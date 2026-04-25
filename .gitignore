@@ -1,5 +1,9 @@
-*.pdf
+node_modules/
 dist/
 .DS_Store
-node_modules/
+*.pdf
 *.zip
+android/local.properties
+ios/**/xcuserdata/
+ios/**/UserInterfaceState.xcuserstate
+ios/**/.swiftpm/xcode/xcuserdata/

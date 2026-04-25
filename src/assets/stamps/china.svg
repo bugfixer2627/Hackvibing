@@ -1,0 +1,9 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(15 100 100)">
+    <path d="M 20 50 L 180 50 L 180 150 L 20 150 Z" fill="none" stroke="#dc2626" stroke-width="5"/>
+    <path d="M 28 58 L 172 58 L 172 142 L 28 142 Z" fill="none" stroke="#dc2626" stroke-width="1"/>
+    <text x="100" y="90" fill="#dc2626" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle">P.R. CHINA</text>
+    <text x="100" y="115" fill="#dc2626" font-family="monospace" font-size="16" font-weight="bold" text-anchor="middle">入境 ENTRY</text>
+    <text x="100" y="135" fill="#dc2626" font-family="monospace" font-size="12" text-anchor="middle">PEK / SHOUDU</text>
+  </g>
+</svg>

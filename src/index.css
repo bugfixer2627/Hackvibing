@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #2d2926;
+  background: #f8f3ea;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overscroll-behavior-y: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.paper-texture {
+  background-color: #f8f3ea;
+  background-image:
+    radial-gradient(rgba(45, 41, 38, 0.06) 0.7px, transparent 0.7px),
+    linear-gradient(115deg, rgba(217, 119, 6, 0.08), transparent 36%, rgba(15, 118, 110, 0.08));
+  background-size: 18px 18px, 100% 100%;
+}
+
+.stamp-edge {
+  mask:
+    radial-gradient(7px at 7px 7px, transparent 98%, #000) -7px -7px;
+}
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-pantry-paper;
+}
+
+
+@supports (padding: max(0px)) {
+  main {
+    padding-bottom: max(6rem, env(safe-area-inset-bottom));
+  }
+}

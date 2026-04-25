@@ -1,0 +1,1321 @@
+import {
+  Award,
+  BookOpen,
+  Camera,
+  Check,
+  ChefHat,
+  Download,
+  Flame,
+  ImagePlus,
+  Lock,
+  Map as MapIcon,
+  RefreshCcw,
+  Search,
+  Share2,
+  Sparkles,
+  Stamp,
+  Trophy,
+  Utensils,
+  X
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent, ReactNode } from "react";
+import pantryData from "./data.json";
+import chinaStamp from "./assets/stamps/china.svg";
+import indiaStamp from "./assets/stamps/india.svg";
+import indonesiaStamp from "./assets/stamps/indonesia.svg";
+import usaStamp from "./assets/stamps/usa.svg";
+
+type IngredientCategories = Record<string, string[]>;
+
+type RecipeComment = {
+  user: string;
+  text: string;
+};
+
+type Recipe = {
+  id: string;
+  name: string;
+  country: string;
+  chineseName: string;
+  badgeEmoji: string;
+  countryStamp: string;
+  description: string;
+  prepTime: string;
+  requiredIngredients: string[];
+  steps: string[];
+  history: string;
+  flavorProfile: string;
+  comments: RecipeComment[];
+};
+
+type PantryData = {
+  ingredients: IngredientCategories;
+  recipes: Recipe[];
+};
+
+type StoredPassport = {
+  foodBadges: string[];
+  countryStamps: string[];
+  photos: Record<string, string>;
+};
+
+type AppView = "pantry" | "suggestion" | "cooking" | "passport";
+
+const data = pantryData as PantryData;
+const STORAGE_KEY = "passport-pantry-state-v1";
+
+const defaultPassport: StoredPassport = {
+  foodBadges: [],
+  countryStamps: [],
+  photos: {}
+};
+
+const countryPalette: Record<string, string> = {
+  China: "from-red-600 to-amber-500",
+  Indonesia: "from-rose-600 to-white",
+  "United States of America": "from-sky-700 to-rose-500",
+  India: "from-orange-500 to-emerald-600"
+};
+
+const countryStampAssets: Record<string, string> = {
+  China: chinaStamp,
+  Indonesia: indonesiaStamp,
+  "United States of America": usaStamp,
+  India: indiaStamp
+};
+
+const ingredientEmojiMap: Record<string, string> = {
+  Apple: "🍎",
+  Bacon: "🥓",
+  "Basmati rice": "🍚",
+  "Bean sprout": "🌱",
+  Beef: "🥩",
+  Bun: "🍞",
+  Butter: "🧈",
+  "Cheddar cheese": "🧀",
+  Chicken: "🍗",
+  Chili: "🌶️",
+  "Chili powder": "🌶️",
+  "Cold water": "🧊",
+  "Coconut milk": "🥥",
+  "Cooked rice (day-old)": "🍚",
+  "Cooking wine": "🍷",
+  "Coriander leaves": "🌿",
+  Cucumber: "🥒",
+  "Desiccated coconut": "🥥",
+  "Dried shrimp": "🦐",
+  Egg: "🥚",
+  "Elbow macaroni": "🍝",
+  Garlic: "🧄",
+  "Garlic powder": "🧄",
+  Ghee: "🧈",
+  Ginger: "🫚",
+  "Green onion": "🌿",
+  "Green peas": "🫛",
+  "Ground beef": "🥩",
+  "Hard-boiled egg": "🥚",
+  Lettuce: "🥬",
+  "Lemon juice": "🍋",
+  Lime: "🍋‍🟩",
+  "Lime juice": "🍋‍🟩",
+  Milk: "🥛",
+  Mint: "🌿",
+  Noodles: "🍜",
+  Onion: "🧅",
+  "Onion powder": "🧅",
+  Paneer: "🧀",
+  Paprika: "🌶️",
+  "Peanut butter": "🥜",
+  "Peanut sauce": "🥜",
+  Pickle: "🥒",
+  Pork: "🥩",
+  "Pork ribs": "🍖",
+  Potato: "🥔",
+  "Red lentils": "🫘",
+  "Rice vermicelli": "🍜",
+  Salt: "🧂",
+  Scallion: "🌿",
+  "Sea bass": "🐟",
+  Shallot: "🧅",
+  Spinach: "🥬",
+  Thyme: "🌿",
+  Tomato: "🍅",
+  Water: "💧"
+};
+
+function getStampAsset(country: string) {
+  return countryStampAssets[country] ?? usaStamp;
+}
+
+function loadPassport(): StoredPassport {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultPassport;
+    const parsed = JSON.parse(raw) as Partial<StoredPassport>;
+    return {
+      foodBadges: Array.isArray(parsed.foodBadges) ? parsed.foodBadges : [],
+      countryStamps: Array.isArray(parsed.countryStamps) ? parsed.countryStamps : [],
+      photos: parsed.photos && typeof parsed.photos === "object" ? parsed.photos : {}
+    };
+  } catch {
+    return defaultPassport;
+  }
+}
+
+function scoreRecipe(recipe: Recipe, selected: string[]) {
+  const required = new Set(recipe.requiredIngredients);
+  const directMatches = selected.filter((ingredient) => required.has(ingredient)).length;
+  const coverage = directMatches / recipe.requiredIngredients.length;
+  const selectedCoverage = directMatches / Math.max(selected.length, 1);
+  return directMatches * 10 + coverage * 4 + selectedCoverage * 3 + decisionTreeBonus(recipe, selected);
+}
+
+function decisionTreeBonus(recipe: Recipe, selected: string[]) {
+  const selectedText = selected.join(" ").toLowerCase();
+  const hasAny = (...needles: string[]) => needles.some((needle) => selectedText.includes(needle.toLowerCase()));
+
+  if (hasAny("soy sauce", "noodles", "scallion", "sea bass", "pork") && recipe.country === "China") {
+    return 5;
+  }
+
+  if (hasAny("kecap manis", "peanut", "coconut", "lemongrass", "turmeric") && recipe.country === "Indonesia") {
+    return 5;
+  }
+
+  if (hasAny("bbq", "macaroni", "cheddar", "bun", "apple", "clam") && recipe.country === "United States of America") {
+    return 5;
+  }
+
+  if (hasAny("garam masala", "turmeric", "cumin", "lentils", "paneer", "basmati") && recipe.country === "India") {
+    return 5;
+  }
+
+  return 0;
+}
+
+function matchingRecipes(selected: string[], recipes: Recipe[]) {
+  return [...recipes].sort((a, b) => scoreRecipe(b, selected) - scoreRecipe(a, selected));
+}
+
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function App() {
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [view, setView] = useState<AppView>("pantry");
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const [activeRecipeId, setActiveRecipeId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [communityRecipeId, setCommunityRecipeId] = useState<string | null>(null);
+  const [shareCardDataUrl, setShareCardDataUrl] = useState<string | null>(null);
+  const [passport, setPassport] = useState<StoredPassport>(() => loadPassport());
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+  }, [passport]);
+
+  const orderedMatches = useMemo(
+    () => matchingRecipes(selectedIngredients, data.recipes),
+    [selectedIngredients]
+  );
+
+  const suggestion = orderedMatches[suggestionIndex % orderedMatches.length];
+  const activeRecipe =
+    data.recipes.find((recipe) => recipe.id === activeRecipeId) ?? suggestion ?? data.recipes[0];
+  const communityRecipe = communityRecipeId
+    ? data.recipes.find((recipe) => recipe.id === communityRecipeId) ?? null
+    : null;
+  const unlockedCountries = new Set(passport.countryStamps);
+  const unlockedBadges = new Set(passport.foodBadges);
+
+  function toggleIngredient(ingredient: string) {
+    setSelectedIngredients((current) => {
+      if (current.includes(ingredient)) {
+        return current.filter((item) => item !== ingredient);
+      }
+      if (current.length >= 4) {
+        return current;
+      }
+      return [...current, ingredient];
+    });
+  }
+
+  function findRecipe() {
+    if (selectedIngredients.length < 2) return;
+    setSuggestionIndex(0);
+    setView("suggestion");
+  }
+
+  function rerollRecipe() {
+    setSuggestionIndex((index) => (index + 1) % orderedMatches.length);
+  }
+
+  function cookRecipe(recipe: Recipe) {
+    setActiveRecipeId(recipe.id);
+    setShareCardDataUrl(null);
+    setView("cooking");
+  }
+
+  function finishRecipe(recipe: Recipe) {
+    setPassport((current) => ({
+      foodBadges: Array.from(new Set([...current.foodBadges, recipe.id])),
+      countryStamps: Array.from(new Set([...current.countryStamps, recipe.country])),
+      photos: current.photos
+    }));
+    setShowCelebration(true);
+    window.setTimeout(() => setShowCelebration(false), 1400);
+  }
+
+  function openCommunity(recipeId: string) {
+    setShareCardDataUrl(null);
+    setCommunityRecipeId(recipeId);
+  }
+
+  function handlePhotoUpload(recipe: Recipe, event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      if (!result) return;
+      setPassport((current) => ({
+        ...current,
+        photos: {
+          ...current.photos,
+          [recipe.id]: result
+        }
+      }));
+      setShareCardDataUrl(null);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function generateShareCard(recipe: Recipe) {
+    const photo = passport.photos[recipe.id];
+    if (!photo) return;
+
+    const canvas = canvasRef.current ?? document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = 1200;
+    canvas.height = 1600;
+
+    ctx.fillStyle = "#f8f3ea";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(45, 41, 38, 0.05)";
+    for (let x = 0; x < canvas.width; x += 28) {
+      for (let y = 0; y < canvas.height; y += 28) {
+        if ((x + y) % 56 === 0) ctx.fillRect(x, y, 2, 2);
+      }
+    }
+
+    ctx.fillStyle = "#fffaf0";
+    roundRect(ctx, 90, 110, 1020, 1160, 42);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(45, 41, 38, 0.12)";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    const image = await loadImage(photo);
+    const imageBox = { x: 150, y: 180, width: 900, height: 760, radius: 34 };
+    ctx.save();
+    roundRect(ctx, imageBox.x, imageBox.y, imageBox.width, imageBox.height, imageBox.radius);
+    ctx.clip();
+    drawCoverImage(ctx, image, imageBox.x, imageBox.y, imageBox.width, imageBox.height);
+    ctx.restore();
+
+    ctx.fillStyle = "rgba(255, 250, 240, 0.92)";
+    roundRect(ctx, 190, 830, 820, 150, 28);
+    ctx.fill();
+
+    ctx.fillStyle = "#2d2926";
+    ctx.font = "700 64px Georgia, serif";
+    wrapCanvasText(ctx, recipe.name, 230, 895, 650, 68);
+    ctx.font = "500 34px system-ui, sans-serif";
+    ctx.fillText(recipe.country, 230, 955);
+
+    const stampImage = await loadImage(getStampAsset(recipe.country));
+    ctx.save();
+    ctx.translate(910, 930);
+    ctx.rotate(-0.12);
+    ctx.drawImage(stampImage, -85, -85, 170, 170);
+    ctx.restore();
+    ctx.font = "86px serif";
+    ctx.fillText(recipe.badgeEmoji, 805, 1040);
+
+    ctx.fillStyle = "#0f766e";
+    ctx.font = "700 40px system-ui, sans-serif";
+    ctx.fillText("Flavor Profile", 150, 1095);
+    ctx.fillStyle = "#2d2926";
+    ctx.font = "500 38px system-ui, sans-serif";
+    wrapCanvasText(ctx, recipe.flavorProfile, 150, 1155, 900, 50);
+
+    ctx.fillStyle = "#9f1239";
+    ctx.font = "700 36px system-ui, sans-serif";
+    ctx.fillText(`Earned: ${recipe.badgeEmoji} ${recipe.name} Badge + ${recipe.countryStamp} Stamp`, 150, 1285);
+
+    ctx.strokeStyle = "rgba(45, 41, 38, 0.18)";
+    ctx.beginPath();
+    ctx.moveTo(150, 1355);
+    ctx.lineTo(1050, 1355);
+    ctx.stroke();
+
+    ctx.fillStyle = "#2d2926";
+    ctx.font = "700 48px Georgia, serif";
+    ctx.fillText("The Passport Pantry", 150, 1440);
+    ctx.font = "500 30px system-ui, sans-serif";
+    ctx.fillStyle = "rgba(45, 41, 38, 0.68)";
+    ctx.fillText("Cooked with The Passport Pantry", 150, 1495);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    setShareCardDataUrl(dataUrl);
+  }
+
+  return (
+    <main className="paper-texture min-h-screen overflow-x-hidden pb-24 text-pantry-ink sm:pb-0">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 py-3 sm:max-w-2xl sm:px-5 lg:max-w-7xl lg:px-8">
+        <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />
+        <MobileBottomNav view={view} setView={setView} earnedCount={passport.foodBadges.length} />
+
+        <section className="grid flex-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+          <aside className="hidden rounded-[2rem] border border-stone-900/10 bg-white/60 p-5 shadow-soft backdrop-blur lg:block">
+            <ProgressPanel
+              selectedIngredients={selectedIngredients}
+              passport={passport}
+              setView={setView}
+            />
+          </aside>
+
+          <div className="min-w-0">
+            {view === "pantry" && (
+              <PantryView
+                ingredients={data.ingredients}
+                selectedIngredients={selectedIngredients}
+                onToggle={toggleIngredient}
+                onFind={findRecipe}
+              />
+            )}
+            {view === "suggestion" && suggestion && (
+              <SuggestionView
+                selectedIngredients={selectedIngredients}
+                recipe={suggestion}
+                matchScore={scoreRecipe(suggestion, selectedIngredients)}
+                onCook={() => cookRecipe(suggestion)}
+                onReroll={rerollRecipe}
+                onBack={() => setView("pantry")}
+              />
+            )}
+            {view === "cooking" && (
+              <CookingView
+                recipe={activeRecipe}
+                isEarned={unlockedBadges.has(activeRecipe.id)}
+                onHistory={() => setShowHistory(true)}
+                onFinish={() => finishRecipe(activeRecipe)}
+                onPassport={() => setView("passport")}
+              />
+            )}
+            {view === "passport" && (
+              <PassportView
+                recipes={data.recipes}
+                passport={passport}
+                unlockedCountries={unlockedCountries}
+                unlockedBadges={unlockedBadges}
+                onBadgeClick={openCommunity}
+                onCookAgain={(recipe) => cookRecipe(recipe)}
+              />
+            )}
+          </div>
+        </section>
+      </div>
+
+      {showHistory && (
+        <HistoryModal recipe={activeRecipe} onClose={() => setShowHistory(false)} />
+      )}
+
+      {communityRecipe && (
+        <CommunityModal
+          recipe={communityRecipe}
+          isUnlocked={unlockedBadges.has(communityRecipe.id)}
+          photo={passport.photos[communityRecipe.id]}
+          shareCardDataUrl={shareCardDataUrl}
+          onUpload={(event) => handlePhotoUpload(communityRecipe, event)}
+          onGenerate={() => generateShareCard(communityRecipe)}
+          onClose={() => setCommunityRecipeId(null)}
+        />
+      )}
+
+      {showCelebration && <Celebration recipe={activeRecipe} />}
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+    </main>
+  );
+}
+
+function Header({
+  view,
+  setView,
+  earnedCount
+}: {
+  view: AppView;
+  setView: (view: AppView) => void;
+  earnedCount: number;
+}) {
+  return (
+    <header className="sticky top-3 z-20 mb-4 flex flex-col gap-3 rounded-[1.7rem] border border-stone-900/10 bg-white/80 p-3 shadow-soft backdrop-blur md:mb-6 md:flex-row md:items-center md:justify-between md:p-4">
+      <button
+        type="button"
+        onClick={() => setView("pantry")}
+        className="focus-ring flex items-center gap-3 rounded-2xl text-left"
+      >
+        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-pantry-mint text-white shadow-stamp">
+          <ChefHat aria-hidden="true" />
+        </span>
+        <span>
+          <span className="block font-display text-xl font-bold leading-tight md:text-3xl">
+            The Passport Pantry
+          </span>
+          <span className="text-sm font-medium text-stone-600">
+            Pick ingredients. Cook the world. Stamp your plate.
+          </span>
+        </span>
+      </button>
+
+      <nav className="hidden grid-cols-2 gap-2 sm:flex" aria-label="Primary navigation">
+        <NavButton
+          active={view === "pantry"}
+          icon={<Utensils aria-hidden="true" size={18} />}
+          label="Pantry"
+          onClick={() => setView("pantry")}
+        />
+        <NavButton
+          active={view === "passport"}
+          icon={<MapIcon aria-hidden="true" size={18} />}
+          label={`Passport ${earnedCount ? `(${earnedCount})` : ""}`}
+          onClick={() => setView("passport")}
+        />
+      </nav>
+    </header>
+  );
+}
+
+function MobileBottomNav({
+  view,
+  setView,
+  earnedCount
+}: {
+  view: AppView;
+  setView: (view: AppView) => void;
+  earnedCount: number;
+}) {
+  return (
+    <nav
+      className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      aria-label="Mobile navigation"
+    >
+      <NavButton
+        active={view === "pantry"}
+        icon={<Utensils aria-hidden="true" size={18} />}
+        label="Pantry"
+        onClick={() => setView("pantry")}
+      />
+      <NavButton
+        active={view === "passport"}
+        icon={<MapIcon aria-hidden="true" size={18} />}
+        label={`Passport ${earnedCount ? `(${earnedCount})` : ""}`}
+        onClick={() => setView("passport")}
+      />
+    </nav>
+  );
+}
+
+function StampImage({
+  country,
+  className
+}: {
+  country: string;
+  className?: string;
+}) {
+  return <img src={getStampAsset(country)} alt={`${country} passport stamp`} className={className} />;
+}
+
+function NavButton({
+  active,
+  icon,
+  label,
+  onClick
+}: {
+  active: boolean;
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cx(
+        "focus-ring inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold transition",
+        active ? "bg-pantry-ink text-white shadow-soft" : "bg-white text-stone-700 hover:bg-amber-50"
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function ProgressPanel({
+  selectedIngredients,
+  passport,
+  setView
+}: {
+  selectedIngredients: string[];
+  passport: StoredPassport;
+  setView: (view: AppView) => void;
+}) {
+  return (
+    <div className="flex h-full flex-col gap-5">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Today</p>
+        <h2 className="mt-2 font-display text-3xl font-bold">Your cooking route</h2>
+      </div>
+
+      <div className="rounded-3xl bg-pantry-paper p-4">
+        <p className="text-sm font-bold text-stone-500">Selected ingredients</p>
+        <div className="mt-3 flex min-h-24 flex-wrap content-start gap-2">
+          {selectedIngredients.length ? (
+            selectedIngredients.map((ingredient) => (
+              <span key={ingredient} className="rounded-full bg-white px-3 py-2 text-sm font-bold shadow-sm">
+                {ingredient}
+              </span>
+            ))
+          ) : (
+            <p className="text-sm text-stone-500">Choose 2 to 4 pantry items to begin.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <StatCard icon={<Award />} label="Food Badges" value={passport.foodBadges.length} />
+        <StatCard icon={<Stamp />} label="Stamps" value={passport.countryStamps.length} />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setView("passport")}
+        className="focus-ring mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-pantry-berry px-4 py-3 font-bold text-white shadow-soft transition hover:-translate-y-0.5"
+      >
+        <Trophy size={18} aria-hidden="true" />
+        Open Libraries
+      </button>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-3xl bg-white p-4 shadow-sm">
+      <div className="mb-3 text-pantry-saffron">{icon}</div>
+      <p className="text-3xl font-black">{value}</p>
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">{label}</p>
+    </div>
+  );
+}
+
+function PantryView({
+  ingredients,
+  selectedIngredients,
+  onToggle,
+  onFind
+}: {
+  ingredients: IngredientCategories;
+  selectedIngredients: string[];
+  onToggle: (ingredient: string) => void;
+  onFind: () => void;
+}) {
+  const visibleIngredients = Object.entries(ingredients).reduce<IngredientCategories>((categories, [category, items]) => {
+    const visibleItems = items.filter(hasIngredientEmoji);
+    if (visibleItems.length > 0) {
+      categories[category] = visibleItems;
+    }
+    return categories;
+  }, {});
+  const canFind = selectedIngredients.length >= 2 && selectedIngredients.length <= 4;
+
+  return (
+    <div className="animate-pop">
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
+          <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
+            Choose your passport ingredients.
+          </h1>
+        </div>
+        <div className="self-start rounded-2xl bg-white/80 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
+          {selectedIngredients.length}/4 selected
+        </div>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        {Object.entries(visibleIngredients).map(([category, items]) => (
+          <section key={category} className="rounded-[2rem] border border-stone-900/10 bg-white/70 p-5 shadow-soft">
+            <h2 className="mb-4 flex items-center gap-2 font-display text-2xl font-bold">
+              <Sparkles size={20} className="text-pantry-saffron" aria-hidden="true" />
+              {category}
+            </h2>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {items.map((ingredient) => {
+                const active = selectedIngredients.includes(ingredient);
+                const disabled = !active && selectedIngredients.length >= 4;
+                return (
+                  <button
+                    key={ingredient}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onToggle(ingredient)}
+                    className={cx(
+                      "focus-ring min-h-20 rounded-2xl border p-3 text-left text-sm font-extrabold transition",
+                      active
+                        ? "border-pantry-mint bg-pantry-mint text-white shadow-stamp"
+                        : "border-stone-900/10 bg-white text-stone-700 hover:-translate-y-0.5 hover:border-pantry-saffron",
+                      disabled && "cursor-not-allowed opacity-40 hover:translate-y-0"
+                    )}
+                    aria-pressed={active}
+                  >
+                    <span className="mb-2 block text-xl">{ingredientEmoji(ingredient)}</span>
+                    {ingredient}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <div className="sticky bottom-4 z-10 mt-6 rounded-[2rem] border border-stone-900/10 bg-white/85 p-3 shadow-soft backdrop-blur">
+        <button
+          type="button"
+          disabled={!canFind}
+          onClick={onFind}
+          className={cx(
+            "focus-ring flex w-full items-center justify-center gap-3 rounded-3xl px-6 py-5 text-lg font-black transition",
+            canFind
+              ? "bg-pantry-ink text-white hover:-translate-y-0.5"
+              : "cursor-not-allowed bg-stone-200 text-stone-500"
+          )}
+        >
+          <Search aria-hidden="true" />
+          Find Recipe
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SuggestionView({
+  selectedIngredients,
+  recipe,
+  matchScore,
+  onCook,
+  onReroll,
+  onBack
+}: {
+  selectedIngredients: string[];
+  recipe: Recipe;
+  matchScore: number;
+  onCook: () => void;
+  onReroll: () => void;
+  onBack: () => void;
+}) {
+  const matched = recipe.requiredIngredients.filter((ingredient) => selectedIngredients.includes(ingredient));
+
+  return (
+    <div className="animate-pop">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Suggestion</p>
+          <h1 className="mt-2 font-display text-4xl font-black md:text-5xl">Your closest match</h1>
+        </div>
+        <button
+          type="button"
+          onClick={onBack}
+          className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-bold shadow-sm transition hover:bg-amber-50"
+        >
+          Edit Pantry
+        </button>
+      </div>
+
+      <article className="relative overflow-hidden rounded-[2rem] border-2 border-dashed border-stone-900/20 bg-[#fffaf0] p-4 shadow-soft sm:p-6">
+        <div className={cx("absolute inset-x-0 top-0 h-2 bg-gradient-to-r", countryPalette[recipe.country] ?? "from-amber-500 to-teal-700")} />
+        <div className="absolute right-4 top-5 rotate-6 rounded-2xl bg-white/70 p-1 shadow-sm">
+          <StampImage country={recipe.country} className="h-20 w-20 object-contain sm:h-28 sm:w-28" />
+        </div>
+        <div className="pointer-events-none absolute bottom-5 right-5 hidden w-40 space-y-3 opacity-25 sm:block">
+          <span className="block border-t border-stone-700" />
+          <span className="block border-t border-stone-700" />
+          <span className="block border-t border-stone-700" />
+        </div>
+        <div className="pt-16 sm:pt-20">
+          <div className="mb-5 pr-20 sm:pr-28">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-berry">{recipe.country}</p>
+            <h2 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">{recipe.name}</h2>
+            <p className="mt-1 text-lg font-bold text-pantry-mint">{recipe.chineseName}</p>
+          </div>
+
+          <p className="max-w-2xl text-lg font-medium leading-8 text-stone-600">{recipe.description}</p>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-[1fr_220px]">
+            <div className="rounded-3xl bg-pantry-paper p-5">
+              <h3 className="mb-3 font-display text-2xl font-bold">Required ingredients</h3>
+              <div className="flex flex-wrap gap-2">
+                {recipe.requiredIngredients.map((ingredient) => (
+                  <span
+                    key={ingredient}
+                    className={cx(
+                      "rounded-full px-3 py-2 text-sm font-black",
+                      selectedIngredients.includes(ingredient)
+                        ? "bg-pantry-mint text-white"
+                        : "bg-white text-stone-600"
+                    )}
+                  >
+                    {ingredient}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-3xl bg-pantry-ink p-5 text-white">
+              <Flame aria-hidden="true" />
+              <p className="mt-4 text-3xl font-black">{recipe.prepTime}</p>
+              <p className="text-sm font-bold text-white/70">
+                {matched.length} pantry match{matched.length === 1 ? "" : "es"} · score {Math.round(matchScore)}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={onCook}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-6 py-5 text-lg font-black text-white shadow-stamp transition hover:-translate-y-0.5"
+            >
+              <Check aria-hidden="true" />
+              Cook This
+            </button>
+            <button
+              type="button"
+              onClick={onReroll}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-white px-6 py-5 text-lg font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:-translate-y-0.5 hover:bg-amber-50"
+            >
+              <RefreshCcw aria-hidden="true" />
+              Change Food
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function CookingView({
+  recipe,
+  isEarned,
+  onHistory,
+  onFinish,
+  onPassport
+}: {
+  recipe: Recipe;
+  isEarned: boolean;
+  onHistory: () => void;
+  onFinish: () => void;
+  onPassport: () => void;
+}) {
+  return (
+    <div className="animate-pop">
+      <div className="overflow-hidden rounded-[2.5rem] border border-stone-900/10 bg-white shadow-soft">
+        <div className="grid gap-6 p-5 md:grid-cols-[1fr_260px] md:p-8">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">Cooking</p>
+            <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
+              {recipe.name}
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">{recipe.description}</p>
+          </div>
+          <div className="rounded-[2rem] bg-pantry-paper p-5">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-stone-500">Badge</p>
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-6xl">{recipe.badgeEmoji}</span>
+              <div>
+                <p className="font-display text-2xl font-bold">{recipe.countryStamp}</p>
+                <p className="text-sm font-bold text-stone-500">{recipe.prepTime}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-5 border-t border-stone-900/10 p-5 md:grid-cols-[minmax(0,1fr)_280px] md:p-8">
+          <section>
+            <h2 className="mb-4 font-display text-3xl font-bold">Step-by-step</h2>
+            <ol className="grid gap-3">
+              {recipe.steps.map((step, index) => (
+                <li key={step} className="flex gap-4 rounded-3xl bg-pantry-paper p-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pantry-ink font-black text-white">
+                    {index + 1}
+                  </span>
+                  <span className="pt-2 font-semibold leading-7 text-stone-700">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <aside className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={onHistory}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-white px-5 py-4 font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
+            >
+              <BookOpen aria-hidden="true" />
+              Cultural History
+            </button>
+            <button
+              type="button"
+              onClick={onFinish}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-berry px-5 py-5 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
+            >
+              <Award aria-hidden="true" />
+              {isEarned ? "Cooked Again!" : "I Finished Cooking!"}
+            </button>
+            <button
+              type="button"
+              onClick={onPassport}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-5 py-4 font-black text-white shadow-stamp transition hover:-translate-y-0.5"
+            >
+              <MapIcon aria-hidden="true" />
+              Food Passport & Badges
+            </button>
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PassportView({
+  recipes,
+  passport,
+  unlockedCountries,
+  unlockedBadges,
+  onBadgeClick,
+  onCookAgain
+}: {
+  recipes: Recipe[];
+  passport: StoredPassport;
+  unlockedCountries: Set<string>;
+  unlockedBadges: Set<string>;
+  onBadgeClick: (recipeId: string) => void;
+  onCookAgain: (recipe: Recipe) => void;
+}) {
+  const countries = Array.from(new Map(recipes.map((recipe) => [recipe.country, recipe])).values());
+
+  return (
+    <div className="animate-pop">
+      <div className="mb-6">
+        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
+        <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
+          Food Passport
+        </h1>
+      </div>
+
+      <section className="mb-6 rounded-[2rem] border border-stone-900/10 bg-white/75 p-5 shadow-soft">
+        <h2 className="mb-4 flex items-center gap-2 font-display text-3xl font-bold">
+          <Stamp className="text-pantry-berry" aria-hidden="true" />
+          Country Stamps
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {countries.map((recipe) => {
+            const unlocked = unlockedCountries.has(recipe.country);
+            return (
+              <div
+                key={recipe.country}
+                className={cx(
+                  "stamp-edge min-h-36 rounded-3xl border-2 border-dashed p-4 transition",
+                  unlocked
+                    ? "border-pantry-mint bg-emerald-50 text-pantry-ink shadow-stamp"
+                    : "border-stone-300 bg-stone-100 text-stone-400 grayscale"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  {unlocked ? <StampImage country={recipe.country} className="h-20 w-20 object-contain" /> : <span className="text-5xl">⬚</span>}
+                  {!unlocked && <Lock aria-hidden="true" />}
+                </div>
+                <p className="mt-4 font-display text-2xl font-black">{recipe.countryStamp}</p>
+                <p className="text-sm font-bold">{recipe.country}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-stone-900/10 bg-white/75 p-5 shadow-soft">
+        <h2 className="mb-4 flex items-center gap-2 font-display text-3xl font-bold">
+          <Award className="text-pantry-saffron" aria-hidden="true" />
+          Food Badges
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {recipes.map((recipe) => {
+            const unlocked = unlockedBadges.has(recipe.id);
+            return (
+              <article
+                key={recipe.id}
+                className={cx(
+                  "rounded-[2rem] border p-4 transition",
+                  unlocked
+                    ? "border-stone-900/10 bg-white shadow-soft"
+                    : "border-stone-200 bg-stone-100 text-stone-400 grayscale"
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-5xl">{unlocked ? recipe.badgeEmoji : "🔒"}</div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-pantry-paper px-3 py-1 text-xs font-black">
+                    <StampImage country={recipe.country} className="h-8 w-8 object-contain" /> {recipe.countryStamp}
+                  </span>
+                </div>
+                <h3 className="mt-4 font-display text-2xl font-bold leading-tight">{recipe.name}</h3>
+                <p className="mt-2 line-clamp-2 text-sm font-medium text-stone-600">{recipe.description}</p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    disabled={!unlocked}
+                    onClick={() => onBadgeClick(recipe.id)}
+                    className={cx(
+                      "focus-ring inline-flex items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-black transition",
+                      unlocked
+                        ? "bg-pantry-mint text-white hover:-translate-y-0.5"
+                        : "cursor-not-allowed bg-stone-200 text-stone-500"
+                    )}
+                  >
+                    <Camera size={16} aria-hidden="true" />
+                    Community
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onCookAgain(recipe)}
+                    className="focus-ring inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-3 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
+                  >
+                    <ChefHat size={16} aria-hidden="true" />
+                    Cook
+                  </button>
+                </div>
+                {passport.photos[recipe.id] && (
+                  <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-pantry-berry">
+                    Photo shared
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function HistoryModal({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
+  return (
+    <ModalShell onClose={onClose} labelledBy="history-title">
+      <div className="max-w-xl rounded-[2rem] bg-white p-6 shadow-soft">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">
+              {recipe.country}
+            </p>
+            <h2 id="history-title" className="mt-2 font-display text-4xl font-black">
+              Cultural History
+            </h2>
+          </div>
+          <IconButton label="Close history" onClick={onClose} icon={<X aria-hidden="true" />} />
+        </div>
+        <p className="text-lg font-medium leading-8 text-stone-700">{recipe.history}</p>
+      </div>
+    </ModalShell>
+  );
+}
+
+function CommunityModal({
+  recipe,
+  isUnlocked,
+  photo,
+  shareCardDataUrl,
+  onUpload,
+  onGenerate,
+  onClose
+}: {
+  recipe: Recipe;
+  isUnlocked: boolean;
+  photo?: string;
+  shareCardDataUrl: string | null;
+  onUpload: (event: ChangeEvent<HTMLInputElement>) => void;
+  onGenerate: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <ModalShell onClose={onClose} labelledBy="community-title">
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-auto rounded-[2rem] bg-white shadow-soft">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-stone-900/10 bg-white/95 p-5 backdrop-blur">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">
+              Community View
+            </p>
+            <h2 id="community-title" className="mt-1 font-display text-3xl font-black">
+              {recipe.badgeEmoji} {recipe.name}
+            </h2>
+          </div>
+          <IconButton label="Close community" onClick={onClose} icon={<X aria-hidden="true" />} />
+        </div>
+
+        <div className="grid gap-5 p-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="rounded-[2rem] bg-pantry-paper p-5">
+            <div className="mb-4 grid h-40 place-items-center rounded-3xl bg-white text-7xl shadow-sm">
+              {isUnlocked ? recipe.badgeEmoji : <Lock aria-hidden="true" />}
+            </div>
+            <div className="mb-3 rounded-2xl bg-white/70 p-2"><StampImage country={recipe.country} className="mx-auto h-28 w-28 object-contain" /></div>
+            <p className="font-display text-2xl font-bold">{recipe.country}</p>
+            <p className="mt-2 text-sm font-bold text-stone-600">{recipe.flavorProfile}</p>
+
+            <label className="focus-within:ring-4 focus-within:ring-amber-500/30 mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-4 py-4 text-center font-black text-white shadow-stamp transition hover:-translate-y-0.5">
+              <ImagePlus aria-hidden="true" />
+              Share Your Result
+              <input type="file" accept="image/*" onChange={onUpload} className="sr-only" />
+            </label>
+
+            {photo && (
+              <button
+                type="button"
+                onClick={onGenerate}
+                className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-pantry-berry px-4 py-4 font-black text-white shadow-soft transition hover:-translate-y-0.5"
+              >
+                <Share2 aria-hidden="true" />
+                Generate Share Card
+                <span className="text-white/80">生成分享海报</span>
+              </button>
+            )}
+
+            {shareCardDataUrl && (
+              <a
+                href={shareCardDataUrl}
+                download={`${recipe.id}-passport-pantry.png`}
+                className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-pantry-ink px-4 py-4 font-black text-white transition hover:-translate-y-0.5"
+              >
+                <Download aria-hidden="true" />
+                Download PNG
+              </a>
+            )}
+          </aside>
+
+          <section>
+            {photo && (
+              <article className="mb-4 rounded-[2rem] border border-pantry-mint/30 bg-emerald-50 p-4 shadow-sm">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-pantry-mint font-black text-white">
+                    You
+                  </div>
+                  <div>
+                    <p className="font-black">You shared a cooking photo</p>
+                    <p className="text-sm font-semibold text-stone-500">Just now · live in your pantry</p>
+                  </div>
+                </div>
+                <img
+                  src={photo}
+                  alt={`Your cooked ${recipe.name}`}
+                  className="max-h-[420px] w-full rounded-3xl object-cover"
+                />
+              </article>
+            )}
+
+            {shareCardDataUrl && (
+              <article className="mb-4 rounded-[2rem] border border-stone-900/10 bg-white p-4 shadow-sm">
+                <p className="mb-3 font-black">Share card preview</p>
+                <img
+                  src={shareCardDataUrl}
+                  alt={`Generated share card for ${recipe.name}`}
+                  className="mx-auto max-h-[520px] rounded-3xl border border-stone-900/10"
+                />
+              </article>
+            )}
+
+            <div className="space-y-3">
+              {recipe.comments.map((comment) => (
+                <article key={`${comment.user}-${comment.text}`} className="rounded-[2rem] bg-pantry-paper p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-11 w-11 place-items-center rounded-full bg-white font-black text-pantry-berry shadow-sm">
+                      {comment.user.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-black">{comment.user}</p>
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Cooked this</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 font-medium leading-7 text-stone-700">{comment.text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+function Celebration({ recipe }: { recipe: Recipe }) {
+  const pieces = Array.from({ length: 28 }, (_, index) => index);
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-live="polite">
+      <div className="absolute left-1/2 top-24 -translate-x-1/2 rounded-[2rem] bg-white px-6 py-5 text-center shadow-soft">
+        <div className="text-5xl">{recipe.badgeEmoji}</div>
+        <p className="mt-2 font-display text-3xl font-black">Badge earned!</p>
+        <p className="font-bold text-pantry-mint">{recipe.countryStamp} stamp added</p>
+      </div>
+      {pieces.map((piece) => (
+        <span
+          key={piece}
+          className="absolute top-[-40px] h-5 w-3 animate-confetti rounded-full"
+          style={{
+            left: `${(piece * 37) % 100}%`,
+            animationDelay: `${piece * 22}ms`,
+            backgroundColor: ["#d97706", "#0f766e", "#9f1239", "#4338ca"][piece % 4]
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ModalShell({
+  children,
+  onClose,
+  labelledBy
+}: {
+  children: ReactNode;
+  onClose: () => void;
+  labelledBy: string;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-40 grid place-items-center bg-stone-950/45 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function IconButton({
+  label,
+  icon,
+  onClick
+}: {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="focus-ring grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100"
+    >
+      {icon}
+    </button>
+  );
+}
+
+function hasIngredientEmoji(ingredient: string) {
+  return ingredient in ingredientEmojiMap;
+}
+
+function ingredientEmoji(ingredient: string) {
+  return ingredientEmojiMap[ingredient] ?? null;
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function drawCoverImage(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  const scale = Math.max(width / image.width, height / image.height);
+  const scaledWidth = image.width * scale;
+  const scaledHeight = image.height * scale;
+  const offsetX = x + (width - scaledWidth) / 2;
+  const offsetY = y + (height - scaledHeight) / 2;
+  ctx.drawImage(image, offsetX, offsetY, scaledWidth, scaledHeight);
+}
+
+function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function wrapCanvasText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+) {
+  const words = text.split(" ");
+  let line = "";
+  let currentY = y;
+
+  words.forEach((word, index) => {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = word;
+      currentY += lineHeight;
+    } else {
+      line = test;
+    }
+
+    if (index === words.length - 1 && line) {
+      ctx.fillText(line, x, currentY);
+    }
+  });
+}
+
+export default App;

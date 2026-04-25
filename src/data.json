@@ -1,0 +1,946 @@
+{
+  "ingredients": {
+    "Proteins": [
+      "Bacon",
+      "Beef",
+      "Chicken",
+      "Clams",
+      "Dried shrimp",
+      "Egg",
+      "Ground beef",
+      "Hard-boiled egg",
+      "Paneer",
+      "Pork",
+      "Pork gelatin",
+      "Pork ribs",
+      "Red lentils",
+      "Sea bass",
+      "Shrimp crackers",
+      "Shrimp paste",
+      "Tofu"
+    ],
+    "Vegetables": [
+      "Apple",
+      "Bean sprout",
+      "Celery",
+      "Chili",
+      "Chili powder",
+      "Coriander leaves",
+      "Cucumber",
+      "Fried shallots",
+      "Galangal",
+      "Garlic",
+      "Garlic powder",
+      "Ginger",
+      "Green onion",
+      "Green peas",
+      "Lemongrass",
+      "Lettuce",
+      "Long beans",
+      "Mint",
+      "Onion",
+      "Onion powder",
+      "Pickle",
+      "Potato",
+      "Shallot",
+      "Spinach",
+      "Tomato"
+    ],
+    "Carbs": [
+      "Basmati rice",
+      "Bun",
+      "Cold water",
+      "Cooked rice (day-old)",
+      "Elbow macaroni",
+      "Flour",
+      "Noodles",
+      "Rice vermicelli",
+      "Water",
+      "Yeast"
+    ],
+    "Spices & Sauces": [
+      "Bay leaf",
+      "BBQ sauce",
+      "Black pepper",
+      "Brown sugar",
+      "Butter",
+      "Cheddar cheese",
+      "Cinnamon",
+      "Coconut milk",
+      "Cooking wine",
+      "Coriander seeds",
+      "Cream",
+      "Cumin",
+      "Dark soy sauce",
+      "Desiccated coconut",
+      "Garam masala",
+      "Ghee",
+      "Heavy cream",
+      "Kecap manis",
+      "Ketchup",
+      "Lemon juice",
+      "Lime",
+      "Lime juice",
+      "Milk",
+      "Mustard",
+      "Nutmeg",
+      "Oil",
+      "Paprika",
+      "Peanut butter",
+      "Peanut sauce",
+      "Saffron",
+      "Salt",
+      "Scallion",
+      "Sesame",
+      "Sesame oil",
+      "Soy sauce",
+      "Sugar",
+      "Thyme",
+      "Turmeric",
+      "Vegetable oil",
+      "Yogurt"
+    ]
+  },
+  "recipes": [
+    {
+      "id": "hamburger",
+      "name": "Hamburger",
+      "chineseName": "汉堡",
+      "country": "United States of America",
+      "badgeEmoji": "🍔",
+      "countryStamp": "USA",
+      "description": "Hamburger (汉堡) made with Ground beef, Bun, Lettuce, Tomato, and a guided postcard-style cooking route.",
+      "prepTime": "25 min",
+      "requiredIngredients": [
+        "Ground beef",
+        "Bun",
+        "Lettuce",
+        "Tomato",
+        "Cheddar cheese",
+        "Ketchup",
+        "Mustard",
+        "Onion",
+        "Pickle",
+        "Salt",
+        "Black pepper"
+      ],
+      "steps": [
+        "Season ground beef with salt and pepper, form into patties.",
+        "Grill or pan-fry patties 3-4 min per side.",
+        "Add cheese in last minute.",
+        "Toast buns.",
+        "Layer lettuce, tomato, onion, pickle on bun.",
+        "Add patty and condiments. Serve."
+      ],
+      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "comments": [
+        {
+          "user": "Lena W.",
+          "text": "Hamburger felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Adi R.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Noah L.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "mac-and-cheese",
+      "name": "Mac and Cheese",
+      "chineseName": "芝士通心粉",
+      "country": "United States of America",
+      "badgeEmoji": "🧀",
+      "countryStamp": "USA",
+      "description": "Mac and Cheese (芝士通心粉) made with Elbow macaroni, Butter, Flour, Milk, and a guided postcard-style cooking route.",
+      "prepTime": "25 min",
+      "requiredIngredients": [
+        "Elbow macaroni",
+        "Butter",
+        "Flour",
+        "Milk",
+        "Cheddar cheese",
+        "Salt",
+        "Black pepper",
+        "Nutmeg"
+      ],
+      "steps": [
+        "Cook macaroni until al dente; drain.",
+        "Melt butter in saucepan, whisk in flour (2 min).",
+        "Gradually add milk, stir until thickened.",
+        "Add cheese, stir until melted.",
+        "Season with salt, pepper, nutmeg.",
+        "Toss with pasta. Serve hot."
+      ],
+      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "comments": [
+        {
+          "user": "Bao Kitchen",
+          "text": "Mac and Cheese felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Priya M.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Ivy Spoon",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "bbq-ribs",
+      "name": "BBQ Ribs",
+      "chineseName": "烧烤排骨",
+      "country": "United States of America",
+      "badgeEmoji": "🔥",
+      "countryStamp": "USA",
+      "description": "BBQ Ribs (烧烤排骨) made with Pork ribs, BBQ sauce, Garlic powder, Onion powder, and a guided postcard-style cooking route.",
+      "prepTime": "3 hr 25 min",
+      "requiredIngredients": [
+        "Pork ribs",
+        "BBQ sauce",
+        "Garlic powder",
+        "Onion powder",
+        "Paprika",
+        "Brown sugar",
+        "Salt",
+        "Black pepper"
+      ],
+      "steps": [
+        "Mix dry rub (garlic powder, onion powder, paprika, brown sugar, salt, pepper).",
+        "Coat ribs generously with rub.",
+        "Wrap in foil, bake at 150°C for 3 hrs.",
+        "Unwrap, brush with BBQ sauce.",
+        "Grill or broil 5-10 min until caramelized. Serve."
+      ],
+      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "comments": [
+        {
+          "user": "Maya C.",
+          "text": "BBQ Ribs felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Noah L.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Carla Makes",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "clam-chowder",
+      "name": "Clam Chowder",
+      "chineseName": "蛤蜊浓汤",
+      "country": "United States of America",
+      "badgeEmoji": "🥣",
+      "countryStamp": "USA",
+      "description": "Clam Chowder (蛤蜊浓汤) made with Clams, Bacon, Potato, Onion, and a guided postcard-style cooking route.",
+      "prepTime": "40 min",
+      "requiredIngredients": [
+        "Clams",
+        "Bacon",
+        "Potato",
+        "Onion",
+        "Celery",
+        "Butter",
+        "Flour",
+        "Heavy cream",
+        "Salt",
+        "Thyme",
+        "Bay leaf"
+      ],
+      "steps": [
+        "Cook bacon until crisp; set aside.",
+        "Sauté onion and celery in butter.",
+        "Add flour, stir 1 min.",
+        "Add clam juice and potato; simmer until soft.",
+        "Add clams and cream; heat gently.",
+        "Season with salt and thyme.",
+        "Top with bacon. Serve with bread."
+      ],
+      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "comments": [
+        {
+          "user": "Adi R.",
+          "text": "Clam Chowder felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Ivy Spoon",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Lena W.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "apple-pie",
+      "name": "Apple Pie",
+      "chineseName": "苹果派",
+      "country": "United States of America",
+      "badgeEmoji": "🥧",
+      "countryStamp": "USA",
+      "description": "Apple Pie (苹果派) made with Apple, Flour, Butter, Sugar, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr 20 min",
+      "requiredIngredients": [
+        "Apple",
+        "Flour",
+        "Butter",
+        "Sugar",
+        "Cinnamon",
+        "Lemon juice",
+        "Salt",
+        "Egg",
+        "Cold water"
+      ],
+      "steps": [
+        "Make crust: mix flour, salt, butter; add cold water; form dough, chill.",
+        "Peel and slice apples, toss with sugar, cinnamon, lemon juice.",
+        "Roll out half dough, fit into pie dish.",
+        "Fill with apple mixture.",
+        "Cover with second crust, crimp edges, cut vents.",
+        "Brush with egg wash.",
+        "Bake 200°C for 45-50 min until golden."
+      ],
+      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "comments": [
+        {
+          "user": "Priya M.",
+          "text": "Apple Pie felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Carla Makes",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Bao Kitchen",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "nasi-goreng",
+      "name": "Nasi Goreng",
+      "chineseName": "印尼炒饭",
+      "country": "Indonesia",
+      "badgeEmoji": "🍳",
+      "countryStamp": "IDN",
+      "description": "Nasi Goreng (印尼炒饭) made with Cooked rice (day-old), Egg, Dried shrimp, Kecap manis, and a guided postcard-style cooking route.",
+      "prepTime": "25 min",
+      "requiredIngredients": [
+        "Cooked rice (day-old)",
+        "Egg",
+        "Dried shrimp",
+        "Kecap manis",
+        "Garlic",
+        "Shallot",
+        "Chili",
+        "Shrimp paste",
+        "Green onion",
+        "Salt"
+      ],
+      "steps": [
+        "Blend shallot, garlic, chili, shrimp paste into paste.",
+        "Fry paste in oil 2 min.",
+        "Add dried shrimp; fry 1 min.",
+        "Add cold rice; stir-fry on high heat.",
+        "Add kecap manis; toss well.",
+        "Season with salt.",
+        "Push rice aside, fry egg sunny-side up.",
+        "Top rice with egg and green onion. Serve."
+      ],
+      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "comments": [
+        {
+          "user": "Noah L.",
+          "text": "Nasi Goreng felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Lena W.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Maya C.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "beef-rendang",
+      "name": "Beef Rendang",
+      "chineseName": "仁当牛肉",
+      "country": "Indonesia",
+      "badgeEmoji": "🥥",
+      "countryStamp": "IDN",
+      "description": "Beef Rendang (仁当牛肉) made with Beef, Coconut milk, Lemongrass, Shallot, and a guided postcard-style cooking route.",
+      "prepTime": "3 hr",
+      "requiredIngredients": [
+        "Beef",
+        "Coconut milk",
+        "Lemongrass",
+        "Shallot",
+        "Garlic",
+        "Turmeric",
+        "Chili",
+        "Galangal",
+        "Desiccated coconut",
+        "Salt"
+      ],
+      "steps": [
+        "Blend shallot, garlic, chili, galangal, turmeric into paste.",
+        "Fry paste with lemongrass until fragrant.",
+        "Add beef; coat with paste.",
+        "Add coconut milk; bring to boil.",
+        "Simmer on low heat 2-3 hrs, stirring occasionally, until liquid evaporates and beef is dark and tender.",
+        "Add toasted coconut. Season with salt. Serve with rice."
+      ],
+      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "comments": [
+        {
+          "user": "Ivy Spoon",
+          "text": "Beef Rendang felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Bao Kitchen",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Adi R.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "chicken-satay",
+      "name": "Chicken Satay",
+      "chineseName": "沙爹鸡肉串",
+      "country": "Indonesia",
+      "badgeEmoji": "🍢",
+      "countryStamp": "IDN",
+      "description": "Chicken Satay (沙爹鸡肉串) made with Chicken, Peanut butter, Coconut milk, Kecap manis, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr 25 min",
+      "requiredIngredients": [
+        "Chicken",
+        "Peanut butter",
+        "Coconut milk",
+        "Kecap manis",
+        "Turmeric",
+        "Cumin",
+        "Lime juice",
+        "Chili",
+        "Salt"
+      ],
+      "steps": [
+        "Mix turmeric, cumin, kecap manis, lime juice, salt for marinade.",
+        "Cube chicken; marinate 1+ hr.",
+        "Thread onto skewers.",
+        "Grill on high heat 3-4 min per side.",
+        "Make peanut sauce: mix peanut butter, coconut milk, chili, lime juice; heat until smooth.",
+        "Serve skewers with peanut sauce."
+      ],
+      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "comments": [
+        {
+          "user": "Carla Makes",
+          "text": "Chicken Satay felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Maya C.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Priya M.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "gado-gado",
+      "name": "Gado-Gado",
+      "chineseName": "印尼花生蔬菜沙拉",
+      "country": "Indonesia",
+      "badgeEmoji": "🥜",
+      "countryStamp": "IDN",
+      "description": "Gado-Gado (印尼花生蔬菜沙拉) made with Tofu, Hard-boiled egg, Potato, Bean sprout, and a guided postcard-style cooking route.",
+      "prepTime": "35 min",
+      "requiredIngredients": [
+        "Tofu",
+        "Hard-boiled egg",
+        "Potato",
+        "Bean sprout",
+        "Long beans",
+        "Peanut sauce",
+        "Coconut milk",
+        "Shrimp crackers",
+        "Cucumber",
+        "Lime"
+      ],
+      "steps": [
+        "Boil potato until tender; slice.",
+        "Blanch long beans and bean sprouts (2 min); drain.",
+        "Fry or bake tofu until golden.",
+        "Arrange all vegetables, tofu, and sliced egg on plate.",
+        "Make peanut sauce: blend peanuts, chili, garlic, lime, coconut milk; heat.",
+        "Pour sauce over salad.",
+        "Top with shrimp crackers. Serve."
+      ],
+      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "comments": [
+        {
+          "user": "Lena W.",
+          "text": "Gado-Gado felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Adi R.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Noah L.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "soto-ayam",
+      "name": "Soto Ayam",
+      "chineseName": "印尼鸡汤",
+      "country": "Indonesia",
+      "badgeEmoji": "🍜",
+      "countryStamp": "IDN",
+      "description": "Soto Ayam (印尼鸡汤) made with Chicken, Rice vermicelli, Lemongrass, Turmeric, and a guided postcard-style cooking route.",
+      "prepTime": "50 min",
+      "requiredIngredients": [
+        "Chicken",
+        "Rice vermicelli",
+        "Lemongrass",
+        "Turmeric",
+        "Galangal",
+        "Garlic",
+        "Shallot",
+        "Bean sprout",
+        "Hard-boiled egg",
+        "Salt",
+        "Fried shallots"
+      ],
+      "steps": [
+        "Boil chicken in water with lemongrass, galangal until cooked (30 min).",
+        "Remove chicken; shred meat.",
+        "Blend shallot, garlic, turmeric into paste; fry until fragrant.",
+        "Add to broth; simmer 15 min. Season with salt.",
+        "Soak vermicelli; drain.",
+        "Blanch bean sprouts.",
+        "Serve broth over noodles, topped with chicken, egg, bean sprouts and fried shallots."
+      ],
+      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "comments": [
+        {
+          "user": "Bao Kitchen",
+          "text": "Soto Ayam felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Priya M.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Ivy Spoon",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "butter-chicken",
+      "name": "Butter Chicken",
+      "chineseName": "奶油鸡",
+      "country": "India",
+      "badgeEmoji": "🍛",
+      "countryStamp": "IND",
+      "description": "Butter Chicken (奶油鸡) made with Chicken, Butter, Tomato, Heavy cream, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr",
+      "requiredIngredients": [
+        "Chicken",
+        "Butter",
+        "Tomato",
+        "Heavy cream",
+        "Yogurt",
+        "Garam masala",
+        "Chili powder",
+        "Turmeric",
+        "Garlic",
+        "Ginger",
+        "Cumin",
+        "Salt"
+      ],
+      "steps": [
+        "Marinate chicken in yogurt, garam masala, chili powder, turmeric, garlic, ginger (overnight).",
+        "Grill or bake chicken until charred; set aside.",
+        "Fry onion, garlic, ginger in butter.",
+        "Add tomatoes; cook until soft.",
+        "Blend sauce until smooth; return to pan.",
+        "Add cream, butter, garam masala; simmer 10 min.",
+        "Add chicken; simmer 10 min. Serve with naan."
+      ],
+      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "comments": [
+        {
+          "user": "Maya C.",
+          "text": "Butter Chicken felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Noah L.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Carla Makes",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "dal",
+      "name": "Dal",
+      "chineseName": "豆泥咖喱",
+      "country": "India",
+      "badgeEmoji": "🫘",
+      "countryStamp": "IND",
+      "description": "Dal (豆泥咖喱) made with Red lentils, Onion, Tomato, Garlic, and a guided postcard-style cooking route.",
+      "prepTime": "35 min",
+      "requiredIngredients": [
+        "Red lentils",
+        "Onion",
+        "Tomato",
+        "Garlic",
+        "Ginger",
+        "Turmeric",
+        "Garam masala",
+        "Cumin",
+        "Coriander leaves",
+        "Salt",
+        "Butter"
+      ],
+      "steps": [
+        "Rinse lentils; cook in water with turmeric until soft (20 min).",
+        "Heat butter; fry cumin seeds.",
+        "Add onion; cook until golden.",
+        "Add garlic, ginger; fry 2 min.",
+        "Add tomatoes; cook until soft.",
+        "Add to lentils with garam masala; simmer 10 min.",
+        "Season with salt.",
+        "Top with fresh coriander. Serve with rice or naan."
+      ],
+      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "comments": [
+        {
+          "user": "Adi R.",
+          "text": "Dal felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Ivy Spoon",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Lena W.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "chicken-biryani",
+      "name": "Chicken Biryani",
+      "chineseName": "比里亚尼饭",
+      "country": "India",
+      "badgeEmoji": "🍚",
+      "countryStamp": "IND",
+      "description": "Chicken Biryani (比里亚尼饭) made with Basmati rice, Chicken, Yogurt, Onion, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr 30 min",
+      "requiredIngredients": [
+        "Basmati rice",
+        "Chicken",
+        "Yogurt",
+        "Onion",
+        "Garam masala",
+        "Saffron",
+        "Mint",
+        "Ghee",
+        "Garlic",
+        "Ginger",
+        "Salt"
+      ],
+      "steps": [
+        "Marinate chicken in yogurt, garam masala, garlic, ginger, salt (2+ hrs).",
+        "Fry onion in ghee until golden; set half aside.",
+        "Cook chicken with remaining onion until tender.",
+        "Parboil rice (70% cooked); drain.",
+        "Dissolve saffron in warm milk.",
+        "Layer: rice, chicken, mint, fried onion; repeat.",
+        "Drizzle saffron milk and ghee on top.",
+        "Cover tightly; cook on low heat 25 min (dum method). Serve."
+      ],
+      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "comments": [
+        {
+          "user": "Priya M.",
+          "text": "Chicken Biryani felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Carla Makes",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Bao Kitchen",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "palak-paneer",
+      "name": "Palak Paneer",
+      "chineseName": "菠菜奶酪",
+      "country": "India",
+      "badgeEmoji": "🥬",
+      "countryStamp": "IND",
+      "description": "Palak Paneer (菠菜奶酪) made with Spinach, Paneer, Onion, Tomato, and a guided postcard-style cooking route.",
+      "prepTime": "35 min",
+      "requiredIngredients": [
+        "Spinach",
+        "Paneer",
+        "Onion",
+        "Tomato",
+        "Garlic",
+        "Ginger",
+        "Garam masala",
+        "Cream",
+        "Cumin",
+        "Salt"
+      ],
+      "steps": [
+        "Blanch spinach (2 min); blend into smooth puree.",
+        "Fry cumin seeds in oil.",
+        "Add onion; cook until golden.",
+        "Add garlic and ginger; fry 2 min.",
+        "Add tomato; cook until soft.",
+        "Add spinach puree; simmer 5 min.",
+        "Add garam masala and cream; stir.",
+        "Add pan-fried paneer cubes; simmer 5 min. Season with salt. Serve with naan."
+      ],
+      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "comments": [
+        {
+          "user": "Noah L.",
+          "text": "Palak Paneer felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Lena W.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Maya C.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "samosa",
+      "name": "Samosa",
+      "chineseName": "印度咖喱角",
+      "country": "India",
+      "badgeEmoji": "🥟",
+      "countryStamp": "IND",
+      "description": "Samosa (印度咖喱角) made with Flour, Potato, Green peas, Onion, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr 15 min",
+      "requiredIngredients": [
+        "Flour",
+        "Potato",
+        "Green peas",
+        "Onion",
+        "Coriander seeds",
+        "Cumin",
+        "Chili powder",
+        "Salt",
+        "Oil",
+        "Water"
+      ],
+      "steps": [
+        "Make dough: mix flour, salt, oil, water; knead until smooth; rest 30 min.",
+        "Boil and mash potatoes.",
+        "Fry onion with cumin and coriander seeds.",
+        "Add mashed potato, peas, chili powder, salt; mix well.",
+        "Roll dough into circles; cut in half.",
+        "Form cones; fill with potato mixture; seal edges.",
+        "Deep-fry in medium-hot oil until golden (5-7 min). Serve with chutney."
+      ],
+      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "comments": [
+        {
+          "user": "Ivy Spoon",
+          "text": "Samosa felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Bao Kitchen",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Adi R.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "scallion-oil-noodles",
+      "name": "Scallion Oil Noodles",
+      "chineseName": "葱油拌面",
+      "country": "China",
+      "badgeEmoji": "🍜",
+      "countryStamp": "CHN",
+      "description": "Scallion Oil Noodles (葱油拌面) made with Noodles, Scallion, Soy sauce, Dark soy sauce, and a guided postcard-style cooking route.",
+      "prepTime": "25 min",
+      "requiredIngredients": [
+        "Noodles",
+        "Scallion",
+        "Soy sauce",
+        "Dark soy sauce",
+        "Sugar",
+        "Vegetable oil",
+        "Salt"
+      ],
+      "steps": [
+        "Fry scallion slices in oil on medium-low heat until golden and crispy (15 min).",
+        "Remove scallions; reserve the fragrant oil.",
+        "Mix soy sauce, dark soy sauce, sugar in a bowl.",
+        "Cook noodles until al dente; drain.",
+        "Toss noodles immediately with scallion oil and sauce mixture.",
+        "Top with crispy scallions. Serve."
+      ],
+      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "comments": [
+        {
+          "user": "Carla Makes",
+          "text": "Scallion Oil Noodles felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Maya C.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Priya M.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "steamed-fish",
+      "name": "Steamed Fish",
+      "chineseName": "清蒸鱼",
+      "country": "China",
+      "badgeEmoji": "🐟",
+      "countryStamp": "CHN",
+      "description": "Steamed Fish (清蒸鱼) made with Sea bass, Ginger, Green onion, Soy sauce, and a guided postcard-style cooking route.",
+      "prepTime": "20 min",
+      "requiredIngredients": [
+        "Sea bass",
+        "Ginger",
+        "Green onion",
+        "Soy sauce",
+        "Sesame oil",
+        "Cooking wine",
+        "Salt"
+      ],
+      "steps": [
+        "Score fish on both sides; season with salt and cooking wine.",
+        "Place ginger slices inside and on top of fish.",
+        "Steam over high heat for 8-10 min.",
+        "Discard liquid from plate.",
+        "Top with fresh shredded ginger and green onion.",
+        "Heat oil until smoking; pour over fish to wilt onion.",
+        "Drizzle with soy sauce and sesame oil. Serve immediately."
+      ],
+      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "comments": [
+        {
+          "user": "Lena W.",
+          "text": "Steamed Fish felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Adi R.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Noah L.",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    },
+    {
+      "id": "pan-fried-pork-buns",
+      "name": "Pan-fried Pork Buns",
+      "chineseName": "生煎包",
+      "country": "China",
+      "badgeEmoji": "🥟",
+      "countryStamp": "CHN",
+      "description": "Pan-fried Pork Buns (生煎包) made with Pork, Flour, Pork gelatin, Soy sauce, and a guided postcard-style cooking route.",
+      "prepTime": "1 hr 45 min",
+      "requiredIngredients": [
+        "Pork",
+        "Flour",
+        "Pork gelatin",
+        "Soy sauce",
+        "Green onion",
+        "Ginger",
+        "Sesame",
+        "Yeast",
+        "Sugar",
+        "Salt"
+      ],
+      "steps": [
+        "Make dough: mix flour, yeast, sugar, water; knead; rest 1 hr.",
+        "Mix pork with soy sauce, ginger, green onion, salt.",
+        "Add diced pork gelatin to filling.",
+        "Divide dough into pieces; roll each into circle.",
+        "Fill and pleat buns closed.",
+        "Rest 20 min.",
+        "Fry buns in oiled pan (flat side down) until golden.",
+        "Add water; cover and steam 8 min.",
+        "Sprinkle sesame and green onion. Serve."
+      ],
+      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "comments": [
+        {
+          "user": "Bao Kitchen",
+          "text": "Pan-fried Pork Buns felt like a passport stamp in dinner form."
+        },
+        {
+          "user": "Priya M.",
+          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
+        },
+        {
+          "user": "Ivy Spoon",
+          "text": "Saving this one for a weekend cook-along."
+        }
+      ]
+    }
+  ]
+}

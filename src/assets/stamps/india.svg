@@ -1,0 +1,16 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(-5 100 100)">
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#0f766e" stroke-width="6"/>
+    <circle cx="100" cy="100" r="70" fill="none" stroke="#0f766e" stroke-width="1"/>
+    <circle cx="100" cy="100" r="20" fill="none" stroke="#0f766e" stroke-width="2"/>
+    <line x1="100" y1="80" x2="100" y2="120" stroke="#0f766e" stroke-width="2"/>
+    <line x1="80" y1="100" x2="120" y2="100" stroke="#0f766e" stroke-width="2"/>
+    <line x1="86" y1="86" x2="114" y2="114" stroke="#0f766e" stroke-width="2"/>
+    <line x1="114" y1="86" x2="86" y2="114" stroke="#0f766e" stroke-width="2"/>
+    <path d="M 40 100 A 60 60 0 0 1 160 100" id="topInd" fill="none"/>
+    <text fill="#0f766e" font-family="monospace" font-size="16" font-weight="bold">
+      <textPath href="#topInd" startOffset="50%" text-anchor="middle">REPUBLIC OF INDIA</textPath>
+    </text>
+    <text x="100" y="150" fill="#0f766e" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">ARRIVAL</text>
+  </g>
+</svg>
