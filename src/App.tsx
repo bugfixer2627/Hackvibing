@@ -213,11 +213,22 @@ function App() {
   const [communityRecipeId, setCommunityRecipeId] = useState<string | null>(null);
   const [shareCardDataUrl, setShareCardDataUrl] = useState<string | null>(null);
   const [passport, setPassport] = useState<StoredPassport>(() => loadPassport());
+  const [pantryFridgeOpen, setPantryFridgeOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
   }, [passport]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [view]);
+
+  useEffect(() => {
+    if (selectedIngredients.length > 0) {
+      setPantryFridgeOpen(true);
+    }
+  }, [selectedIngredients.length]);
 
   const orderedMatches = useMemo(
     () => matchingRecipes(selectedIngredients, data.recipes),
@@ -232,6 +243,7 @@ function App() {
     : null;
   const unlockedCountries = new Set(passport.countryStamps);
   const unlockedBadges = new Set(passport.foodBadges);
+  const showAppChrome = view !== "pantry";
 
   function toggleIngredient(ingredient: string) {
     setSelectedIngredients((current) => {
@@ -332,60 +344,65 @@ function App() {
   }
 
   return (
-    <main className="paper-texture min-h-screen overflow-x-hidden pb-24 text-pantry-ink sm:pb-0">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 py-3 sm:max-w-2xl sm:px-5 lg:max-w-7xl lg:px-8">
-        <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />
-        <MobileBottomNav view={view} setView={setView} earnedCount={passport.foodBadges.length} />
+    <main className="app-safe-shell paper-texture min-h-screen overflow-x-hidden text-pantry-ink">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 py-3 sm:max-w-2xl sm:px-5 sm:py-5 lg:max-w-7xl lg:px-8">
+        {showAppChrome && <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
+        {showAppChrome && <MobileBottomNav view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
 
-        <section className="grid flex-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-          <aside className="hidden rounded-[2rem] border border-stone-900/10 bg-white/60 p-5 shadow-soft backdrop-blur lg:block">
-            <ProgressPanel
+        {view === "pantry" ? (
+          <div className="min-w-0 flex-1">
+            <PantryView
+              ingredients={data.ingredients}
               selectedIngredients={selectedIngredients}
-              passport={passport}
-              setView={setView}
+              onToggle={toggleIngredient}
+              onFind={findRecipe}
+              fridgeOpen={pantryFridgeOpen}
+              onFridgeOpenChange={setPantryFridgeOpen}
             />
-          </aside>
-
-          <div className="min-w-0">
-            {view === "pantry" && (
-              <PantryView
-                ingredients={data.ingredients}
-                selectedIngredients={selectedIngredients}
-                onToggle={toggleIngredient}
-                onFind={findRecipe}
-              />
-            )}
-            {view === "suggestion" && suggestion && (
-              <SuggestionView
-                selectedIngredients={selectedIngredients}
-                recipe={suggestion}
-                matchScore={scoreRecipe(suggestion, selectedIngredients)}
-                onCook={() => cookRecipe(suggestion)}
-                onReroll={rerollRecipe}
-                onBack={() => setView("pantry")}
-              />
-            )}
-            {view === "cooking" && (
-              <CookingView
-                recipe={activeRecipe}
-                isEarned={unlockedBadges.has(activeRecipe.id)}
-                onHistory={() => setShowHistory(true)}
-                onFinish={() => finishRecipe(activeRecipe)}
-                onPassport={() => setView("passport")}
-              />
-            )}
-            {view === "passport" && (
-              <PassportView
-                recipes={data.recipes}
-                passport={passport}
-                unlockedCountries={unlockedCountries}
-                unlockedBadges={unlockedBadges}
-                onBadgeClick={openCommunity}
-                onCookAgain={(recipe) => cookRecipe(recipe)}
-              />
-            )}
           </div>
-        </section>
+        ) : (
+          <section className="grid flex-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+            <aside className="hidden rounded-[2rem] border border-stone-900/10 bg-white/60 p-5 shadow-soft backdrop-blur lg:block">
+              <ProgressPanel
+                selectedIngredients={selectedIngredients}
+                passport={passport}
+                setView={setView}
+              />
+            </aside>
+
+            <div className="min-w-0">
+              {view === "suggestion" && suggestion && (
+                <SuggestionView
+                  selectedIngredients={selectedIngredients}
+                  recipe={suggestion}
+                  matchScore={scoreRecipe(suggestion, selectedIngredients)}
+                  onCook={() => cookRecipe(suggestion)}
+                  onReroll={rerollRecipe}
+                  onBack={() => setView("pantry")}
+                />
+              )}
+              {view === "cooking" && (
+                <CookingView
+                  recipe={activeRecipe}
+                  isEarned={unlockedBadges.has(activeRecipe.id)}
+                  onHistory={() => setShowHistory(true)}
+                  onFinish={() => finishRecipe(activeRecipe)}
+                  onPassport={() => setView("passport")}
+                />
+              )}
+              {view === "passport" && (
+                <PassportView
+                  recipes={data.recipes}
+                  passport={passport}
+                  unlockedCountries={unlockedCountries}
+                  unlockedBadges={unlockedBadges}
+                  onBadgeClick={openCommunity}
+                  onCookAgain={(recipe) => cookRecipe(recipe)}
+                />
+              )}
+            </div>
+          </section>
+        )}
       </div>
 
       {showHistory && (
@@ -420,7 +437,10 @@ function Header({
   earnedCount: number;
 }) {
   return (
-    <header className="sticky top-3 z-20 mb-4 flex flex-col gap-3 rounded-[1.7rem] border border-stone-900/10 bg-white/80 p-3 shadow-soft backdrop-blur md:mb-6 md:flex-row md:items-center md:justify-between md:p-4">
+    <header
+      className="sticky z-20 mb-4 flex flex-col gap-3 rounded-[1.7rem] border border-stone-900/10 bg-white/80 p-3 shadow-soft backdrop-blur md:mb-6 md:flex-row md:items-center md:justify-between md:p-4"
+      style={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
+    >
       <button
         type="button"
         onClick={() => setView("pantry")}
@@ -468,7 +488,8 @@ function MobileBottomNav({
 }) {
   return (
     <nav
-      className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      className="fixed inset-x-3 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
       aria-label="Mobile navigation"
     >
       <NavButton
@@ -587,14 +608,17 @@ function PantryView({
   ingredients,
   selectedIngredients,
   onToggle,
-  onFind
+  onFind,
+  fridgeOpen,
+  onFridgeOpenChange
 }: {
   ingredients: IngredientCategories;
   selectedIngredients: string[];
   onToggle: (ingredient: string) => void;
   onFind: () => void;
+  fridgeOpen: boolean;
+  onFridgeOpenChange: (open: boolean) => void;
 }) {
-  const [fridgeOpen, setFridgeOpen] = useState(selectedIngredients.length > 0);
   const visibleIngredients = Object.entries(ingredients).reduce<IngredientCategories>((categories, [category, items]) => {
     const visibleItems = items.filter(hasIngredientEmoji);
     if (visibleItems.length > 0) {
@@ -605,25 +629,29 @@ function PantryView({
   const canFind = selectedIngredients.length >= 2 && selectedIngredients.length <= 4;
 
   useEffect(() => {
-    if (selectedIngredients.length > 0) setFridgeOpen(true);
-  }, [selectedIngredients.length]);
+    if (selectedIngredients.length > 0 && !fridgeOpen) {
+      onFridgeOpenChange(true);
+    }
+  }, [fridgeOpen, onFridgeOpenChange, selectedIngredients.length]);
 
   return (
     <div className="animate-pop">
-      <section className={cx("fridge-landing", fridgeOpen && "fridge-landing-open")}>
-        <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
-            <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
-              Open the fridge. Pick your route.
-            </h1>
+      <section className={cx("fridge-landing", fridgeOpen && "fridge-landing-open") }>
+        {fridgeOpen && (
+          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
+              <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
+                Open the fridge. Pick your route.
+              </h1>
+            </div>
+            <div className="self-start rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
+              {selectedIngredients.length}/4 selected
+            </div>
           </div>
-          <div className="self-start rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
-            {selectedIngredients.length}/4 selected
-          </div>
-        </div>
+        )}
 
-        <div className={cx("fridge-stage", fridgeOpen && "fridge-stage-open")}>
+        <div className={cx("fridge-stage", !fridgeOpen && "fridge-stage-landing", fridgeOpen && "fridge-stage-open")}>
           <div className="fridge-aura" aria-hidden="true" />
           <div className="fridge-shell">
             <div className={cx("fridge-interior", !fridgeOpen && "pointer-events-none")} aria-hidden={!fridgeOpen}>
@@ -707,7 +735,7 @@ function PantryView({
               <p className="text-sm font-black uppercase tracking-[0.22em] text-pantry-mint">Ready to cook?</p>
               <button
                 type="button"
-                onClick={() => setFridgeOpen(true)}
+                onClick={() => onFridgeOpenChange(true)}
                 className="focus-ring mt-3 inline-flex items-center justify-center rounded-3xl bg-pantry-berry px-7 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
               >
                 Open Fridge
@@ -838,12 +866,30 @@ function CookingView({
   onPassport: () => void;
 }) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showStepMode, setShowStepMode] = useState(false);
+  const stepModeRef = useRef<HTMLDivElement | null>(null);
   const totalSteps = recipe.steps.length;
   const stepProgress = totalSteps > 1 ? (currentStep / (totalSteps - 1)) * 100 : 100;
 
+  function goToStep(nextStep: number) {
+    const clamped = Math.min(totalSteps - 1, Math.max(0, nextStep));
+    setCurrentStep(clamped);
+    if (window.innerWidth < 768) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
+  }
+
   useEffect(() => {
     setCurrentStep(0);
+    setShowStepMode(false);
   }, [recipe.id]);
+
+  useEffect(() => {
+    if (showStepMode) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      stepModeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentStep, showStepMode]);
 
   return (
     <div className="animate-pop">
@@ -870,73 +916,150 @@ function CookingView({
 
         <div className="grid gap-5 border-t border-stone-900/10 p-5 md:grid-cols-[minmax(0,1fr)_280px] md:p-8">
           <section>
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
+            <div className="md:hidden">
+              <div className="rounded-[2rem] border border-stone-900/10 bg-pantry-paper p-4 shadow-sm">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
                   Step {currentStep + 1} of {totalSteps}
                 </p>
-                <h2 className="font-display text-3xl font-bold">Step-by-step</h2>
+                <h2 className="mt-2 font-display text-3xl font-bold">Cook Mode</h2>
+                <p className="mt-3 font-semibold leading-7 text-stone-700">{recipe.steps[currentStep]}</p>
+                <div className="mt-4 h-3 overflow-hidden rounded-full bg-white" aria-hidden="true">
+                  <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowStepMode(true)}
+                  className="focus-ring mt-4 flex w-full items-center justify-center rounded-3xl bg-pantry-ink px-5 py-4 text-base font-black text-white transition hover:-translate-y-0.5"
+                >
+                  Open Step-by-Step Mode
+                </button>
               </div>
-              <div className="h-3 overflow-hidden rounded-full bg-stone-100 sm:w-48" aria-hidden="true">
-                <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
-              </div>
+
+              {showStepMode && (
+                <div className="fixed inset-0 z-40 grid place-items-center bg-stone-950/40 p-4 backdrop-blur-sm">
+                  <div ref={stepModeRef} className="w-full max-w-sm rounded-[2rem] border border-stone-900/10 bg-white p-5 shadow-soft">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
+                          Step {currentStep + 1} of {totalSteps}
+                        </p>
+                        <h2 className="mt-2 font-display text-3xl font-bold">Step-by-step</h2>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowStepMode(false)}
+                        className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink"
+                        aria-label="Close step mode"
+                      >
+                        <X size={18} aria-hidden="true" />
+                      </button>
+                    </div>
+                    <div className="mt-4 h-3 overflow-hidden rounded-full bg-stone-100" aria-hidden="true">
+                      <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
+                    </div>
+                    <article className="mt-4 rounded-[1.75rem] border border-pantry-mint bg-emerald-50 p-5 shadow-stamp">
+                      <div className="flex gap-4">
+                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-pantry-mint font-black text-white">
+                          {currentStep + 1}
+                        </span>
+                        <p className="pt-1 text-lg font-semibold leading-8 text-pantry-ink">{recipe.steps[currentStep]}</p>
+                      </div>
+                    </article>
+                    <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={currentStep === 0}
+                        onClick={() => goToStep(currentStep - 1)}
+                        className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        Back
+                      </button>
+                      <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
+                        {currentStep + 1}/{totalSteps}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={currentStep === totalSteps - 1}
+                        onClick={() => goToStep(currentStep + 1)}
+                        className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
+                      >
+                        Next Step
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <ol className="grid gap-3">
-              {recipe.steps.map((step, index) => {
-                const active = index === currentStep;
-                const completed = index < currentStep;
-                return (
-                  <li key={step}>
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(index)}
-                      aria-current={active ? "step" : undefined}
-                      className={cx(
-                        "focus-ring flex w-full gap-4 rounded-3xl border p-4 text-left transition",
-                        active
-                          ? "border-pantry-mint bg-emerald-50 shadow-stamp"
-                          : completed
-                            ? "border-pantry-mint/30 bg-white"
-                            : "border-stone-900/10 bg-pantry-paper hover:bg-amber-50"
-                      )}
-                    >
-                      <span
+            <div className="hidden md:block">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
+                    Step {currentStep + 1} of {totalSteps}
+                  </p>
+                  <h2 className="font-display text-3xl font-bold">Step-by-step</h2>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-stone-100 sm:w-48" aria-hidden="true">
+                  <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
+                </div>
+              </div>
+
+              <ol className="grid gap-3">
+                {recipe.steps.map((step, index) => {
+                  const active = index === currentStep;
+                  const completed = index < currentStep;
+                  return (
+                    <li key={step}>
+                      <button
+                        type="button"
+                        onClick={() => goToStep(index)}
+                        aria-current={active ? "step" : undefined}
                         className={cx(
-                          "grid h-11 w-11 shrink-0 place-items-center rounded-full font-black transition",
-                          active || completed ? "bg-pantry-mint text-white" : "bg-white text-pantry-ink"
+                          "focus-ring flex w-full gap-4 rounded-3xl border p-4 text-left transition",
+                          active
+                            ? "border-pantry-mint bg-emerald-50 shadow-stamp"
+                            : completed
+                              ? "border-pantry-mint/30 bg-white"
+                              : "border-stone-900/10 bg-pantry-paper hover:bg-amber-50"
                         )}
                       >
-                        {completed ? <Check size={18} aria-hidden="true" /> : index + 1}
-                      </span>
-                      <span className={cx("pt-1 font-semibold leading-7", active ? "text-pantry-ink" : "text-stone-700")}>{step}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
+                        <span
+                          className={cx(
+                            "grid h-11 w-11 shrink-0 place-items-center rounded-full font-black transition",
+                            active || completed ? "bg-pantry-mint text-white" : "bg-white text-pantry-ink"
+                          )}
+                        >
+                          {completed ? <Check size={18} aria-hidden="true" /> : index + 1}
+                        </span>
+                        <span className={cx("pt-1 font-semibold leading-7", active ? "text-pantry-ink" : "text-stone-700")}>{step}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
 
-            <div className="sticky bottom-4 z-10 mt-4 rounded-[2rem] border border-stone-900/10 bg-white/90 p-3 shadow-soft backdrop-blur md:static md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-                <button
-                  type="button"
-                  disabled={currentStep === 0}
-                  onClick={() => setCurrentStep((step) => Math.max(0, step - 1))}
-                  className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Back
-                </button>
-                <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
-                  {currentStep + 1}/{totalSteps}
-                </span>
-                <button
-                  type="button"
-                  disabled={currentStep === totalSteps - 1}
-                  onClick={() => setCurrentStep((step) => Math.min(totalSteps - 1, step + 1))}
-                  className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
-                >
-                  Next Step
-                </button>
+              <div className="sticky bottom-4 z-10 mt-4 rounded-[2rem] border border-stone-900/10 bg-white/90 p-3 shadow-soft backdrop-blur md:static md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
+                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={currentStep === 0}
+                    onClick={() => goToStep(currentStep - 1)}
+                    className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Back
+                  </button>
+                  <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
+                    {currentStep + 1}/{totalSteps}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentStep === totalSteps - 1}
+                    onClick={() => goToStep(currentStep + 1)}
+                    className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
+                  >
+                    Next Step
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -1021,6 +1144,10 @@ function PassportView({
   useEffect(() => {
     setPageIndex((index) => Math.min(index, Math.max(stampPages.length - 1, 0)));
   }, [stampPages.length]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [pageIndex]);
 
   function turnPage(direction: "next" | "previous") {
     const nextIndex = direction === "next" ? pageIndex + 1 : pageIndex - 1;

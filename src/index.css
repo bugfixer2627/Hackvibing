@@ -39,6 +39,11 @@ input {
   background-size: 18px 18px, 100% 100%;
 }
 
+.app-safe-shell {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 .stamp-edge {
   mask:
     radial-gradient(7px at 7px 7px, transparent 98%, #000) -7px -7px;
@@ -50,8 +55,9 @@ input {
 
 
 @supports (padding: max(0px)) {
-  main {
-    padding-bottom: max(6rem, env(safe-area-inset-bottom));
+  .app-safe-shell {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 }
 
@@ -151,6 +157,10 @@ input {
     linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(217, 119, 6, 0.12));
   box-shadow: 0 24px 70px rgba(45, 41, 38, 0.12);
   padding: 1.25rem;
+}
+
+.fridge-stage-landing {
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 2rem);
 }
 
 .fridge-aura {
@@ -507,6 +517,10 @@ input {
     min-height: 620px;
     padding: 0.75rem;
     border-radius: 2rem;
+  }
+
+  .fridge-stage-landing {
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.5rem);
   }
 
   .fridge-shell {
