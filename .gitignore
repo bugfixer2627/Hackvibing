@@ -1,1 +1,5 @@
 *.pdf
+dist/
+.DS_Store
+node_modules/
+*.zip
