@@ -268,7 +268,7 @@ function App() {
       photos: current.photos
     }));
     setShowCelebration(true);
-    window.setTimeout(() => setShowCelebration(false), 1400);
+    window.setTimeout(() => setShowCelebration(false), 2200);
   }
 
   function openCommunity(recipeId: string) {
@@ -594,6 +594,7 @@ function PantryView({
   onToggle: (ingredient: string) => void;
   onFind: () => void;
 }) {
+  const [fridgeOpen, setFridgeOpen] = useState(selectedIngredients.length > 0);
   const visibleIngredients = Object.entries(ingredients).reduce<IngredientCategories>((categories, [category, items]) => {
     const visibleItems = items.filter(hasIngredientEmoji);
     if (visibleItems.length > 0) {
@@ -603,72 +604,118 @@ function PantryView({
   }, {});
   const canFind = selectedIngredients.length >= 2 && selectedIngredients.length <= 4;
 
+  useEffect(() => {
+    if (selectedIngredients.length > 0) setFridgeOpen(true);
+  }, [selectedIngredients.length]);
+
   return (
     <div className="animate-pop">
-      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
-          <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
-            Choose your passport ingredients.
-          </h1>
+      <section className={cx("fridge-landing", fridgeOpen && "fridge-landing-open")}>
+        <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
+            <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
+              Open the fridge. Pick your route.
+            </h1>
+          </div>
+          <div className="self-start rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
+            {selectedIngredients.length}/4 selected
+          </div>
         </div>
-        <div className="self-start rounded-2xl bg-white/80 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
-          {selectedIngredients.length}/4 selected
-        </div>
-      </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {Object.entries(visibleIngredients).map(([category, items]) => (
-          <section key={category} className="rounded-[2rem] border border-stone-900/10 bg-white/70 p-5 shadow-soft">
-            <h2 className="mb-4 flex items-center gap-2 font-display text-2xl font-bold">
-              <Sparkles size={20} className="text-pantry-saffron" aria-hidden="true" />
-              {category}
-            </h2>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {items.map((ingredient) => {
-                const active = selectedIngredients.includes(ingredient);
-                const disabled = !active && selectedIngredients.length >= 4;
-                return (
-                  <button
-                    key={ingredient}
-                    type="button"
-                    disabled={disabled}
-                    onClick={() => onToggle(ingredient)}
-                    className={cx(
-                      "focus-ring min-h-20 rounded-2xl border p-3 text-left text-sm font-extrabold transition",
-                      active
-                        ? "border-pantry-mint bg-pantry-mint text-white shadow-stamp"
-                        : "border-stone-900/10 bg-white text-stone-700 hover:-translate-y-0.5 hover:border-pantry-saffron",
-                      disabled && "cursor-not-allowed opacity-40 hover:translate-y-0"
-                    )}
-                    aria-pressed={active}
-                  >
-                    <span className="mb-2 block text-xl">{ingredientEmoji(ingredient)}</span>
-                    {ingredient}
-                  </button>
-                );
-              })}
+        <div className={cx("fridge-stage", fridgeOpen && "fridge-stage-open")}>
+          <div className="fridge-aura" aria-hidden="true" />
+          <div className="fridge-shell">
+            <div className={cx("fridge-interior", !fridgeOpen && "pointer-events-none")} aria-hidden={!fridgeOpen}>
+              <div className="fridge-light" aria-hidden="true" />
+              <div className="relative z-10 mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-mint">Fresh picks</p>
+                  <h2 className="font-display text-3xl font-black text-pantry-ink">Choose 2 to 4 ingredients</h2>
+                </div>
+                <p className="rounded-full bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-stone-500 shadow-sm">
+                  Fridge open
+                </p>
+              </div>
+
+              <div className="fridge-shelves">
+                {Object.entries(visibleIngredients).map(([category, items]) => (
+                  <section key={category} className="fridge-shelf">
+                    <h3 className="mb-3 flex items-center gap-2 font-display text-xl font-bold">
+                      <Sparkles size={18} className="text-pantry-saffron" aria-hidden="true" />
+                      {category}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+                      {items.map((ingredient) => {
+                        const active = selectedIngredients.includes(ingredient);
+                        const disabled = !active && selectedIngredients.length >= 4;
+                        return (
+                          <button
+                            key={ingredient}
+                            type="button"
+                            disabled={disabled}
+                            onClick={() => onToggle(ingredient)}
+                            className={cx(
+                              "focus-ring fridge-ingredient",
+                              active ? "fridge-ingredient-active" : "",
+                              disabled && "cursor-not-allowed opacity-40"
+                            )}
+                            aria-pressed={active}
+                          >
+                            <span className="block text-2xl">{ingredientEmoji(ingredient)}</span>
+                            <span className="block text-sm font-black leading-snug">{ingredient}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
+
+              <div className="fridge-drawer">
+                <button
+                  type="button"
+                  disabled={!canFind}
+                  onClick={onFind}
+                  className={cx(
+                    "focus-ring flex w-full items-center justify-center gap-3 rounded-3xl px-6 py-5 text-lg font-black transition",
+                    canFind
+                      ? "bg-pantry-ink text-white hover:-translate-y-0.5"
+                      : "cursor-not-allowed bg-stone-200 text-stone-500"
+                  )}
+                >
+                  <Search aria-hidden="true" />
+                  Find Recipe
+                </button>
+              </div>
             </div>
-          </section>
-        ))}
-      </div>
 
-      <div className="sticky bottom-4 z-10 mt-6 rounded-[2rem] border border-stone-900/10 bg-white/85 p-3 shadow-soft backdrop-blur">
-        <button
-          type="button"
-          disabled={!canFind}
-          onClick={onFind}
-          className={cx(
-            "focus-ring flex w-full items-center justify-center gap-3 rounded-3xl px-6 py-5 text-lg font-black transition",
-            canFind
-              ? "bg-pantry-ink text-white hover:-translate-y-0.5"
-              : "cursor-not-allowed bg-stone-200 text-stone-500"
+            <div className="fridge-door fridge-door-left" aria-hidden="true">
+              <span className="fridge-handle fridge-handle-left" />
+              <span className="fridge-magnet fridge-magnet-three" />
+              <span className="fridge-magnet fridge-magnet-four" />
+            </div>
+            <div className="fridge-door fridge-door-right" aria-hidden="true">
+              <span className="fridge-handle fridge-handle-right" />
+              <span className="fridge-magnet fridge-magnet-one" />
+              <span className="fridge-magnet fridge-magnet-two" />
+            </div>
+          </div>
+
+          {!fridgeOpen && (
+            <div className="fridge-open-panel">
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-pantry-mint">Ready to cook?</p>
+              <button
+                type="button"
+                onClick={() => setFridgeOpen(true)}
+                className="focus-ring mt-3 inline-flex items-center justify-center rounded-3xl bg-pantry-berry px-7 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
+              >
+                Open Fridge
+              </button>
+            </div>
           )}
-        >
-          <Search aria-hidden="true" />
-          Find Recipe
-        </button>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -790,6 +837,14 @@ function CookingView({
   onFinish: () => void;
   onPassport: () => void;
 }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = recipe.steps.length;
+  const stepProgress = totalSteps > 1 ? (currentStep / (totalSteps - 1)) * 100 : 100;
+
+  useEffect(() => {
+    setCurrentStep(0);
+  }, [recipe.id]);
+
   return (
     <div className="animate-pop">
       <div className="overflow-hidden rounded-[2.5rem] border border-stone-900/10 bg-white shadow-soft">
@@ -815,24 +870,82 @@ function CookingView({
 
         <div className="grid gap-5 border-t border-stone-900/10 p-5 md:grid-cols-[minmax(0,1fr)_280px] md:p-8">
           <section>
-            <h2 className="mb-4 font-display text-3xl font-bold">Step-by-step</h2>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
+                  Step {currentStep + 1} of {totalSteps}
+                </p>
+                <h2 className="font-display text-3xl font-bold">Step-by-step</h2>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-stone-100 sm:w-48" aria-hidden="true">
+                <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
+              </div>
+            </div>
+
             <ol className="grid gap-3">
-              {recipe.steps.map((step, index) => (
-                <li key={step} className="flex gap-4 rounded-3xl bg-pantry-paper p-4">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pantry-ink font-black text-white">
-                    {index + 1}
-                  </span>
-                  <span className="pt-2 font-semibold leading-7 text-stone-700">{step}</span>
-                </li>
-              ))}
+              {recipe.steps.map((step, index) => {
+                const active = index === currentStep;
+                const completed = index < currentStep;
+                return (
+                  <li key={step}>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(index)}
+                      aria-current={active ? "step" : undefined}
+                      className={cx(
+                        "focus-ring flex w-full gap-4 rounded-3xl border p-4 text-left transition",
+                        active
+                          ? "border-pantry-mint bg-emerald-50 shadow-stamp"
+                          : completed
+                            ? "border-pantry-mint/30 bg-white"
+                            : "border-stone-900/10 bg-pantry-paper hover:bg-amber-50"
+                      )}
+                    >
+                      <span
+                        className={cx(
+                          "grid h-11 w-11 shrink-0 place-items-center rounded-full font-black transition",
+                          active || completed ? "bg-pantry-mint text-white" : "bg-white text-pantry-ink"
+                        )}
+                      >
+                        {completed ? <Check size={18} aria-hidden="true" /> : index + 1}
+                      </span>
+                      <span className={cx("pt-1 font-semibold leading-7", active ? "text-pantry-ink" : "text-stone-700")}>{step}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ol>
+
+            <div className="sticky bottom-4 z-10 mt-4 rounded-[2rem] border border-stone-900/10 bg-white/90 p-3 shadow-soft backdrop-blur md:static md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                <button
+                  type="button"
+                  disabled={currentStep === 0}
+                  onClick={() => setCurrentStep((step) => Math.max(0, step - 1))}
+                  className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Back
+                </button>
+                <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
+                  {currentStep + 1}/{totalSteps}
+                </span>
+                <button
+                  type="button"
+                  disabled={currentStep === totalSteps - 1}
+                  onClick={() => setCurrentStep((step) => Math.min(totalSteps - 1, step + 1))}
+                  className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
+                >
+                  Next Step
+                </button>
+              </div>
+            </div>
           </section>
 
-          <aside className="flex flex-col gap-3">
+          <aside className="flex flex-col gap-3 md:sticky md:top-28 md:self-start">
             <button
               type="button"
               onClick={onHistory}
-              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-white px-5 py-4 font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
+              className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-white px-5 py-4 text-lg font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
             >
               <BookOpen aria-hidden="true" />
               Cultural History
@@ -840,15 +953,15 @@ function CookingView({
             <button
               type="button"
               onClick={onFinish}
-              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-berry px-5 py-5 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
+              className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-pantry-berry px-5 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
             >
               <Award aria-hidden="true" />
-              {isEarned ? "Cooked Again!" : "I Finished Cooking!"}
+              {isEarned ? "Cook Again" : "I Finished Cooking!"}
             </button>
             <button
               type="button"
               onClick={onPassport}
-              className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-5 py-4 font-black text-white shadow-stamp transition hover:-translate-y-0.5"
+              className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-pantry-mint px-5 py-4 text-lg font-black text-white shadow-stamp transition hover:-translate-y-0.5"
             >
               <MapIcon aria-hidden="true" />
               Food Passport & Badges
@@ -1238,22 +1351,24 @@ function CommunityModal({
 }
 
 function Celebration({ recipe }: { recipe: Recipe }) {
-  const pieces = Array.from({ length: 28 }, (_, index) => index);
+  const pieces = Array.from({ length: 36 }, (_, index) => index);
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-live="polite">
-      <div className="absolute left-1/2 top-24 -translate-x-1/2 rounded-[2rem] bg-white px-6 py-5 text-center shadow-soft">
-        <div className="text-5xl">{recipe.badgeEmoji}</div>
-        <p className="mt-2 font-display text-3xl font-black">Badge earned!</p>
+      <div className="celebration-card">
+        <div className="celebration-badge">
+          <span>{recipe.badgeEmoji}</span>
+        </div>
+        <p className="mt-3 font-display text-3xl font-black">Badge earned!</p>
         <p className="font-bold text-pantry-mint">{recipe.countryStamp} stamp added</p>
       </div>
       {pieces.map((piece) => (
         <span
           key={piece}
-          className="absolute top-[-40px] h-5 w-3 animate-confetti rounded-full"
+          className="celebration-confetti"
           style={{
-            left: `${(piece * 37) % 100}%`,
-            animationDelay: `${piece * 22}ms`,
-            backgroundColor: ["#d97706", "#0f766e", "#9f1239", "#4338ca"][piece % 4]
+            left: `${(piece * 29) % 100}%`,
+            animationDelay: `${piece * 28}ms`,
+            backgroundColor: ["#d97706", "#0f766e", "#9f1239", "#4338ca", "#f8f3ea"][piece % 5]
           }}
         />
       ))}
