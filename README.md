@@ -37,15 +37,13 @@ The uploaded ZIP must contain `index.html` at the root. Build the static web ver
 npm run build
 ```
 
-Then create the ZIP from the contents of `dist/`, not the `dist` folder itself. The resulting ZIP should look like this at the top level:
+The build step creates a standalone `dist/index.html` with the CSS and JavaScript inlined, so it works when opened directly from Finder with a `file://` URL. The submission ZIP can contain just that generated `index.html` at the top level, or the full contents of `dist/` if the platform accepts extra files.
+
+Top-level ZIP structure:
 
 ```text
 index.html
-manifest.webmanifest
-assets/
 ```
-
-Because Vite is configured with relative asset paths, the generated root `index.html` can be opened from a static host or extracted folder.
 
 ## Build Web Assets
 
