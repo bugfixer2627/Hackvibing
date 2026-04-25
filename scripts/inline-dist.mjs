@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,4 +27,7 @@ if (!appScript) {
 html = html.replace("</body>", `  <script>\n${appScript}\n  </script>\n  </body>`);
 
 writeFileSync(indexPath, html);
-console.log("Created standalone dist/index.html for file:// use");
+writeFileSync(join(projectRoot, "index.html"), html);
+mkdirSync(join(projectRoot, "Hackvibing-web"), { recursive: true });
+writeFileSync(join(projectRoot, "Hackvibing-web", "index.html"), html);
+console.log("Created standalone index.html files for file:// use");

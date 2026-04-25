@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && node scripts/inline-dist.mjs",
+    "dev": "node scripts/write-source-index.mjs && vite",
+    "build": "node scripts/write-source-index.mjs && tsc && vite build && node scripts/inline-dist.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

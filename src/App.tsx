@@ -3,6 +3,8 @@ import {
   BookOpen,
   Camera,
   Check,
+  ChevronLeft,
+  ChevronRight,
   ChefHat,
   Download,
   Flame,
@@ -19,7 +21,7 @@ import {
   X
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChangeEvent, ReactNode } from "react";
+import type { CSSProperties, ChangeEvent, ReactNode } from "react";
 import pantryData from "./data.json";
 import chinaStamp from "./assets/stamps/china.svg";
 import indiaStamp from "./assets/stamps/india.svg";
@@ -302,75 +304,29 @@ function App() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = 1200;
-    canvas.height = 1600;
+    const isNarrow = window.innerWidth < 640;
+    canvas.width = isNarrow ? 800 : 1200;
+    canvas.height = isNarrow ? 1200 : 800;
 
-    ctx.fillStyle = "#f8f3ea";
+    const gap = isNarrow ? 34 : 36;
+    const margin = isNarrow ? 34 : 42;
+    const postcardWidth = isNarrow ? canvas.width - margin * 2 : (canvas.width - margin * 2 - gap) / 2;
+    const postcardHeight = isNarrow ? (canvas.height - margin * 2 - gap) / 2 : canvas.height - margin * 2;
+    const front = { x: margin, y: margin, width: postcardWidth, height: postcardHeight };
+    const back = isNarrow
+      ? { x: margin, y: margin + postcardHeight + gap, width: postcardWidth, height: postcardHeight }
+      : { x: margin + postcardWidth + gap, y: margin, width: postcardWidth, height: postcardHeight };
+
+    ctx.fillStyle = "#eadfce";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(45, 41, 38, 0.05)";
-    for (let x = 0; x < canvas.width; x += 28) {
-      for (let y = 0; y < canvas.height; y += 28) {
-        if ((x + y) % 56 === 0) ctx.fillRect(x, y, 2, 2);
-      }
-    }
-
-    ctx.fillStyle = "#fffaf0";
-    roundRect(ctx, 90, 110, 1020, 1160, 42);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(45, 41, 38, 0.12)";
-    ctx.lineWidth = 5;
-    ctx.stroke();
+    drawPaperTexture(ctx, 0, 0, canvas.width, canvas.height, "rgba(45, 41, 38, 0.05)");
 
     const image = await loadImage(photo);
-    const imageBox = { x: 150, y: 180, width: 900, height: 760, radius: 34 };
-    ctx.save();
-    roundRect(ctx, imageBox.x, imageBox.y, imageBox.width, imageBox.height, imageBox.radius);
-    ctx.clip();
-    drawCoverImage(ctx, image, imageBox.x, imageBox.y, imageBox.width, imageBox.height);
-    ctx.restore();
-
-    ctx.fillStyle = "rgba(255, 250, 240, 0.92)";
-    roundRect(ctx, 190, 830, 820, 150, 28);
-    ctx.fill();
-
-    ctx.fillStyle = "#2d2926";
-    ctx.font = "700 64px Georgia, serif";
-    wrapCanvasText(ctx, recipe.name, 230, 895, 650, 68);
-    ctx.font = "500 34px system-ui, sans-serif";
-    ctx.fillText(recipe.country, 230, 955);
+    drawPostcardFront(ctx, image, front);
 
     const stampImage = await loadImage(getStampAsset(recipe.country));
-    ctx.save();
-    ctx.translate(910, 930);
-    ctx.rotate(-0.12);
-    ctx.drawImage(stampImage, -85, -85, 170, 170);
-    ctx.restore();
-    ctx.font = "86px serif";
-    ctx.fillText(recipe.badgeEmoji, 805, 1040);
-
-    ctx.fillStyle = "#0f766e";
-    ctx.font = "700 40px system-ui, sans-serif";
-    ctx.fillText("Flavor Profile", 150, 1095);
-    ctx.fillStyle = "#2d2926";
-    ctx.font = "500 38px system-ui, sans-serif";
-    wrapCanvasText(ctx, recipe.flavorProfile, 150, 1155, 900, 50);
-
-    ctx.fillStyle = "#9f1239";
-    ctx.font = "700 36px system-ui, sans-serif";
-    ctx.fillText(`Earned: ${recipe.badgeEmoji} ${recipe.name} Badge + ${recipe.countryStamp} Stamp`, 150, 1285);
-
-    ctx.strokeStyle = "rgba(45, 41, 38, 0.18)";
-    ctx.beginPath();
-    ctx.moveTo(150, 1355);
-    ctx.lineTo(1050, 1355);
-    ctx.stroke();
-
-    ctx.fillStyle = "#2d2926";
-    ctx.font = "700 48px Georgia, serif";
-    ctx.fillText("The Passport Pantry", 150, 1440);
-    ctx.font = "500 30px system-ui, sans-serif";
-    ctx.fillStyle = "rgba(45, 41, 38, 0.68)";
-    ctx.fillText("Cooked with The Passport Pantry", 150, 1495);
+    const badgeImage = await loadImage(createFoodBadgeSvg(recipe));
+    drawPostcardBack(ctx, recipe, stampImage, badgeImage, back);
 
     const dataUrl = canvas.toDataURL("image/png");
     setShareCardDataUrl(dataUrl);
@@ -534,12 +490,14 @@ function MobileBottomNav({
 
 function StampImage({
   country,
-  className
+  className,
+  style
 }: {
   country: string;
   className?: string;
+  style?: CSSProperties;
 }) {
-  return <img src={getStampAsset(country)} alt={`${country} passport stamp`} className={className} />;
+  return <img src={getStampAsset(country)} alt={`${country} passport stamp`} className={className} style={style} />;
 }
 
 function NavButton({
@@ -919,43 +877,82 @@ function PassportView({
   onCookAgain: (recipe: Recipe) => void;
 }) {
   const countries = Array.from(new Map(recipes.map((recipe) => [recipe.country, recipe])).values());
+  const stampPages = chunkItems(countries, 4);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
+
+  useEffect(() => {
+    setPageIndex((index) => Math.min(index, Math.max(stampPages.length - 1, 0)));
+  }, [stampPages.length]);
+
+  function turnPage(direction: "next" | "previous") {
+    const nextIndex = direction === "next" ? pageIndex + 1 : pageIndex - 1;
+    if (nextIndex < 0 || nextIndex >= stampPages.length) return;
+    setTurnDirection(direction);
+    setPageIndex(nextIndex);
+    window.setTimeout(() => setTurnDirection(null), 560);
+  }
+
+  const currentPage = stampPages[pageIndex] ?? [];
+  const facingPage = stampPages[pageIndex + 1] ?? [];
+  const canTurnBack = pageIndex > 0;
+  const canTurnForward = pageIndex < stampPages.length - 1;
 
   return (
     <div className="animate-pop">
-      <div className="mb-6">
-        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
-        <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
-          Food Passport
-        </h1>
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
+          <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
+            Food Passport
+          </h1>
+        </div>
+        <div className="flex items-center gap-2 self-start rounded-3xl bg-white/80 p-2 shadow-sm">
+          <button
+            type="button"
+            onClick={() => turnPage("previous")}
+            disabled={!canTurnBack}
+            aria-label="Turn to previous passport page"
+            className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <span className="w-20 text-center text-sm font-black text-stone-600">
+            {pageIndex + 1}/{stampPages.length}
+          </span>
+          <button
+            type="button"
+            onClick={() => turnPage("next")}
+            disabled={!canTurnForward}
+            aria-label="Turn to next passport page"
+            className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronRight aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
-      <section className="mb-6 rounded-[2rem] border border-stone-900/10 bg-white/75 p-5 shadow-soft">
-        <h2 className="mb-4 flex items-center gap-2 font-display text-3xl font-bold">
+      <section className="mb-6 rounded-[2rem] border border-stone-900/10 bg-white/75 p-4 shadow-soft md:p-6">
+        <h2 className="mb-5 flex items-center gap-2 font-display text-3xl font-bold">
           <Stamp className="text-pantry-berry" aria-hidden="true" />
           Country Stamps
         </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {countries.map((recipe) => {
-            const unlocked = unlockedCountries.has(recipe.country);
-            return (
-              <div
-                key={recipe.country}
-                className={cx(
-                  "stamp-edge min-h-36 rounded-3xl border-2 border-dashed p-4 transition",
-                  unlocked
-                    ? "border-pantry-mint bg-emerald-50 text-pantry-ink shadow-stamp"
-                    : "border-stone-300 bg-stone-100 text-stone-400 grayscale"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  {unlocked ? <StampImage country={recipe.country} className="h-20 w-20 object-contain" /> : <span className="text-5xl">⬚</span>}
-                  {!unlocked && <Lock aria-hidden="true" />}
-                </div>
-                <p className="mt-4 font-display text-2xl font-black">{recipe.countryStamp}</p>
-                <p className="text-sm font-bold">{recipe.country}</p>
-              </div>
-            );
-          })}
+        <div className="passport-book-shell">
+          <div className={cx("passport-book", turnDirection === "next" && "passport-book-turn-next", turnDirection === "previous" && "passport-book-turn-previous")}>
+            <PassportStampPage
+              label={`Page ${pageIndex + 1}`}
+              recipes={currentPage}
+              unlockedCountries={unlockedCountries}
+            />
+            <div className="hidden md:block">
+              <PassportStampPage
+                label={facingPage.length ? `Page ${pageIndex + 2}` : "Notes"}
+                recipes={facingPage}
+                unlockedCountries={unlockedCountries}
+                isFacing
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1020,6 +1017,66 @@ function PassportView({
         </div>
       </section>
     </div>
+  );
+}
+
+function PassportStampPage({
+  label,
+  recipes,
+  unlockedCountries,
+  isFacing = false
+}: {
+  label: string;
+  recipes: Recipe[];
+  unlockedCountries: Set<string>;
+  isFacing?: boolean;
+}) {
+  const slots = [...recipes, ...Array<null>(Math.max(0, 4 - recipes.length)).fill(null)];
+
+  return (
+    <article className={cx("passport-page", isFacing && "passport-page-facing")}>
+      <div className="passport-page-face">
+        <div className="mb-4 flex items-center justify-between border-b border-stone-900/10 pb-3">
+          <p className="font-display text-2xl font-black text-pantry-ink">{label}</p>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">Visa Stamps</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {slots.map((recipe, index) => {
+            if (!recipe) {
+              return (
+                <div key={`empty-${index}`} className="passport-stamp-slot border-stone-900/10 bg-white/35 text-stone-400">
+                  <span className="text-xs font-black uppercase tracking-[0.18em]">Blank Page</span>
+                </div>
+              );
+            }
+
+            const unlocked = unlockedCountries.has(recipe.country);
+            return (
+              <div
+                key={recipe.country}
+                className={cx(
+                  "passport-stamp-slot stamp-edge border-dashed",
+                  unlocked ? "border-pantry-mint bg-emerald-50 text-pantry-ink" : "border-stone-300 bg-stone-100 text-stone-500"
+                )}
+              >
+                <StampImage
+                  country={recipe.country}
+                  className="mx-auto h-20 w-20 object-contain"
+                  style={!unlocked ? { filter: "grayscale(100%) opacity(40%)" } : undefined}
+                />
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-display text-xl font-black leading-tight">{recipe.countryStamp}</p>
+                    <p className="text-xs font-bold leading-snug">{recipe.country}</p>
+                  </div>
+                  {!unlocked && <Lock size={17} aria-hidden="true" />}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -1245,6 +1302,168 @@ function hasIngredientEmoji(ingredient: string) {
 
 function ingredientEmoji(ingredient: string) {
   return ingredientEmojiMap[ingredient] ?? null;
+}
+
+
+type CanvasBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function chunkItems<T>(items: T[], size: number) {
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks.length ? chunks : [[]];
+}
+
+function createFoodBadgeSvg(recipe: Recipe) {
+  const safeName = escapeSvgText(recipe.name);
+  const safeCountry = escapeSvgText(recipe.countryStamp);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+    <defs>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#2d2926" flood-opacity="0.18"/>
+      </filter>
+    </defs>
+    <circle cx="130" cy="130" r="108" fill="#fffaf0" stroke="#9f1239" stroke-width="10" filter="url(#shadow)"/>
+    <circle cx="130" cy="130" r="88" fill="none" stroke="#0f766e" stroke-width="4" stroke-dasharray="8 8"/>
+    <text x="130" y="122" text-anchor="middle" font-size="70" font-family="Apple Color Emoji, Segoe UI Emoji, sans-serif">${recipe.badgeEmoji}</text>
+    <text x="130" y="172" text-anchor="middle" font-size="20" font-weight="800" font-family="Arial, sans-serif" fill="#2d2926">${safeName}</text>
+    <text x="130" y="202" text-anchor="middle" font-size="18" font-weight="800" font-family="Arial, sans-serif" fill="#9f1239">${safeCountry} BADGE</text>
+  </svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeSvgText(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function drawPaperTexture(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  color: string
+) {
+  ctx.save();
+  ctx.fillStyle = color;
+  for (let dotX = x + 10; dotX < x + width; dotX += 18) {
+    for (let dotY = y + 10; dotY < y + height; dotY += 18) {
+      if ((Math.floor(dotX + dotY) / 18) % 2 < 1) {
+        ctx.fillRect(dotX, dotY, 1.5, 1.5);
+      }
+    }
+  }
+  ctx.restore();
+}
+
+function drawPostcardFront(ctx: CanvasRenderingContext2D, image: HTMLImageElement, box: CanvasBox) {
+  ctx.save();
+  ctx.fillStyle = "#fffaf0";
+  roundRect(ctx, box.x, box.y, box.width, box.height, 24);
+  ctx.fill();
+  ctx.shadowColor = "rgba(45, 41, 38, 0.22)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 8;
+  ctx.strokeStyle = "rgba(45, 41, 38, 0.15)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.restore();
+
+  const inset = 22;
+  ctx.save();
+  roundRect(ctx, box.x + inset, box.y + inset, box.width - inset * 2, box.height - inset * 2, 18);
+  ctx.clip();
+  drawCoverImage(ctx, image, box.x + inset, box.y + inset, box.width - inset * 2, box.height - inset * 2);
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = "rgba(255, 250, 240, 0.88)";
+  roundRect(ctx, box.x + 34, box.y + box.height - 84, 255, 48, 16);
+  ctx.fill();
+  ctx.fillStyle = "#2d2926";
+  ctx.font = "700 24px Georgia, serif";
+  ctx.fillText("The Passport Pantry", box.x + 52, box.y + box.height - 53);
+  ctx.restore();
+}
+
+function drawPostcardBack(
+  ctx: CanvasRenderingContext2D,
+  recipe: Recipe,
+  stampImage: HTMLImageElement,
+  badgeImage: HTMLImageElement,
+  box: CanvasBox
+) {
+  ctx.save();
+  ctx.fillStyle = "#fffaf0";
+  roundRect(ctx, box.x, box.y, box.width, box.height, 24);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(45, 41, 38, 0.15)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  drawPaperTexture(ctx, box.x, box.y, box.width, box.height, "rgba(45, 41, 38, 0.055)");
+  ctx.restore();
+
+  const dividerX = box.x + box.width * 0.53;
+  ctx.strokeStyle = "rgba(45, 41, 38, 0.35)";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath();
+  ctx.moveTo(dividerX, box.y + 52);
+  ctx.lineTo(dividerX, box.y + box.height - 52);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const leftX = box.x + 42;
+  const topY = box.y + 62;
+  ctx.drawImage(badgeImage, leftX, topY, 132, 132);
+
+  ctx.fillStyle = "#2d2926";
+  ctx.font = "700 34px Georgia, serif";
+  wrapCanvasText(ctx, recipe.name, leftX, topY + 174, dividerX - leftX - 28, 38);
+  ctx.fillStyle = "#0f766e";
+  ctx.font = "700 20px system-ui, sans-serif";
+  ctx.fillText("Flavor Profile", leftX, topY + 260);
+  ctx.fillStyle = "#2d2926";
+  ctx.font = "500 22px system-ui, sans-serif";
+  wrapCanvasText(ctx, recipe.flavorProfile, leftX, topY + 294, dividerX - leftX - 28, 30);
+  ctx.fillStyle = "rgba(45, 41, 38, 0.55)";
+  ctx.font = "700 17px system-ui, sans-serif";
+  ctx.fillText("Cooked with The Passport Pantry", leftX, box.y + box.height - 50);
+
+  const rightX = dividerX + 42;
+  const stampSize = Math.min(118, box.width * 0.22);
+  ctx.save();
+  ctx.translate(box.x + box.width - stampSize - 42, box.y + 42);
+  ctx.rotate(0.08);
+  ctx.fillStyle = "#fff";
+  roundRect(ctx, -8, -8, stampSize + 16, stampSize + 16, 12);
+  ctx.fill();
+  ctx.drawImage(stampImage, 0, 0, stampSize, stampSize);
+  ctx.restore();
+
+  ctx.strokeStyle = "rgba(45, 41, 38, 0.42)";
+  ctx.lineWidth = 2;
+  for (let index = 0; index < 4; index += 1) {
+    const y = box.y + box.height * 0.48 + index * 42;
+    ctx.beginPath();
+    ctx.moveTo(rightX, y);
+    ctx.lineTo(box.x + box.width - 48, y);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(159, 18, 57, 0.82)";
+  ctx.font = "800 20px system-ui, sans-serif";
+  ctx.fillText(`${recipe.countryStamp} / ${recipe.country}`, rightX, box.y + box.height - 72);
 }
 
 function roundRect(
