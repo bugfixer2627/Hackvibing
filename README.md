@@ -29,6 +29,24 @@ npx cap open android
 
 Then choose an emulator or connected Android device in Android Studio and press Run.
 
+## ZIP Submission
+
+The uploaded ZIP must contain `index.html` at the root. Build the static web version first:
+
+```bash
+npm run build
+```
+
+Then create the ZIP from the contents of `dist/`, not the `dist` folder itself. The resulting ZIP should look like this at the top level:
+
+```text
+index.html
+manifest.webmanifest
+assets/
+```
+
+Because Vite is configured with relative asset paths, the generated root `index.html` can be opened from a static host or extracted folder.
+
 ## Build Web Assets
 
 ```bash
