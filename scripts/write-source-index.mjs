@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-writeFileSync(join(projectRoot, "index.html"), `<!doctype html>
+writeFileSync(join(projectRoot, "dev.html"), `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -23,4 +23,4 @@ writeFileSync(join(projectRoot, "index.html"), `<!doctype html>
 </html>
 `);
 
-console.log("Prepared Vite source index.html");
+console.log("Prepared Vite source dev.html");
