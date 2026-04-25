@@ -707,17 +707,17 @@ function SuggestionView({
         </button>
       </div>
 
-      <article className="relative overflow-hidden rounded-[2rem] border-2 border-dashed border-stone-900/20 bg-[#fffaf0] p-4 shadow-soft sm:p-6">
+      <article className="relative z-0 overflow-hidden rounded-[2rem] border-2 border-dashed border-stone-900/20 bg-[#fffaf0] p-4 shadow-soft sm:p-6">
         <div className={cx("absolute inset-x-0 top-0 h-2 bg-gradient-to-r", countryPalette[recipe.country] ?? "from-amber-500 to-teal-700")} />
-        <div className="absolute right-4 top-5 rotate-6 rounded-2xl bg-white/70 p-1 shadow-sm">
+        <div className="absolute right-4 top-5 z-20 rotate-6 rounded-2xl bg-white/70 p-1 shadow-sm">
           <StampImage country={recipe.country} className="h-20 w-20 object-contain sm:h-28 sm:w-28" />
         </div>
-        <div className="pointer-events-none absolute bottom-5 right-5 hidden w-40 space-y-3 opacity-25 sm:block">
+        <div className="pointer-events-none absolute bottom-5 right-5 z-0 hidden w-40 space-y-3 opacity-25 sm:block">
           <span className="block border-t border-stone-700" />
           <span className="block border-t border-stone-700" />
           <span className="block border-t border-stone-700" />
         </div>
-        <div className="pt-16 sm:pt-20">
+        <div className="relative z-10 pt-16 sm:pt-20">
           <div className="mb-5 pr-20 sm:pr-28">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-berry">{recipe.country}</p>
             <h2 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">{recipe.name}</h2>
