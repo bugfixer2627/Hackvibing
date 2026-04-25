@@ -1,7 +1,6 @@
 import {
   Award,
   BookOpen,
-  Camera,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -864,7 +863,7 @@ function CookingView({
 function PassportView({
   recipes,
   passport,
-  unlockedCountries,
+  unlockedCountries: _unlockedCountries,
   unlockedBadges,
   onBadgeClick,
   onCookAgain
@@ -876,8 +875,33 @@ function PassportView({
   onBadgeClick: (recipeId: string) => void;
   onCookAgain: (recipe: Recipe) => void;
 }) {
-  const countries = Array.from(new Map(recipes.map((recipe) => [recipe.country, recipe])).values());
-  const stampPages = chunkItems(countries, 4);
+  void _unlockedCountries;
+  const countryRecipeMap = useMemo(() => new Map(recipes.map((recipe) => [recipe.country, recipe])), [recipes]);
+  const unlockedCountryRecipes = useMemo(
+    () => passport.countryStamps.map((country) => countryRecipeMap.get(country)).filter((recipe): recipe is Recipe => Boolean(recipe)),
+    [countryRecipeMap, passport.countryStamps]
+  );
+  const stampPages = useMemo(() => {
+    const pages = chunkItems(unlockedCountryRecipes, 4);
+    return pages.length >= 2 ? pages : [pages[0] ?? [], []];
+  }, [unlockedCountryRecipes]);
+  const sortedRecipes = useMemo(() => {
+    const unlockedOrder = new Map(passport.foodBadges.map((recipeId, index) => [recipeId, index]));
+    return recipes
+      .map((recipe, index) => ({ recipe, index }))
+      .sort((a, b) => {
+        const aOrder = unlockedOrder.get(a.recipe.id);
+        const bOrder = unlockedOrder.get(b.recipe.id);
+        const aUnlocked = aOrder !== undefined;
+        const bUnlocked = bOrder !== undefined;
+
+        if (aUnlocked && bUnlocked) return aOrder - bOrder;
+        if (aUnlocked) return -1;
+        if (bUnlocked) return 1;
+        return a.index - b.index;
+      })
+      .map(({ recipe }) => recipe);
+  }, [passport.foodBadges, recipes]);
   const [pageIndex, setPageIndex] = useState(0);
   const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
 
@@ -900,55 +924,53 @@ function PassportView({
 
   return (
     <div className="animate-pop">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
-          <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
-            Food Passport
-          </h1>
-        </div>
-        <div className="flex items-center gap-2 self-start rounded-3xl bg-white/80 p-2 shadow-sm">
-          <button
-            type="button"
-            onClick={() => turnPage("previous")}
-            disabled={!canTurnBack}
-            aria-label="Turn to previous passport page"
-            className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronLeft aria-hidden="true" />
-          </button>
-          <span className="w-20 text-center text-sm font-black text-stone-600">
-            {pageIndex + 1}/{stampPages.length}
-          </span>
-          <button
-            type="button"
-            onClick={() => turnPage("next")}
-            disabled={!canTurnForward}
-            aria-label="Turn to next passport page"
-            className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronRight aria-hidden="true" />
-          </button>
-        </div>
+      <div className="mb-6">
+        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
+        <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
+          Food Passport
+        </h1>
       </div>
 
       <section className="mb-6 rounded-[2rem] border border-stone-900/10 bg-white/75 p-4 shadow-soft md:p-6">
-        <h2 className="mb-5 flex items-center gap-2 font-display text-3xl font-bold">
-          <Stamp className="text-pantry-berry" aria-hidden="true" />
-          Country Stamps
-        </h2>
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="flex items-center gap-2 font-display text-3xl font-bold">
+            <Stamp className="text-pantry-berry" aria-hidden="true" />
+            Country Stamps
+          </h2>
+          <div className="flex items-center gap-2 self-start rounded-3xl bg-white/85 p-2 shadow-sm sm:self-auto">
+            <button
+              type="button"
+              onClick={() => turnPage("previous")}
+              disabled={!canTurnBack}
+              aria-label="Turn to previous passport page"
+              className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft aria-hidden="true" />
+            </button>
+            <span className="w-20 text-center text-sm font-black text-stone-600">
+              {pageIndex + 1}/{stampPages.length}
+            </span>
+            <button
+              type="button"
+              onClick={() => turnPage("next")}
+              disabled={!canTurnForward}
+              aria-label="Turn to next passport page"
+              className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight aria-hidden="true" />
+            </button>
+          </div>
+        </div>
         <div className="passport-book-shell">
           <div className={cx("passport-book", turnDirection === "next" && "passport-book-turn-next", turnDirection === "previous" && "passport-book-turn-previous")}>
             <PassportStampPage
               label={`Page ${pageIndex + 1}`}
               recipes={currentPage}
-              unlockedCountries={unlockedCountries}
             />
             <div className="hidden md:block">
               <PassportStampPage
                 label={facingPage.length ? `Page ${pageIndex + 2}` : "Notes"}
                 recipes={facingPage}
-                unlockedCountries={unlockedCountries}
                 isFacing
               />
             </div>
@@ -962,7 +984,7 @@ function PassportView({
           Food Badges
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {recipes.map((recipe) => {
+          {sortedRecipes.map((recipe) => {
             const unlocked = unlockedBadges.has(recipe.id);
             return (
               <article
@@ -988,14 +1010,13 @@ function PassportView({
                     disabled={!unlocked}
                     onClick={() => onBadgeClick(recipe.id)}
                     className={cx(
-                      "focus-ring inline-flex items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-black transition",
+                      "focus-ring grid h-12 place-items-center rounded-2xl px-2 text-center text-sm font-black leading-none transition",
                       unlocked
                         ? "bg-pantry-mint text-white hover:-translate-y-0.5"
                         : "cursor-not-allowed bg-stone-200 text-stone-500"
                     )}
                   >
-                    <Camera size={16} aria-hidden="true" />
-                    Community
+                    <span className="block w-full text-center">Community</span>
                   </button>
                   <button
                     type="button"
@@ -1023,12 +1044,10 @@ function PassportView({
 function PassportStampPage({
   label,
   recipes,
-  unlockedCountries,
   isFacing = false
 }: {
   label: string;
   recipes: Recipe[];
-  unlockedCountries: Set<string>;
   isFacing?: boolean;
 }) {
   const slots = [...recipes, ...Array<null>(Math.max(0, 4 - recipes.length)).fill(null)];
@@ -1050,26 +1069,18 @@ function PassportStampPage({
               );
             }
 
-            const unlocked = unlockedCountries.has(recipe.country);
             return (
               <div
                 key={recipe.country}
-                className={cx(
-                  "passport-stamp-slot stamp-edge border-dashed",
-                  unlocked ? "border-pantry-mint bg-emerald-50 text-pantry-ink" : "border-stone-300 bg-stone-100 text-stone-500"
-                )}
+                className="passport-stamp-slot stamp-edge border-dashed border-pantry-mint bg-emerald-50 text-pantry-ink"
               >
                 <StampImage
                   country={recipe.country}
                   className="mx-auto h-20 w-20 object-contain"
-                  style={!unlocked ? { filter: "grayscale(100%) opacity(40%)" } : undefined}
                 />
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <div>
-                    <p className="font-display text-xl font-black leading-tight">{recipe.countryStamp}</p>
-                    <p className="text-xs font-bold leading-snug">{recipe.country}</p>
-                  </div>
-                  {!unlocked && <Lock size={17} aria-hidden="true" />}
+                <div className="mt-3">
+                  <p className="font-display text-xl font-black leading-tight">{recipe.countryStamp}</p>
+                  <p className="text-xs font-bold leading-snug">{recipe.country}</p>
                 </div>
               </div>
             );
@@ -1386,13 +1397,18 @@ function drawPostcardFront(ctx: CanvasRenderingContext2D, image: HTMLImageElemen
   drawCoverImage(ctx, image, box.x + inset, box.y + inset, box.width - inset * 2, box.height - inset * 2);
   ctx.restore();
 
+  const logoText = "The Passport Pantry";
+  const logoX = box.x + 34;
+  const logoY = box.y + box.height - 84;
+  const logoWidth = Math.min(230, box.width - 68);
+
   ctx.save();
   ctx.fillStyle = "rgba(255, 250, 240, 0.88)";
-  roundRect(ctx, box.x + 34, box.y + box.height - 84, 255, 48, 16);
+  roundRect(ctx, logoX, logoY, logoWidth, 48, 16);
   ctx.fill();
   ctx.fillStyle = "#2d2926";
-  ctx.font = "700 24px Georgia, serif";
-  ctx.fillText("The Passport Pantry", box.x + 52, box.y + box.height - 53);
+  ctx.font = fitCanvasFont(ctx, logoText, logoWidth - 28, "700", 22, 14, "Georgia, serif");
+  ctx.fillText(logoText, logoX + 14, box.y + box.height - 53, logoWidth - 28);
   ctx.restore();
 }
 
@@ -1436,9 +1452,10 @@ function drawPostcardBack(
   ctx.fillStyle = "#2d2926";
   ctx.font = "500 22px system-ui, sans-serif";
   wrapCanvasText(ctx, recipe.flavorProfile, leftX, topY + 294, dividerX - leftX - 28, 30);
+  const watermarkText = "Cooked with The Passport Pantry";
   ctx.fillStyle = "rgba(45, 41, 38, 0.55)";
-  ctx.font = "700 17px system-ui, sans-serif";
-  ctx.fillText("Cooked with The Passport Pantry", leftX, box.y + box.height - 50);
+  ctx.font = fitCanvasFont(ctx, watermarkText, dividerX - leftX - 28, "700", 17, 12, "system-ui, sans-serif");
+  ctx.fillText(watermarkText, leftX, box.y + box.height - 50, dividerX - leftX - 28);
 
   const rightX = dividerX + 42;
   const stampSize = Math.min(118, box.width * 0.22);
@@ -1461,9 +1478,29 @@ function drawPostcardBack(
     ctx.stroke();
   }
 
+  const countryLabel = `${recipe.countryStamp} / ${recipe.country}`;
+  const countryMaxWidth = box.x + box.width - rightX - 52;
   ctx.fillStyle = "rgba(159, 18, 57, 0.82)";
-  ctx.font = "800 20px system-ui, sans-serif";
-  ctx.fillText(`${recipe.countryStamp} / ${recipe.country}`, rightX, box.y + box.height - 72);
+  ctx.font = fitCanvasFont(ctx, countryLabel, countryMaxWidth, "800", 20, 12, "system-ui, sans-serif");
+  ctx.fillText(countryLabel, rightX, box.y + box.height - 72, countryMaxWidth);
+}
+
+function fitCanvasFont(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  weight: string,
+  maxSize: number,
+  minSize: number,
+  family: string
+) {
+  for (let size = maxSize; size >= minSize; size -= 1) {
+    const font = `${weight} ${size}px ${family}`;
+    ctx.font = font;
+    if (ctx.measureText(text).width <= maxWidth) return font;
+  }
+
+  return `${weight} ${minSize}px ${family}`;
 }
 
 function roundRect(
