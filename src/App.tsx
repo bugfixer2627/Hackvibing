@@ -345,12 +345,12 @@ function App() {
 
   return (
     <main className="app-safe-shell paper-texture min-h-screen overflow-x-hidden text-pantry-ink">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 py-3 sm:max-w-2xl sm:px-5 sm:py-5 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 py-4 sm:max-w-2xl sm:px-5 sm:py-5 lg:max-w-7xl lg:px-8">
         {showAppChrome && <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
         {showAppChrome && <MobileBottomNav view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
 
         {view === "pantry" ? (
-          <div className="min-w-0 flex-1">
+          <div className="mobile-page-content min-w-0 flex-1">
             <PantryView
               ingredients={data.ingredients}
               selectedIngredients={selectedIngredients}
@@ -361,7 +361,7 @@ function App() {
             />
           </div>
         ) : (
-          <section className="grid flex-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+          <section className="mobile-page-content grid flex-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
             <aside className="hidden rounded-[2rem] border border-stone-900/10 bg-white/60 p-5 shadow-soft backdrop-blur lg:block">
               <ProgressPanel
                 selectedIngredients={selectedIngredients}
@@ -438,7 +438,7 @@ function Header({
 }) {
   return (
     <header
-      className="sticky z-20 mb-4 flex flex-col gap-3 rounded-[1.7rem] border border-stone-900/10 bg-white/80 p-3 shadow-soft backdrop-blur md:mb-6 md:flex-row md:items-center md:justify-between md:p-4"
+      className="sticky z-20 mb-4 hidden flex-col gap-3 rounded-[1.7rem] border border-stone-900/10 bg-white/80 p-3 shadow-soft backdrop-blur sm:flex md:mb-6 md:flex-row md:items-center md:justify-between md:p-4"
       style={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
     >
       <button
@@ -488,7 +488,7 @@ function MobileBottomNav({
 }) {
   return (
     <nav
-      className="fixed inset-x-3 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      className="fixed inset-x-4 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
       aria-label="Mobile navigation"
     >
@@ -902,7 +902,7 @@ function CookingView({
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">{recipe.description}</p>
           </div>
-          <div className="rounded-[2rem] bg-pantry-paper p-5">
+          <div className="hidden rounded-[2rem] bg-pantry-paper p-5 md:block">
             <p className="text-sm font-black uppercase tracking-[0.2em] text-stone-500">Badge</p>
             <div className="mt-4 flex items-center gap-3">
               <span className="text-6xl">{recipe.badgeEmoji}</span>
@@ -918,21 +918,57 @@ function CookingView({
           <section>
             <div className="md:hidden">
               <div className="rounded-[2rem] border border-stone-900/10 bg-pantry-paper p-4 shadow-sm">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
-                  Step {currentStep + 1} of {totalSteps}
-                </p>
-                <h2 className="mt-2 font-display text-3xl font-bold">Cook Mode</h2>
-                <p className="mt-3 font-semibold leading-7 text-stone-700">{recipe.steps[currentStep]}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
+                      Step {currentStep + 1} of {totalSteps}
+                    </p>
+                    <h2 className="mt-2 font-display text-3xl font-bold">Full Recipe</h2>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowStepMode(true)}
+                    className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5"
+                  >
+                    Step Mode
+                  </button>
+                </div>
                 <div className="mt-4 h-3 overflow-hidden rounded-full bg-white" aria-hidden="true">
                   <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowStepMode(true)}
-                  className="focus-ring mt-4 flex w-full items-center justify-center rounded-3xl bg-pantry-ink px-5 py-4 text-base font-black text-white transition hover:-translate-y-0.5"
-                >
-                  Open Step-by-Step Mode
-                </button>
+                <ol className="mt-4 grid gap-2.5">
+                  {recipe.steps.map((step, index) => {
+                    const active = index === currentStep;
+                    const completed = index < currentStep;
+                    return (
+                      <li key={step}>
+                        <button
+                          type="button"
+                          onClick={() => goToStep(index)}
+                          aria-current={active ? "step" : undefined}
+                          className={cx(
+                            "focus-ring flex w-full gap-3 rounded-[1.4rem] border px-3 py-3 text-left transition",
+                            active
+                              ? "border-pantry-mint bg-emerald-50 shadow-sm"
+                              : completed
+                                ? "border-pantry-mint/30 bg-white"
+                                : "border-stone-900/10 bg-[#fffaf0]"
+                          )}
+                        >
+                          <span
+                            className={cx(
+                              "grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-black transition",
+                              active || completed ? "bg-pantry-mint text-white" : "bg-white text-pantry-ink"
+                            )}
+                          >
+                            {completed ? <Check size={16} aria-hidden="true" /> : index + 1}
+                          </span>
+                          <span className="pt-0.5 text-sm font-semibold leading-6 text-stone-700">{step}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
               </div>
 
               {showStepMode && (
@@ -979,11 +1015,21 @@ function CookingView({
                       </span>
                       <button
                         type="button"
-                        disabled={currentStep === totalSteps - 1}
-                        onClick={() => goToStep(currentStep + 1)}
-                        className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
+                        onClick={() => {
+                          if (currentStep === totalSteps - 1) {
+                            setShowStepMode(false);
+                            return;
+                          }
+                          goToStep(currentStep + 1);
+                        }}
+                        className={cx(
+                          "focus-ring rounded-2xl px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5",
+                          currentStep === totalSteps - 1
+                            ? "bg-pantry-berry"
+                            : "bg-pantry-ink"
+                        )}
                       >
-                        Next Step
+                        {currentStep === totalSteps - 1 ? "Finish" : "Next Step"}
                       </button>
                     </div>
                   </div>
@@ -1144,10 +1190,6 @@ function PassportView({
   useEffect(() => {
     setPageIndex((index) => Math.min(index, Math.max(stampPages.length - 1, 0)));
   }, [stampPages.length]);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-  }, [pageIndex]);
 
   function turnPage(direction: "next" | "previous") {
     const nextIndex = direction === "next" ? pageIndex + 1 : pageIndex - 1;

@@ -44,6 +44,10 @@ input {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+.mobile-page-content {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6.5rem);
+}
+
 .stamp-edge {
   mask:
     radial-gradient(7px at 7px 7px, transparent 98%, #000) -7px -7px;
@@ -56,8 +60,8 @@ input {
 
 @supports (padding: max(0px)) {
   .app-safe-shell {
-    padding-top: max(0.75rem, env(safe-area-inset-top));
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    padding-top: max(1.6rem, calc(env(safe-area-inset-top) + 1.15rem));
+    padding-bottom: max(0.9rem, calc(env(safe-area-inset-bottom) + 0.25rem));
   }
 }
 
@@ -536,3 +540,9 @@ input {
 
 }
 
+
+@media (min-width: 640px) {
+  .mobile-page-content {
+    padding-bottom: 0;
+  }
+}
