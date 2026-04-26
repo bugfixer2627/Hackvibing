@@ -9,3 +9,6 @@ ios/**/.swiftpm/xcode/xcuserdata/
 Hackvibing-web/
 
 .spm-cache/
+
+# Claude Workinng Branches
+.claude
