@@ -518,3 +518,81 @@ input {
     padding-bottom: 0;
   }
 }
+
+/* World map pin styles (Leaflet divIcon) */
+.map-pin-wrap {
+  background: transparent !important;
+  border: 0 !important;
+}
+.map-pin {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+.map-pin:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+.map-pin .map-pin-core {
+  position: relative;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  background: var(--accent, #ffffff);
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+.map-pin-locked .map-pin-core {
+  background: rgba(60, 60, 60, 0.65);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+.map-pin-visited .map-pin-ring {
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  background: var(--accent, #ffffff);
+  opacity: 0.28;
+  animation: map-pin-pulse 1.8s ease-out infinite;
+}
+.map-pin-badge {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  z-index: 3;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #E67E22;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  border: 2px solid #fff;
+}
+@keyframes map-pin-pulse {
+  0% { transform: scale(0.8); opacity: 0.45; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Make Leaflet attribution legible against the cream UI */
+.leaflet-container {
+  font-family: inherit;
+  background: #aad3df;
+}
+.leaflet-control-attribution {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.75) !important;
+}

@@ -6,6 +6,7 @@ type RecipeLite = {
   id: string;
   name: string;
   country: string;
+  badgeEmoji?: string;
 };
 
 type CookingTransitionViewProps = {
@@ -227,12 +228,12 @@ export function CookingTransitionView({
         }
       }
 
-      drawDishReveal(ctx, size.width, size.height, recipe, elapsed);
-      drawRevealText(ctx, size.width, size.height, recipe.country, elapsed);
+      drawDishReveal(ctx, size.width, size.height, recipe, elapsed, vesselY);
+      drawRevealText(ctx, size.width, size.height, recipe, elapsed, vesselY);
 
       if (recipe.country === "United States of America" && elapsed >= 1.5 && elapsed <= 1.78) {
-        const flash = 1 - clamp((elapsed - 1.5) / 0.28, 0, 1);
-        ctx.fillStyle = `rgba(255,255,255,${flash})`;
+        const flash = (1 - clamp((elapsed - 1.5) / 0.28, 0, 1)) * 0.6;
+        ctx.fillStyle = `rgba(255, 244, 220, ${flash})`;
         ctx.fillRect(0, 0, size.width, size.height);
       }
 
@@ -255,7 +256,7 @@ export function CookingTransitionView({
     };
   }, [fact, onComplete, recipe, selectedIngredients]);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 h-full w-full bg-[#111]" aria-hidden="true" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 h-full w-full bg-pantry-paper" aria-hidden="true" />;
 }
 
 function createFactCard(country: string, fact: string) {
@@ -275,7 +276,8 @@ function createFactCard(country: string, fact: string) {
   card.style.padding = "20px 20px calc(28px + env(safe-area-inset-bottom)) 20px";
   card.style.boxShadow = "0 -8px 32px rgba(0,0,0,0.15), 0 -2px 8px rgba(0,0,0,0.08)";
   card.style.borderTop = `3px solid ${countryAccent[country] ?? "#DE2910"}`;
-  card.style.color = "#2C3E50";
+  card.style.color = "#2d2926";
+  card.style.fontFamily = "Inter, ui-sans-serif, system-ui, sans-serif";
 
   const title = document.createElement("div");
   title.style.display = "flex";
@@ -304,25 +306,31 @@ function drawBackground(
   country: string,
   elapsed: number
 ) {
-  const fade = clamp(elapsed / 0.3, 0, 1);
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  const from = country === "China"
-    ? ["#8B0000", "#2C0000"]
-    : country === "Indonesia"
-      ? ["#8B4500", "#4A1500"]
-      : country === "India"
-        ? ["#8B4500", "#2A0A00"]
-        : ["#1C1C1C", "#090909"];
-  gradient.addColorStop(0, mixColor("#FDF6EC", from[0], fade));
-  gradient.addColorStop(1, mixColor("#FDF6EC", from[1], fade));
-  ctx.fillStyle = gradient;
+  const fade = clamp(elapsed / 0.4, 0, 1);
+  const accent = countryAccent[country] ?? "#d97706";
+
+  // Cream paper base — matches the app's pantry-paper (#f8f3ea) tone.
+  ctx.fillStyle = "#f8f3ea";
   ctx.fillRect(0, 0, width, height);
 
-  if (country === "United States of America") {
-    for (let x = 0; x < width * 0.15; x += 8) {
-      ctx.fillStyle = x % 16 === 0 ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.3)";
-      ctx.fillRect(x, 0, 8, height);
-      ctx.fillRect(width - width * 0.15 + x, 0, 8, height);
+  // Soft radial accent wash from the vessel area, tinted by country.
+  const cx = width * 0.5;
+  const cy = height * 0.62;
+  const wash = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.max(width, height) * 0.7);
+  wash.addColorStop(0, hexToRgba(accent, 0.22 * fade));
+  wash.addColorStop(0.55, hexToRgba(accent, 0.08 * fade));
+  wash.addColorStop(1, "rgba(248,243,234,0)");
+  ctx.fillStyle = wash;
+  ctx.fillRect(0, 0, width, height);
+
+  // Subtle paper grain — tiny dots at low opacity, like the .paper-texture CSS.
+  ctx.fillStyle = "rgba(45, 41, 38, 0.05)";
+  const grainStep = 18;
+  for (let y = 0; y < height; y += grainStep) {
+    for (let x = (y / grainStep) % 2 === 0 ? 0 : grainStep / 2; x < width; x += grainStep) {
+      ctx.beginPath();
+      ctx.arc(x, y, 0.7, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 }
@@ -334,85 +342,79 @@ function drawDecorations(
   country: string,
   elapsed: number
 ) {
-  if (country === "China") {
-    [width * 0.14, width * 0.86].forEach((x) => {
-      ctx.save();
-      ctx.translate(x, height * 0.12);
-      ctx.rotate((Math.sin(elapsed * 1.5) * 8 * Math.PI) / 180);
-      ctx.strokeStyle = "#111";
-      ctx.beginPath();
-      ctx.moveTo(0, -50);
-      ctx.lineTo(0, -16);
-      ctx.stroke();
-      ctx.fillStyle = "#CC0000";
-      ctx.beginPath();
-      ctx.ellipse(0, 8, 16, 26, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#FF6666";
-      ctx.fillRect(-4, -12, 8, 40);
-      ctx.restore();
-    });
-  } else if (country === "Indonesia") {
-    ctx.strokeStyle = "rgba(200,120,50,0.28)";
-    ctx.lineWidth = 1.5;
-    for (let x = 20; x < width - 20; x += 24) {
-      for (let y = 20; y < height - 20; y += 24) {
-        if ((x + y) % 48 === 0) {
+  // Very light, on-paper cultural flourishes — tuned to the warm cream palette.
+  const accent = countryAccent[country] ?? "#d97706";
+
+  if (country === "India") {
+    const burst = clamp((elapsed - 1.5) / 0.6, 0, 1);
+    if (burst > 0) {
+      const cx = width * 0.5;
+      const cy = height * 0.54;
+      for (let ring = 0; ring < 6; ring += 1) {
+        const delay = ring * 0.06;
+        const ringProgress = clamp((burst - delay) / 0.8, 0, 1);
+        if (ringProgress <= 0) continue;
+        const radius = 60 + ringProgress * (140 - ring * 8);
+        ctx.strokeStyle = hexToRgba(accent, (1 - ringProgress) * 0.35);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    return;
+  }
+
+  if (country === "Indonesia") {
+    ctx.strokeStyle = hexToRgba(accent, 0.18);
+    ctx.lineWidth = 1.2;
+    for (let x = 24; x < width - 24; x += 30) {
+      for (let y = 24; y < height - 24; y += 30) {
+        if ((x + y) % 60 === 0) {
           ctx.beginPath();
-          ctx.moveTo(x, y - 8);
-          ctx.lineTo(x + 8, y);
-          ctx.lineTo(x, y + 8);
-          ctx.lineTo(x - 8, y);
+          ctx.moveTo(x, y - 6);
+          ctx.lineTo(x + 6, y);
+          ctx.lineTo(x, y + 6);
+          ctx.lineTo(x - 6, y);
           ctx.closePath();
           ctx.stroke();
         }
       }
     }
-  } else if (country === "India") {
-    const burst = clamp((elapsed - 1.5) / 0.55, 0, 1);
-    if (burst > 0) {
-      const cx = width * 0.5;
-      const cy = height * 0.54;
-      for (let ring = 0; ring < 8; ring += 1) {
-        const delay = ring * 0.05;
-        const ringProgress = clamp((burst - delay) / 0.75, 0, 1);
-        if (ringProgress <= 0) continue;
-        const radius = 50 + ringProgress * (150 - ring * 8);
-        ctx.strokeStyle = `rgba(255,150,0,${1 - ringProgress})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-        ctx.strokeStyle = `rgba(255,150,0,${1 - burst})`;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + Math.cos(angle) * 120, cy + Math.sin(angle) * 120);
-        ctx.stroke();
-      }
-    }
-  } else {
-    const flicker = Math.sin(elapsed * 8) * 0.3 + 0.7;
-    const x = width * 0.25;
-    const y = height * 0.16;
-    const w = width * 0.5;
-    ctx.save();
-    ctx.globalAlpha = flicker;
-    ["rgba(255,107,0,0.1)", "rgba(255,107,0,0.3)", "rgba(255,107,0,0.5)"].forEach((color, index) => {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x - 6 + index * 2, y - 6 + index * 2, w + 12 - index * 4, 40 + 12 - index * 4);
+    return;
+  }
+
+  if (country === "China") {
+    [width * 0.14, width * 0.86].forEach((x) => {
+      ctx.save();
+      ctx.translate(x, height * 0.16);
+      ctx.rotate((Math.sin(elapsed * 1.2) * 5 * Math.PI) / 180);
+      ctx.strokeStyle = "rgba(45, 41, 38, 0.35)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(0, -42);
+      ctx.lineTo(0, -14);
+      ctx.stroke();
+      ctx.fillStyle = hexToRgba(accent, 0.85);
+      ctx.beginPath();
+      ctx.ellipse(0, 6, 13, 22, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = hexToRgba("#7c1d1d", 0.55);
+      ctx.fillRect(-2.5, -10, 5, 30);
+      ctx.restore();
     });
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(x, y, w, 40);
-    ctx.strokeStyle = "#FF6B00";
-    ctx.strokeRect(x, y, w, 40);
-    ctx.fillStyle = "#FF6B00";
-    ctx.font = "700 24px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("DINER", x + w / 2, y + 27);
-    ctx.restore();
+    return;
+  }
+
+  // United States — subtle bunting stripes along the top, paper-friendly.
+  const stripeAlpha = 0.18;
+  const stripeY = height * 0.08;
+  const stripeHeight = 5;
+  for (let i = 0; i < 12; i += 1) {
+    const x = (i / 12) * width;
+    ctx.fillStyle =
+      i % 2 === 0 ? hexToRgba(accent, stripeAlpha) : "rgba(45, 41, 38, 0.08)";
+    ctx.fillRect(x, stripeY, width / 12 - 4, stripeHeight);
   }
 }
 
@@ -669,31 +671,42 @@ function drawDishReveal(
   width: number,
   height: number,
   recipe: RecipeLite,
-  elapsed: number
+  elapsed: number,
+  vesselY: number
 ) {
-  const progress = clamp((elapsed - 2.5) / 1, 0, 1);
+  const progress = clamp((elapsed - 2.4) / 0.9, 0, 1);
   if (progress <= 0) return;
+  const eased = easeOutBack(progress);
   const centerX = width * 0.5;
-  const centerY = height * 0.45;
-  const glow = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, 120);
-  glow.addColorStop(0, `rgba(255,244,180,${0.45 * progress})`);
-  glow.addColorStop(1, "rgba(255,244,180,0)");
+  const centerY = vesselY;
+
+  const glowRadius = 150;
+  const glow = ctx.createRadialGradient(centerX, centerY, 12, centerX, centerY, glowRadius);
+  glow.addColorStop(0, `rgba(255,238,170,${0.55 * progress})`);
+  glow.addColorStop(0.6, `rgba(255,210,140,${0.18 * progress})`);
+  glow.addColorStop(1, "rgba(255,210,140,0)");
   ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, 120, 0, Math.PI * 2);
+  ctx.arc(centerX, centerY, glowRadius, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.save();
   ctx.globalAlpha = progress;
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.translate(centerX, centerY);
+  ctx.scale(eased, eased);
+  ctx.shadowColor = "rgba(0,0,0,0.25)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 6;
+  ctx.fillStyle = "#FFFFFF";
   ctx.beginPath();
-  ctx.arc(centerX, centerY, 58, 0, Math.PI * 2);
+  ctx.arc(0, 0, 64, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#2D2926";
-  ctx.font = "700 44px sans-serif";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.font = "64px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(recipe.name.slice(0, 1), centerX, centerY + 2);
+  ctx.fillText(getRecipeBadge(recipe), 0, 4);
   ctx.restore();
 }
 
@@ -701,57 +714,92 @@ function drawRevealText(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  country: string,
-  elapsed: number
+  recipe: RecipeLite,
+  elapsed: number,
+  vesselY: number
 ) {
-  const progress = clamp((elapsed - 2.5) / 0.3, 0, 1);
+  const country = recipe.country;
+  const progress = clamp((elapsed - 2.5) / 0.4, 0, 1);
   if (progress <= 0) return;
-  const text = countryBurstText[country] ?? "Ready!";
+
+  const burstText = countryBurstText[country] ?? "Ready!";
   const subtitle = countrySubtitles[country] ?? "";
-  const chars = text.slice(0, Math.max(1, Math.floor((elapsed - 2.5) / 0.05)));
-  const scale = country === "China" || country === "United States of America" ? easeOutElastic(progress) : easeOutBack(progress);
+  const burstChars = burstText.slice(0, Math.max(1, Math.floor((elapsed - 2.5) / 0.05)));
+  const burstScale =
+    country === "China" || country === "United States of America" ? easeOutElastic(progress) : easeOutBack(progress);
+
+  const burstY = Math.max(80, vesselY - 200);
+
+  const accent = countryAccent[country] ?? "#d97706";
 
   ctx.save();
-  ctx.translate(width * 0.5, height * 0.22);
-  ctx.scale(scale, scale);
-  if (country === "United States of America") {
-    ctx.font = "900 80px sans-serif";
-    ctx.lineWidth = 8;
-    ctx.strokeStyle = "#111";
-    ctx.strokeText(chars, 0, 0);
-    ctx.fillStyle = "#FF6B00";
-    ctx.shadowColor = "#CC3300";
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 6;
-    ctx.shadowOffsetY = 6;
-    ctx.fillText(chars, 0, 0);
-  } else if (country === "China") {
-    ctx.font = "700 80px serif";
-    ctx.fillStyle = "#FFD700";
-    ctx.shadowColor = "rgba(0,0,0,0.8)";
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 4;
-    ctx.fillText(chars, 0, 0);
-  } else if (country === "India") {
-    ctx.font = "700 52px sans-serif";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillText(chars, 0, 0);
-  } else {
-    ctx.font = "700 64px sans-serif";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillText(chars, 0, 0);
-  }
+  ctx.translate(width * 0.5, burstY);
+  ctx.scale(burstScale, burstScale);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "700 64px Fraunces, Georgia, serif";
+  ctx.shadowColor = hexToRgba(accent, 0.35);
+  ctx.shadowOffsetY = 4;
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#2d2926";
+  ctx.fillText(burstChars, 0, 0);
+  ctx.shadowColor = "transparent";
+  ctx.shadowOffsetY = 0;
+  // Accent underscore — a paper-stamp feel matching the rest of the app.
+  const underlineWidth = ctx.measureText(burstChars).width;
+  ctx.fillStyle = hexToRgba(accent, 0.55);
+  ctx.fillRect(-underlineWidth / 2, 38, underlineWidth, 4);
   ctx.restore();
 
   if (subtitle) {
     ctx.save();
     ctx.globalAlpha = progress;
-    ctx.fillStyle = country === "Indonesia" ? "#FFB830" : "#FFFFFF";
-    ctx.font = country === "India" ? "700 24px sans-serif" : "700 24px sans-serif";
+    ctx.fillStyle = hexToRgba(accent, 0.85);
+    ctx.font = "600 18px Inter, ui-sans-serif, system-ui, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(subtitle, width * 0.5, height * 0.29);
+    ctx.textBaseline = "middle";
+    ctx.fillText(subtitle.toUpperCase(), width * 0.5, burstY + 64);
     ctx.restore();
   }
+
+  // Recipe name reveal — centered horizontally and aligned just under the cooked dish.
+  const nameProgress = clamp((elapsed - 2.7) / 0.5, 0, 1);
+  if (nameProgress > 0) {
+    const nameY = Math.min(height - 60, vesselY + 130);
+    const nameOffset = (1 - easeOutCubic(nameProgress)) * 18;
+    ctx.save();
+    ctx.globalAlpha = nameProgress;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const padding = 18;
+    ctx.font = "800 30px sans-serif";
+    const textWidth = ctx.measureText(recipe.name).width;
+    const pillWidth = textWidth + padding * 2;
+    const pillHeight = 50;
+    const pillX = width * 0.5 - pillWidth / 2;
+    const pillY = nameY - pillHeight / 2 + nameOffset;
+
+    ctx.shadowColor = "rgba(0,0,0,0.25)";
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    roundRectPath(ctx, pillX, pillY, pillWidth, pillHeight, 999);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    ctx.fillStyle = "#2D2926";
+    ctx.fillText(recipe.name, width * 0.5, nameY + nameOffset + 1);
+    ctx.restore();
+  }
+  void height;
+}
+
+function getRecipeBadge(recipe: RecipeLite): string {
+  if (recipe.badgeEmoji) return recipe.badgeEmoji;
+  const match = recipe.name.match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/u);
+  return match?.[0] ?? recipe.name.slice(0, 1).toUpperCase();
 }
 
 function roundRectPath(
@@ -805,6 +853,11 @@ function hexToRgb(hex: string) {
     g: Number.parseInt(normalized.slice(2, 4), 16),
     b: Number.parseInt(normalized.slice(4, 6), 16)
   };
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function easeOutBack(t: number) {
