@@ -23,7 +23,10 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ChangeEvent, ReactNode } from "react";
+import { CookingTransitionView } from "./CookingTransitionView";
 import { IngredientOriginSheet } from "./IngredientOriginSheet";
+import { WorldMapView } from "./WorldMapView";
+import { audio } from "./audio";
 import pantryData from "./data.json";
 import { i18n, useI18nLanguage } from "./i18n";
 import type { LanguageCode } from "./i18n";
@@ -67,7 +70,7 @@ type StoredPassport = {
   photos: Record<string, string>;
 };
 
-type AppView = "pantry" | "suggestion" | "cooking" | "passport" | "settings";
+type AppView = "pantry" | "suggestion" | "transition" | "cooking" | "passport" | "map" | "settings";
 
 const data = pantryData as PantryData;
 const STORAGE_KEY = "passport-pantry-state-v1";
@@ -260,7 +263,7 @@ function App() {
     : null;
   const unlockedCountries = new Set(passport.countryStamps);
   const unlockedBadges = new Set(passport.foodBadges);
-  const showAppChrome = view !== "pantry";
+  const showAppChrome = view !== "pantry" && view !== "map" && view !== "transition";
 
   // Drive BGM from the current screen.
   // audioReady is STATE so this effect re-runs the moment audio is initialised.
@@ -270,7 +273,7 @@ function App() {
       audio.playBGM("home");
     } else if (view === "suggestion") {
       audio.stopBGM();
-    } else if (view === "cooking") {
+    } else if (view === "cooking" || view === "transition" || view === "map") {
       audio.playBGM(activeRecipe.country);
     }
   }, [view, activeRecipe.country, audioReady]);
@@ -281,7 +284,7 @@ function App() {
     const isSelected = selectedIngredients.includes(ingredient);
     if (isSelected) {
       audio.playIngredientDeselect(ingredient);
-    } else if (selectedIngredients.length < 4) {
+    } else {
       audio.playIngredientTap(ingredient);
     }
     setSelectedIngredients((current) => {
@@ -305,7 +308,15 @@ function App() {
   function cookRecipe(recipe: Recipe) {
     setActiveRecipeId(recipe.id);
     setShareCardDataUrl(null);
-    setView("cooking");
+    setView("transition");
+  }
+
+  function openCountryRecipe(country: string) {
+    const countryRecipes = data.recipes.filter((recipe) => recipe.country === country);
+    const unlockedRecipe =
+      countryRecipes.find((recipe) => passport.foodBadges.includes(recipe.id)) ?? countryRecipes[0];
+    if (!unlockedRecipe) return;
+    cookRecipe(unlockedRecipe);
   }
 
   function finishRecipe(recipe: Recipe) {
@@ -380,7 +391,32 @@ function App() {
   }
 
   return (
-    <main className="app-safe-shell paper-texture min-h-screen overflow-x-hidden text-pantry-ink">
+    <>
+    <main
+      className={cx(
+        "app-safe-shell min-h-screen overflow-x-hidden text-pantry-ink",
+        view === "map" || view === "transition" ? "bg-stone-950" : "paper-texture"
+      )}
+    >
+      {view === "map" ? (
+        <WorldMapView
+          recipes={data.recipes}
+          unlockedRecipeIds={new Set(passport.foodBadges)}
+          unlockedCountries={unlockedCountries}
+          onBack={() => setView("pantry")}
+          onStartCooking={() => {
+            setPantryFridgeOpen(true);
+            setView("pantry");
+          }}
+          onOpenCountryRecipe={openCountryRecipe}
+        />
+      ) : view === "transition" ? (
+        <CookingTransitionView
+          recipe={activeRecipe}
+          selectedIngredients={selectedIngredients}
+          onComplete={() => setView("cooking")}
+        />
+      ) : (
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 py-4 sm:max-w-2xl sm:px-5 sm:py-5 lg:max-w-7xl lg:px-8">
         {showAppChrome && <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
         {showAppChrome && <MobileBottomNav view={view} setView={setView} earnedCount={passport.foodBadges.length} />}
@@ -392,6 +428,7 @@ function App() {
               selectedIngredients={selectedIngredients}
               onToggle={toggleIngredient}
               onFind={findRecipe}
+              onOpenMap={() => setView("map")}
               onOpenOrigin={setOriginIngredient}
               fridgeOpen={pantryFridgeOpen}
               onFridgeOpenChange={setPantryFridgeOpen}
@@ -442,6 +479,7 @@ function App() {
           </section>
         )}
       </div>
+      )}
 
       {originIngredient && (
         <IngredientOriginSheet
@@ -527,7 +565,7 @@ function Header({
         </span>
       </button>
 
-      <nav className="hidden grid-cols-3 gap-2 sm:flex" aria-label={i18n.t("header.primary_nav")}>
+      <nav className="hidden grid-cols-4 gap-2 sm:flex" aria-label={i18n.t("header.primary_nav")}>
         <NavButton
           active={view === "pantry"}
           icon={<Utensils aria-hidden="true" size={18} />}
@@ -535,8 +573,14 @@ function Header({
           onClick={() => setView("pantry")}
         />
         <NavButton
-          active={view === "passport"}
+          active={view === "map"}
           icon={<MapIcon aria-hidden="true" size={18} />}
+          label={i18n.t("nav.map")}
+          onClick={() => setView("map")}
+        />
+        <NavButton
+          active={view === "passport"}
+          icon={<Stamp aria-hidden="true" size={18} />}
           label={`${i18n.t("nav.passport")} ${earnedCount ? `(${earnedCount})` : ""}`}
           onClick={() => setView("passport")}
         />
@@ -562,7 +606,7 @@ function MobileBottomNav({
 }) {
   return (
     <nav
-      className="fixed inset-x-4 z-30 grid grid-cols-3 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      className="fixed inset-x-4 z-30 grid grid-cols-4 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
       aria-label={i18n.t("header.primary_nav")}
     >
@@ -573,8 +617,14 @@ function MobileBottomNav({
         onClick={() => setView("pantry")}
       />
       <NavButton
-        active={view === "passport"}
+        active={view === "map"}
         icon={<MapIcon aria-hidden="true" size={18} />}
+        label={i18n.t("nav.map")}
+        onClick={() => setView("map")}
+      />
+      <NavButton
+        active={view === "passport"}
+        icon={<Stamp aria-hidden="true" size={18} />}
         label={`${i18n.t("nav.passport")} ${earnedCount ? `(${earnedCount})` : ""}`}
         onClick={() => setView("passport")}
       />
@@ -760,6 +810,7 @@ function PantryView({
   selectedIngredients,
   onToggle,
   onFind,
+  onOpenMap,
   onOpenOrigin,
   fridgeOpen,
   onFridgeOpenChange
@@ -768,6 +819,7 @@ function PantryView({
   selectedIngredients: string[];
   onToggle: (ingredient: string) => void;
   onFind: () => void;
+  onOpenMap: () => void;
   onOpenOrigin: (ingredient: string) => void;
   fridgeOpen: boolean;
   onFridgeOpenChange: (open: boolean) => void;
@@ -820,6 +872,13 @@ function PantryView({
             </div>
             <div className="flex flex-wrap items-center gap-2 self-start">
               <LanguageSelector compact />
+              <button
+                type="button"
+                onClick={onOpenMap}
+                className="focus-ring rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-700 shadow-sm transition hover:bg-amber-50"
+              >
+                {i18n.t("nav.map")}
+              </button>
               <div className="rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
                 {i18n.t("home.selected_count", { count: selectedIngredients.length })}
               </div>
@@ -924,12 +983,19 @@ function PantryView({
           {!fridgeOpen && (
             <div className="fridge-open-panel">
               <p className="text-sm font-black uppercase tracking-[0.22em] text-pantry-mint">{i18n.t("home.ready_to_cook")}</p>
-              <div className="mt-3 flex justify-center">
-                <LanguageSelector compact />
-              </div>
-              <button
-                type="button"
-                onClick={() => onFridgeOpenChange(true)}
+            <div className="mt-3 flex justify-center">
+              <LanguageSelector compact />
+            </div>
+            <button
+              type="button"
+              onClick={onOpenMap}
+              className="focus-ring mt-3 inline-flex items-center justify-center rounded-3xl bg-white px-7 py-4 text-base font-black text-pantry-ink shadow-soft transition hover:-translate-y-0.5"
+            >
+              {i18n.t("nav.map")}
+            </button>
+            <button
+              type="button"
+              onClick={() => onFridgeOpenChange(true)}
                 className="focus-ring mt-3 inline-flex items-center justify-center rounded-3xl bg-pantry-berry px-7 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
               >
                 {i18n.t("home.open_fridge")}
