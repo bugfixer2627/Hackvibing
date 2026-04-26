@@ -23,6 +23,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ChangeEvent, ReactNode } from "react";
 import pantryData from "./data.json";
+import { audio } from "./audio";
 import chinaStamp from "./assets/stamps/china.svg";
 import indiaStamp from "./assets/stamps/india.svg";
 import indonesiaStamp from "./assets/stamps/indonesia.svg";
@@ -215,10 +216,31 @@ function App() {
   const [shareCardDataUrl, setShareCardDataUrl] = useState<string | null>(null);
   const [passport, setPassport] = useState<StoredPassport>(() => loadPassport());
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+  // audioReady is STATE (not a ref) so the BGM useEffect can react to it changing.
+  const [audioReady, setAudioReady] = useState(false);
+  // audioInitializedRef guards against double-init (StrictMode / multiple gestures).
+  const audioInitializedRef = useRef(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
   }, [passport]);
+
+  // Autoplay-policy compliant: init AudioContext on first user gesture.
+  useEffect(() => {
+    const handleFirstGesture = () => {
+      if (audioInitializedRef.current) return;
+      audioInitializedRef.current = true;
+      audio.init();
+      setAudioReady(true); // triggers re-render → BGM useEffect fires with current view
+    };
+    window.addEventListener("pointerdown", handleFirstGesture, { once: true });
+    window.addEventListener("keydown", handleFirstGesture, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstGesture);
+      window.removeEventListener("keydown", handleFirstGesture);
+    };
+  }, []);
 
   const orderedMatches = useMemo(
     () => matchingRecipes(selectedIngredients, data.recipes),
@@ -234,14 +256,31 @@ function App() {
   const unlockedCountries = new Set(passport.countryStamps);
   const unlockedBadges = new Set(passport.foodBadges);
 
+  // Drive BGM from the current screen.
+  // audioReady is STATE so this effect re-runs the moment audio is initialised.
+  useEffect(() => {
+    if (!audioReady) return;
+    if (view === "pantry" || view === "passport") {
+      audio.playBGM("home");
+    } else if (view === "suggestion") {
+      audio.stopBGM();
+    } else if (view === "cooking") {
+      audio.playBGM(activeRecipe.country);
+    }
+  }, [view, activeRecipe.country, audioReady]);
+
   function toggleIngredient(ingredient: string) {
+    // Read current state HERE (outside updater) for the audio side-effect decision.
+    // State updaters must be pure — no side effects inside them.
+    const isSelected = selectedIngredients.includes(ingredient);
+    if (isSelected) {
+      audio.playIngredientDeselect(ingredient);
+    } else if (selectedIngredients.length < 4) {
+      audio.playIngredientTap(ingredient);
+    }
     setSelectedIngredients((current) => {
-      if (current.includes(ingredient)) {
-        return current.filter((item) => item !== ingredient);
-      }
-      if (current.length >= 4) {
-        return current;
-      }
+      if (current.includes(ingredient)) return current.filter((item) => item !== ingredient);
+      if (current.length >= 4) return current;
       return [...current, ingredient];
     });
   }
@@ -268,6 +307,7 @@ function App() {
       countryStamps: Array.from(new Set([...current.countryStamps, recipe.country])),
       photos: current.photos
     }));
+    audio.playStampJingle(recipe.country);
     setShowCelebration(true);
     window.setTimeout(() => setShowCelebration(false), 1400);
   }
@@ -333,6 +373,7 @@ function App() {
   }
 
   return (
+    <>
     <main className="paper-texture min-h-screen overflow-x-hidden pb-24 text-pantry-ink sm:pb-0">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 py-3 sm:max-w-2xl sm:px-5 lg:max-w-7xl lg:px-8">
         <Header view={view} setView={setView} earnedCount={passport.foodBadges.length} />
@@ -408,6 +449,29 @@ function App() {
       {showCelebration && <Celebration recipe={activeRecipe} />}
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </main>
+
+    {/* Mute toggle — rendered OUTSIDE <main> so it's never clipped by overflow-x:hidden.
+        Positioned bottom-right to avoid the sticky header. On sm+ screens it moves
+        to the top-right corner where there's clear space beside the header nav. */}
+    <button
+      type="button"
+      onClick={() => {
+        if (!audioInitializedRef.current) {
+          audioInitializedRef.current = true;
+          audio.init();
+          setAudioReady(true);
+        }
+        const nowMuted = audio.toggleMute();
+        setAudioMuted(nowMuted);
+      }}
+      aria-label={audioMuted ? "Unmute sound" : "Mute sound"}
+      title={audioMuted ? "Unmute sound" : "Mute sound"}
+      style={{ position: "fixed", bottom: "4.5rem", right: "0.75rem", zIndex: 60 }}
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/10 bg-white text-xl shadow-soft transition hover:bg-amber-50 sm:bottom-auto sm:right-3 sm:top-3"
+    >
+      {audioMuted ? "🔇" : "🔊"}
+    </button>
+    </>
   );
 }
 
