@@ -109,7 +109,7 @@
       "country": "United States of America",
       "badgeEmoji": "🍔",
       "countryStamp": "USA",
-      "description": "Hamburger (汉堡) made with Ground beef, Bun, Lettuce, Tomato, and a guided postcard-style cooking route.",
+      "description": "The American hamburger — a juicy beef patty with cheese, crisp lettuce, tomato, and tangy condiments stacked in a toasted bun. A symbol of American street culture and backyard cookouts.",
       "prepTime": "25 min",
       "requiredIngredients": [
         "Ground beef",
@@ -125,28 +125,19 @@
         "Black pepper"
       ],
       "steps": [
-        "Season ground beef with salt and pepper, form into patties.",
-        "Grill or pan-fry patties 3-4 min per side.",
-        "Add cheese in last minute.",
-        "Toast buns.",
-        "Layer lettuce, tomato, onion, pickle on bun.",
-        "Add patty and condiments. Serve."
+        "Combine ground beef with salt and black pepper. Handle gently — overworking makes tough patties. Form into 1.5cm thick rounds slightly wider than the bun.",
+        "Heat a cast iron pan or grill to high heat. Cook patties 3-4 minutes per side for medium. Resist pressing down — you lose the juices.",
+        "In the last minute of cooking, lay a slice of cheddar on each patty and cover the pan briefly to melt.",
+        "Toast the bun cut-side down in the same pan for 30 seconds until golden.",
+        "Build from bottom up: bun base, ketchup and mustard, lettuce, tomato slice, onion rings, patty with melted cheese, pickles, top bun. Serve immediately."
       ],
-      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "history": "Though the hamburger's exact origin is disputed, it was popularized at the 1904 St. Louis World's Fair and became America's defining fast food. Today Americans eat roughly 50 billion burgers a year — about 3 per person per week.",
       "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "The name 'hamburger' comes from Hamburg, Germany, where minced beef patties called 'Hamburg steaks' were popular with 19th-century German immigrants to America.",
       "comments": [
-        {
-          "user": "Lena W.",
-          "text": "Hamburger felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Adi R.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Noah L.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Lena W.", "text": "Hamburger felt like a passport stamp in dinner form." },
+        { "user": "Adi R.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Noah L.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -156,7 +147,7 @@
       "country": "United States of America",
       "badgeEmoji": "🧀",
       "countryStamp": "USA",
-      "description": "Mac and Cheese (芝士通心粉) made with Elbow macaroni, Butter, Flour, Milk, and a guided postcard-style cooking route.",
+      "description": "Creamy, golden, impossibly comforting — American mac and cheese is a béchamel-based pasta dish smothered in sharp cheddar. The ultimate American childhood meal that never gets old.",
       "prepTime": "25 min",
       "requiredIngredients": [
         "Elbow macaroni",
@@ -169,28 +160,19 @@
         "Nutmeg"
       ],
       "steps": [
-        "Cook macaroni until al dente; drain.",
-        "Melt butter in saucepan, whisk in flour (2 min).",
-        "Gradually add milk, stir until thickened.",
-        "Add cheese, stir until melted.",
-        "Season with salt, pepper, nutmeg.",
-        "Toss with pasta. Serve hot."
+        "Bring a large pot of salted water to a boil. Cook macaroni 1 minute less than the package says — it will continue cooking in the sauce. Drain and set aside.",
+        "In the same pot, melt butter over medium heat. Add flour and whisk constantly for 2 minutes to cook out the raw flour taste. The mixture should look like wet sand.",
+        "Pour in milk gradually, whisking the whole time to avoid lumps. Keep stirring until the sauce thickens enough to coat the back of a spoon, about 5 minutes.",
+        "Remove from heat. Add grated cheddar in three batches, stirring each time until fully melted. Season generously with salt, pepper, and a pinch of nutmeg.",
+        "Add the drained pasta and stir to coat every piece. Serve immediately while the sauce is loose and creamy."
       ],
-      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "history": "Mac and cheese was brought to America by Thomas Jefferson after tasting it in France, though the boxed version by Kraft (1937) made it a true American staple. During WWII rationing it became a household meal for millions.",
       "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "Kraft sold 8 million boxes of mac and cheese in the first year it launched in 1937 — for just 19 cents a box during the Great Depression.",
       "comments": [
-        {
-          "user": "Bao Kitchen",
-          "text": "Mac and Cheese felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Priya M.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Ivy Spoon",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Bao Kitchen", "text": "Mac and Cheese felt like a passport stamp in dinner form." },
+        { "user": "Priya M.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Ivy Spoon", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -200,7 +182,7 @@
       "country": "United States of America",
       "badgeEmoji": "🔥",
       "countryStamp": "USA",
-      "description": "BBQ Ribs (烧烤排骨) made with Pork ribs, BBQ sauce, Garlic powder, Onion powder, and a guided postcard-style cooking route.",
+      "description": "Slow-cooked pork ribs with a caramelized dry rub crust and sticky BBQ glaze — the crown jewel of American barbecue culture. Low heat, long time, and smoke do all the real work.",
       "prepTime": "3 hr 25 min",
       "requiredIngredients": [
         "Pork ribs",
@@ -213,27 +195,19 @@
         "Black pepper"
       ],
       "steps": [
-        "Mix dry rub (garlic powder, onion powder, paprika, brown sugar, salt, pepper).",
-        "Coat ribs generously with rub.",
-        "Wrap in foil, bake at 150°C for 3 hrs.",
-        "Unwrap, brush with BBQ sauce.",
-        "Grill or broil 5-10 min until caramelized. Serve."
+        "Remove the thin membrane from the back of the ribs by pulling it away with a paper towel for grip — this is essential for the rub to penetrate.",
+        "Mix garlic powder, onion powder, paprika, brown sugar, salt, and pepper. Coat the ribs on all sides, pressing the rub firmly into the meat.",
+        "Wrap each rack tightly in foil. Bake meat-side down at 150°C (300°F) for 3 hours. The low heat breaks down collagen into gelatin — this is what makes ribs fall off the bone.",
+        "Unwrap carefully. The ribs should be tender but still holding shape. Brush generously with BBQ sauce on all sides.",
+        "Grill or broil on high heat for 5-10 minutes until the sauce caramelizes and chars slightly. Let rest 5 minutes before cutting between the bones."
       ],
-      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "history": "American BBQ traces back to Indigenous smoking traditions and was developed by enslaved African Americans across the South. Each region has its own style — Memphis is dry rub, Kansas City is sweet sauce, Texas is beef-focused.",
       "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "The word 'barbecue' likely comes from the Taíno word 'barbacoa' — a wooden framework for cooking meat over an open fire, observed by Columbus in the Caribbean in 1492.",
       "comments": [
-        {
-          "user": "Maya C.",
-          "text": "BBQ Ribs felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Noah L.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Carla Makes",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Maya C.", "text": "BBQ Ribs felt like a passport stamp in dinner form." },
+        { "user": "Noah L.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Carla Makes", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -243,7 +217,7 @@
       "country": "United States of America",
       "badgeEmoji": "🥣",
       "countryStamp": "USA",
-      "description": "Clam Chowder (蛤蜊浓汤) made with Clams, Bacon, Potato, Onion, and a guided postcard-style cooking route.",
+      "description": "New England clam chowder — a thick, cream-based soup with tender clams, smoky bacon, and soft potatoes. Served in a sourdough bread bowl along the San Francisco wharf, it's pure coastal American comfort.",
       "prepTime": "40 min",
       "requiredIngredients": [
         "Clams",
@@ -259,29 +233,20 @@
         "Bay leaf"
       ],
       "steps": [
-        "Cook bacon until crisp; set aside.",
-        "Sauté onion and celery in butter.",
-        "Add flour, stir 1 min.",
-        "Add clam juice and potato; simmer until soft.",
-        "Add clams and cream; heat gently.",
-        "Season with salt and thyme.",
-        "Top with bacon. Serve with bread."
+        "Cook bacon in a large pot over medium heat until crisp. Remove and set aside, leaving the fat in the pot.",
+        "Sauté diced onion and celery in the bacon fat with butter until soft and translucent, about 5 minutes.",
+        "Add flour and stir for 1 minute to form a roux. This thickens the chowder.",
+        "Pour in clam juice (from the canned clams) and enough water to cover. Add diced potato, thyme, and bay leaf. Simmer 15 minutes until potato is tender.",
+        "Add the clams and heavy cream. Heat gently — do not boil or the clams will toughen and the cream will break. Simmer 3 minutes. Remove bay leaf.",
+        "Season with salt. Serve in bowls topped with crumbled bacon and a crack of black pepper."
       ],
-      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "history": "New England clam chowder has been eaten by East Coast fishermen since colonial times. A 1751 Boston newspaper published one of the first known chowder recipes — made with ship biscuits and salt pork.",
       "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "In 1939, Maine passed a bill making it illegal to add tomatoes to clam chowder — a dig at the Manhattan-style (tomato-based) version which New Englanders still consider a crime against food.",
       "comments": [
-        {
-          "user": "Adi R.",
-          "text": "Clam Chowder felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Ivy Spoon",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Lena W.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Adi R.", "text": "Clam Chowder felt like a passport stamp in dinner form." },
+        { "user": "Ivy Spoon", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Lena W.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -291,7 +256,7 @@
       "country": "United States of America",
       "badgeEmoji": "🥧",
       "countryStamp": "USA",
-      "description": "Apple Pie (苹果派) made with Apple, Flour, Butter, Sugar, and a guided postcard-style cooking route.",
+      "description": "Double-crusted, cinnamon-spiced apple pie — America's most iconic dessert. Flaky butter pastry encasing tender spiced apples, served warm with vanilla ice cream. 'As American as apple pie' isn't just a saying.",
       "prepTime": "1 hr 20 min",
       "requiredIngredients": [
         "Apple",
@@ -305,29 +270,53 @@
         "Cold water"
       ],
       "steps": [
-        "Make crust: mix flour, salt, butter; add cold water; form dough, chill.",
-        "Peel and slice apples, toss with sugar, cinnamon, lemon juice.",
-        "Roll out half dough, fit into pie dish.",
-        "Fill with apple mixture.",
-        "Cover with second crust, crimp edges, cut vents.",
-        "Brush with egg wash.",
-        "Bake 200°C for 45-50 min until golden."
+        "Make the crust: cut cold butter into flour and salt until the mixture resembles coarse breadcrumbs. Add cold water one tablespoon at a time until the dough just comes together. Divide in half, flatten into discs, and refrigerate 30 minutes.",
+        "Peel, core, and slice apples 5mm thick. Toss with sugar, cinnamon, and lemon juice. Let sit 10 minutes so the apples release some juice.",
+        "Roll one dough disc on a floured surface and fit into a 23cm pie dish. Trim the edges leaving 2cm overhang.",
+        "Fill with the apple mixture, mounding it slightly in the center. Roll the second disc and lay over the top. Crimp the edges to seal and cut 4-5 vents in the top crust.",
+        "Brush with beaten egg. Bake at 200°C (400°F) for 45-50 minutes until the crust is deep golden and the filling is bubbling through the vents. Cool at least 1 hour before slicing."
       ],
-      "history": "This dish reflects the practical, generous spirit of American home cooking, where regional traditions and immigrant influences often become familiar comfort food. The version here follows the CSV source recipe while keeping the pantry app's friendly, weeknight pace.",
+      "history": "Apple pie was brought to America by English colonists in the 1600s, but apples themselves were introduced by European settlers — no native North American apples were suitable for pie. The phrase 'as American as apple pie' only became popular after WWII.",
       "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "During WWII, American soldiers asked 'for mom and apple pie' when reporters asked why they were fighting — cementing the pie's status as a symbol of American identity forever.",
       "comments": [
-        {
-          "user": "Priya M.",
-          "text": "Apple Pie felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Carla Makes",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Bao Kitchen",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Priya M.", "text": "Apple Pie felt like a passport stamp in dinner form." },
+        { "user": "Carla Makes", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Bao Kitchen", "text": "Saving this one for a weekend cook-along." }
+      ]
+    },
+    {
+      "id": "pancakes",
+      "name": "Pancakes",
+      "chineseName": "美式松饼",
+      "country": "United States of America",
+      "badgeEmoji": "🥞",
+      "countryStamp": "USA",
+      "description": "Thick, fluffy American pancakes — light as clouds with crisp golden edges, stacked high and drowned in maple syrup. The Sunday morning ritual of millions of American families.",
+      "prepTime": "20 min",
+      "requiredIngredients": [
+        "Flour",
+        "Egg",
+        "Milk",
+        "Butter",
+        "Sugar",
+        "Salt",
+        "Yeast"
+      ],
+      "steps": [
+        "Whisk together flour, sugar, salt, and baking powder (use yeast as leavening). In a separate bowl, whisk egg, milk, and melted butter.",
+        "Pour the wet ingredients into the dry. Stir gently until just combined — lumps are completely fine. Overmixing develops gluten and makes dense pancakes. Rest the batter 5 minutes.",
+        "Heat a non-stick pan over medium-low heat. Lightly butter the surface. Pour about 60ml batter per pancake.",
+        "Cook until bubbles form on the entire surface and the edges look dry, about 2-3 minutes. Flip once and cook 1 more minute.",
+        "Stack immediately. Serve with butter and maple syrup, or fresh berries. Never press down on pancakes after flipping — you deflate them."
+      ],
+      "history": "Pancakes are one of the oldest foods in human history, found across nearly every culture. The distinctly thick American version developed with baking powder in the 1800s, differentiating them from the thin crepes of Europe.",
+      "flavorProfile": "Comforting & Bold | 经典暖胃",
+      "funFact": "Americans eat over 2 billion pounds of pancake mix per year. The world's largest pancake was made in Rochdale, England in 1994 — 15 metres wide and weighing 3 tonnes.",
+      "comments": [
+        { "user": "Noah L.", "text": "These pancakes are dangerously good for a lazy Sunday." },
+        { "user": "Lena W.", "text": "Finally got the fluffy texture right — the resting trick works!" },
+        { "user": "Adi R.", "text": "Served with fresh mango — absolute perfection." }
       ]
     },
     {
@@ -337,7 +326,7 @@
       "country": "Indonesia",
       "badgeEmoji": "🍳",
       "countryStamp": "IDN",
-      "description": "Nasi Goreng (印尼炒饭) made with Cooked rice (day-old), Egg, Dried shrimp, Kecap manis, and a guided postcard-style cooking route.",
+      "description": "Indonesia's national dish — day-old rice stir-fried with a fragrant shrimp paste and shallot base, darkened with sweet kecap manis, topped with a fried egg. Every household has its own version.",
       "prepTime": "25 min",
       "requiredIngredients": [
         "Cooked rice (day-old)",
@@ -352,30 +341,19 @@
         "Salt"
       ],
       "steps": [
-        "Blend shallot, garlic, chili, shrimp paste into paste.",
-        "Fry paste in oil 2 min.",
-        "Add dried shrimp; fry 1 min.",
-        "Add cold rice; stir-fry on high heat.",
-        "Add kecap manis; toss well.",
-        "Season with salt.",
-        "Push rice aside, fry egg sunny-side up.",
-        "Top rice with egg and green onion. Serve."
+        "The most important step: use day-old refrigerated rice. Fresh rice is too wet and clumps. Break up any clumps with your hands before starting.",
+        "Blend shallots, garlic, chili, and shrimp paste into a coarse paste using a mortar or food processor.",
+        "Heat oil in a wok on the highest possible flame. Fry the paste 2 minutes until fragrant and the raw shallot smell disappears. Add dried shrimp and fry 1 more minute.",
+        "Add the cold rice. Toss and press constantly on high heat — you want the rice to dry out and get some color, not steam. This takes about 3-4 minutes of constant motion.",
+        "Add kecap manis and toss until every grain is coated and dark. Season with salt. Push rice to the side, crack in the egg, scramble briefly then fold into the rice, or fry separately to lay on top. Garnish with green onion. Serve with prawn crackers."
       ],
-      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "history": "Nasi goreng is often called Indonesia's national dish. It was officially recognized by CNN as one of the world's 50 most delicious foods. President Obama famously mentioned craving it from his childhood years in Jakarta.",
       "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "Obama called nasi goreng his favorite food from his time growing up in Jakarta in the 1960s, saying he still misses it. It sparked a massive surge in Indonesian food tourism.",
       "comments": [
-        {
-          "user": "Noah L.",
-          "text": "Nasi Goreng felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Lena W.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Maya C.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Noah L.", "text": "Nasi Goreng felt like a passport stamp in dinner form." },
+        { "user": "Lena W.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Maya C.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -385,7 +363,7 @@
       "country": "Indonesia",
       "badgeEmoji": "🥥",
       "countryStamp": "IDN",
-      "description": "Beef Rendang (仁当牛肉) made with Beef, Coconut milk, Lemongrass, Shallot, and a guided postcard-style cooking route.",
+      "description": "The king of Indonesian cooking — beef simmered for hours in spiced coconut milk until the liquid completely evaporates and the meat absorbs a dark, intensely fragrant crust. Voted the world's most delicious food twice by CNN.",
       "prepTime": "3 hr",
       "requiredIngredients": [
         "Beef",
@@ -400,28 +378,20 @@
         "Salt"
       ],
       "steps": [
-        "Blend shallot, garlic, chili, galangal, turmeric into paste.",
-        "Fry paste with lemongrass until fragrant.",
-        "Add beef; coat with paste.",
-        "Add coconut milk; bring to boil.",
-        "Simmer on low heat 2-3 hrs, stirring occasionally, until liquid evaporates and beef is dark and tender.",
-        "Add toasted coconut. Season with salt. Serve with rice."
+        "Blend shallots, garlic, fresh chilies, galangal, and turmeric into a smooth paste. This is the rendang base — it should be deeply fragrant.",
+        "Dry-toast desiccated coconut in a pan until golden brown. Set aside. This adds the signature nutty texture to the final dish.",
+        "Heat oil in a heavy pot. Fry the spice paste with bruised lemongrass stalks until very fragrant and the oil starts to separate from the paste, about 5 minutes.",
+        "Add beef chunks cut against the grain. Coat completely with the paste and fry 3 minutes.",
+        "Pour in coconut milk until the beef is just submerged. Bring to a boil then reduce to the lowest possible simmer. Cook uncovered, stirring every 20 minutes.",
+        "After 2 hours the liquid will reduce significantly. Increase heat slightly and stir more frequently as it thickens — the coconut milk will fry the meat as the water evaporates. Add toasted coconut in the last 30 minutes. The rendang is done when the meat is dark brown, the oil has separated, and there is almost no liquid. Season with salt."
       ],
-      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "history": "Rendang originated with the Minangkabau people of West Sumatra. Because the cooking process eliminates all moisture, rendang traditionally preserved meat for weeks without refrigeration — it was the original slow-cooked survival food.",
       "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "CNN's reader poll voted Rendang the #1 most delicious food in the world in 2011 and again in 2017. The Minangkabau people serve it only at ceremonies and to honor important guests.",
       "comments": [
-        {
-          "user": "Ivy Spoon",
-          "text": "Beef Rendang felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Bao Kitchen",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Adi R.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Ivy Spoon", "text": "Beef Rendang felt like a passport stamp in dinner form." },
+        { "user": "Bao Kitchen", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Adi R.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -431,7 +401,7 @@
       "country": "Indonesia",
       "badgeEmoji": "🍢",
       "countryStamp": "IDN",
-      "description": "Chicken Satay (沙爹鸡肉串) made with Chicken, Peanut butter, Coconut milk, Kecap manis, and a guided postcard-style cooking route.",
+      "description": "Marinated chicken skewers grilled over charcoal, served with a rich peanut sauce and compressed rice cakes. The smell of satay smoke wafting from street stalls is the defining scent of Indonesian evenings.",
       "prepTime": "1 hr 25 min",
       "requiredIngredients": [
         "Chicken",
@@ -445,28 +415,20 @@
         "Salt"
       ],
       "steps": [
-        "Mix turmeric, cumin, kecap manis, lime juice, salt for marinade.",
-        "Cube chicken; marinate 1+ hr.",
-        "Thread onto skewers.",
-        "Grill on high heat 3-4 min per side.",
-        "Make peanut sauce: mix peanut butter, coconut milk, chili, lime juice; heat until smooth.",
-        "Serve skewers with peanut sauce."
+        "Cut chicken thighs (not breast — thighs stay juicier on the grill) into 2cm cubes.",
+        "Mix turmeric, cumin, kecap manis, lime juice, and salt into a marinade. Add chicken and marinate minimum 1 hour, ideally overnight in the fridge.",
+        "Soak wooden skewers in water for 30 minutes to prevent burning. Thread 4-5 pieces of chicken per skewer, packing tightly.",
+        "Grill on the highest heat possible, turning every minute, until charred in spots and cooked through — about 6-8 minutes total. The char is essential, not optional.",
+        "For the peanut sauce: heat peanut butter, coconut milk, chili (fresh or paste), lime juice, and a splash of kecap manis in a small pan. Stir until smooth and loose enough to pour. Taste and adjust — it should be rich, spicy, and slightly sweet.",
+        "Serve skewers immediately with peanut sauce on the side and fresh cucumber slices."
       ],
-      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "history": "Satay originated in Java and spread throughout Southeast Asia via Arab and Indian traders in the 19th century. The peanut sauce was a Dutch colonial influence — peanuts were introduced to Indonesia by Portuguese traders from Brazil.",
       "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "Satay has been so deeply integrated into Singaporean, Malaysian, and Indonesian culture that each country claims to have invented it. In 2012, Indonesia formally submitted satay to UNESCO as an Intangible Cultural Heritage.",
       "comments": [
-        {
-          "user": "Carla Makes",
-          "text": "Chicken Satay felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Maya C.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Priya M.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Carla Makes", "text": "Chicken Satay felt like a passport stamp in dinner form." },
+        { "user": "Maya C.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Priya M.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -476,7 +438,7 @@
       "country": "Indonesia",
       "badgeEmoji": "🥜",
       "countryStamp": "IDN",
-      "description": "Gado-Gado (印尼花生蔬菜沙拉) made with Tofu, Hard-boiled egg, Potato, Bean sprout, and a guided postcard-style cooking route.",
+      "description": "A generous Indonesian salad of boiled vegetables, fried tofu, and hard-boiled egg, drenched in warm peanut sauce. It's Jakarta street food at its finest — hearty, healthy, and boldly flavored.",
       "prepTime": "35 min",
       "requiredIngredients": [
         "Tofu",
@@ -491,29 +453,20 @@
         "Lime"
       ],
       "steps": [
-        "Boil potato until tender; slice.",
-        "Blanch long beans and bean sprouts (2 min); drain.",
-        "Fry or bake tofu until golden.",
-        "Arrange all vegetables, tofu, and sliced egg on plate.",
-        "Make peanut sauce: blend peanuts, chili, garlic, lime, coconut milk; heat.",
-        "Pour sauce over salad.",
-        "Top with shrimp crackers. Serve."
+        "Boil potatoes whole until a knife slides in easily, about 20 minutes. Let cool slightly and slice into rounds.",
+        "Blanch long beans and bean sprouts in boiling salted water for just 90 seconds. Drain and immediately run under cold water to preserve the green color and crunch.",
+        "Fry tofu slices in a hot oiled pan until golden on both sides, about 3 minutes per side. Drain on paper towels.",
+        "For the peanut sauce: blend or whisk together peanut butter, coconut milk, fresh chili, garlic, lime juice, and a pinch of sugar until smooth. Heat gently in a pan, adding water to adjust to a pourable consistency. It should be thick but flow off a spoon.",
+        "Arrange all vegetables, tofu, and halved eggs on a large plate. Pour the warm peanut sauce over everything generously.",
+        "Finish with shrimp crackers for crunch and a wedge of lime on the side. Serve at room temperature."
       ],
-      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "history": "Gado-gado, meaning 'mix-mix' in Javanese, reflects the Indonesian philosophy of creating harmony from diverse ingredients. It became internationally known when it was served at the 1962 Asian Games hosted in Jakarta.",
       "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "The word 'gado-gado' loosely translates to 'mix-mix' in Betawi (Jakarta dialect), reflecting the dish's nature as a mix of whatever vegetables are available — a true pantry dish that changes with the season.",
       "comments": [
-        {
-          "user": "Lena W.",
-          "text": "Gado-Gado felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Adi R.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Noah L.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Lena W.", "text": "Gado-Gado felt like a passport stamp in dinner form." },
+        { "user": "Adi R.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Noah L.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -523,7 +476,7 @@
       "country": "Indonesia",
       "badgeEmoji": "🍜",
       "countryStamp": "IDN",
-      "description": "Soto Ayam (印尼鸡汤) made with Chicken, Rice vermicelli, Lemongrass, Turmeric, and a guided postcard-style cooking route.",
+      "description": "A bright, turmeric-golden chicken broth soup with shredded chicken, rice vermicelli, boiled egg, and crispy shallots. Indonesia's answer to chicken noodle soup — aromatic, warming, and deeply restorative.",
       "prepTime": "50 min",
       "requiredIngredients": [
         "Chicken",
@@ -539,29 +492,59 @@
         "Fried shallots"
       ],
       "steps": [
-        "Boil chicken in water with lemongrass, galangal until cooked (30 min).",
-        "Remove chicken; shred meat.",
-        "Blend shallot, garlic, turmeric into paste; fry until fragrant.",
-        "Add to broth; simmer 15 min. Season with salt.",
-        "Soak vermicelli; drain.",
-        "Blanch bean sprouts.",
-        "Serve broth over noodles, topped with chicken, egg, bean sprouts and fried shallots."
+        "Place a whole chicken in a large pot with water, bruised lemongrass stalks, galangal slices, and a generous pinch of salt. Bring to a boil then simmer for 30 minutes until the chicken is cooked through.",
+        "Remove the chicken and let it cool slightly. Pull the meat into thin shreds by hand — this gives better texture than chopping. Keep the broth simmering.",
+        "Blend shallots, garlic, and fresh turmeric into a smooth paste. Fry the paste in a separate pan with oil until very fragrant, about 3 minutes, then add to the simmering broth. Simmer 15 more minutes. Taste and season with salt.",
+        "Soak rice vermicelli in boiling water for 3-5 minutes until tender. Drain well.",
+        "Build each bowl: a nest of vermicelli at the base, topped with shredded chicken, a halved boiled egg, a small handful of blanched bean sprouts.",
+        "Ladle the golden broth over everything. Top generously with crispy fried shallots. Serve with a wedge of lime and sambal chili on the side."
       ],
-      "history": "Indonesian cuisine is shaped by islands, trade routes, aromatics, and sauces that balance heat, sweetness, and depth. This recipe follows the provided source ingredients and steps while honoring the everyday richness of Indonesian cooking.",
+      "history": "Soto is considered one of Indonesia's most culturally significant dishes — every region has its own version. Soto Ayam from Java is the most widely known. The use of turmeric for its golden color was influenced by Indian traders who brought turmeric to the archipelago centuries ago.",
       "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "There are over 75 documented regional varieties of soto across Indonesia's 17,000 islands — each using different spices, proteins, and garnishes. Soto is so beloved it's served for breakfast, lunch, and dinner.",
       "comments": [
-        {
-          "user": "Bao Kitchen",
-          "text": "Soto Ayam felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Priya M.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Ivy Spoon",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Bao Kitchen", "text": "Soto Ayam felt like a passport stamp in dinner form." },
+        { "user": "Priya M.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Ivy Spoon", "text": "Saving this one for a weekend cook-along." }
+      ]
+    },
+    {
+      "id": "mie-goreng",
+      "name": "Mie Goreng",
+      "chineseName": "印尼炒面",
+      "country": "Indonesia",
+      "badgeEmoji": "🍝",
+      "countryStamp": "IDN",
+      "description": "Indonesia's beloved stir-fried noodles — springy egg noodles tossed in a fragrant shrimp paste base with kecap manis, vegetables, and egg. The sibling dish to nasi goreng and equally addictive.",
+      "prepTime": "20 min",
+      "requiredIngredients": [
+        "Noodles",
+        "Egg",
+        "Kecap manis",
+        "Shrimp paste",
+        "Garlic",
+        "Shallot",
+        "Chili",
+        "Green onion",
+        "Bean sprout",
+        "Soy sauce",
+        "Salt"
+      ],
+      "steps": [
+        "Cook egg noodles in boiling water for 2 minutes — slightly underdone. Drain and toss with a little oil to prevent sticking.",
+        "Blend shallots, garlic, chili, and a small amount of shrimp paste into a rough paste.",
+        "Heat a wok to the highest possible heat. Fry the paste 2 minutes until fragrant.",
+        "Add the noodles and toss constantly on high heat. Add kecap manis and soy sauce — the noodles should darken and slightly char in spots.",
+        "Push noodles to the side, crack in an egg and scramble until just set, then fold into the noodles.",
+        "Toss in bean sprouts at the very end — they should stay crunchy. Season with salt. Top with green onion and fried shallots. Serve immediately."
+      ],
+      "history": "Mie goreng traveled to Indonesia via Chinese traders who brought noodle-making techniques to the archipelago in the 15th century. The kecap manis twist is distinctly Indonesian — transforming a Chinese technique into something entirely local.",
+      "flavorProfile": "Aromatic & Savory-Sweet | 香浓咸甜",
+      "funFact": "Indomie Mie Goreng instant noodles — an Indonesian brand — is the best-selling instant noodle in the world by some rankings, with a cult following from Australia to Nigeria.",
+      "comments": [
+        { "user": "Carla Makes", "text": "Even better than the instant version — and I love the instant version." },
+        { "user": "Maya C.", "text": "The wok hei from the high heat makes all the difference." },
+        { "user": "Priya M.", "text": "This is my go-to weeknight meal now." }
       ]
     },
     {
@@ -571,7 +554,7 @@
       "country": "India",
       "badgeEmoji": "🍛",
       "countryStamp": "IND",
-      "description": "Butter Chicken (奶油鸡) made with Chicken, Butter, Tomato, Heavy cream, and a guided postcard-style cooking route.",
+      "description": "Murgh makhani — tender tandoor-marinated chicken in a velvety tomato and cream sauce perfumed with garam masala and butter. The dish that introduced Indian food to the world and still the most-ordered Indian dish globally.",
       "prepTime": "1 hr",
       "requiredIngredients": [
         "Chicken",
@@ -588,29 +571,20 @@
         "Salt"
       ],
       "steps": [
-        "Marinate chicken in yogurt, garam masala, chili powder, turmeric, garlic, ginger (overnight).",
-        "Grill or bake chicken until charred; set aside.",
-        "Fry onion, garlic, ginger in butter.",
-        "Add tomatoes; cook until soft.",
-        "Blend sauce until smooth; return to pan.",
-        "Add cream, butter, garam masala; simmer 10 min.",
-        "Add chicken; simmer 10 min. Serve with naan."
+        "Marinate chicken pieces in yogurt, garam masala, chili powder, turmeric, minced garlic, grated ginger, and salt. For best results marinate overnight — minimum 2 hours. The yogurt tenderizes the meat.",
+        "Grill or bake the chicken at high heat (220°C) until slightly charred on the outside. The char adds smokiness that makes butter chicken taste like it came from a tandoor oven.",
+        "In a wide pan, heat butter and fry sliced onions until deeply golden, about 15 minutes. Add garlic and ginger paste, fry 2 more minutes.",
+        "Add chopped tomatoes and cook until they completely break down into a thick paste, about 10 minutes. Blend the sauce until very smooth — strain through a sieve for a restaurant-quality texture.",
+        "Return the smooth sauce to the pan. Add heavy cream and a generous knob of butter. Simmer on low heat for 10 minutes until the sauce is rich and glossy.",
+        "Add the grilled chicken pieces and simmer 10 more minutes to absorb the sauce. Adjust seasoning. Serve with naan or basmati rice, garnished with a swirl of cream."
       ],
-      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "history": "Butter chicken was invented in the 1950s at Moti Mahal restaurant in Delhi by Kundan Lal Gujral, who added leftover tandoori chicken to a tomato and butter sauce to avoid waste. It accidentally became the most famous Indian dish in the world.",
       "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "Butter chicken was invented entirely by accident — the chef at Moti Mahal restaurant was trying to use up leftover dry tandoori chicken by simmering it in a creamy tomato sauce. The recipe has since been replicated billions of times worldwide.",
       "comments": [
-        {
-          "user": "Maya C.",
-          "text": "Butter Chicken felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Noah L.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Carla Makes",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Maya C.", "text": "Butter Chicken felt like a passport stamp in dinner form." },
+        { "user": "Noah L.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Carla Makes", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -620,7 +594,7 @@
       "country": "India",
       "badgeEmoji": "🫘",
       "countryStamp": "IND",
-      "description": "Dal (豆泥咖喱) made with Red lentils, Onion, Tomato, Garlic, and a guided postcard-style cooking route.",
+      "description": "The everyday soul of Indian home cooking — red lentils simmered until silky soft, finished with a tarka of cumin, garlic, and tomato fried in butter. Simple, nourishing, and eaten by every household in India daily.",
       "prepTime": "35 min",
       "requiredIngredients": [
         "Red lentils",
@@ -636,30 +610,20 @@
         "Butter"
       ],
       "steps": [
-        "Rinse lentils; cook in water with turmeric until soft (20 min).",
-        "Heat butter; fry cumin seeds.",
-        "Add onion; cook until golden.",
-        "Add garlic, ginger; fry 2 min.",
-        "Add tomatoes; cook until soft.",
-        "Add to lentils with garam masala; simmer 10 min.",
-        "Season with salt.",
-        "Top with fresh coriander. Serve with rice or naan."
+        "Rinse red lentils thoroughly until the water runs clear. Place in a pot with three times their volume of water and a generous pinch of turmeric. Bring to a boil, skim any foam, then simmer uncovered until completely soft and mashable, about 20 minutes. Red lentils dissolve naturally — no need to blend.",
+        "While the lentils cook, make the tarka (the flavored oil that transforms the dish): heat butter in a separate small pan until foaming. Add whole cumin seeds and fry until they sizzle and pop, about 30 seconds.",
+        "Add finely diced onion to the tarka pan. Cook on medium-high heat until deeply caramelized, about 12 minutes — don't rush this step. Add minced garlic and grated ginger, fry 2 more minutes.",
+        "Add chopped tomatoes and cook until they break down into a jammy paste, about 8 minutes. Add garam masala and stir for 30 seconds.",
+        "Pour the entire tarka into the lentil pot and stir to combine. Simmer together for 10 minutes so the flavors meld.",
+        "Season generously with salt. The dal should flow like thick porridge — add a little water if it has thickened too much. Serve topped with fresh coriander leaves and a final knob of butter. Eat with rice or tear naan to scoop it up."
       ],
-      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "history": "Dal has been eaten in India for over 3,500 years and is mentioned in ancient Sanskrit texts. It's the foundation of Indian vegetarian nutrition — a complete protein when eaten with rice or bread. Estimates suggest the average Indian eats dal over 200 days a year.",
       "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "Dal (lentils) and rice together form a complete protein, providing all essential amino acids. This combination has sustained India's largely vegetarian population for millennia and is still eaten by over a billion people every day.",
       "comments": [
-        {
-          "user": "Adi R.",
-          "text": "Dal felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Ivy Spoon",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Lena W.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Adi R.", "text": "Dal felt like a passport stamp in dinner form." },
+        { "user": "Ivy Spoon", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Lena W.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -669,7 +633,7 @@
       "country": "India",
       "badgeEmoji": "🍚",
       "countryStamp": "IND",
-      "description": "Chicken Biryani (比里亚尼饭) made with Basmati rice, Chicken, Yogurt, Onion, and a guided postcard-style cooking route.",
+      "description": "The crown jewel of Indian rice cooking — saffron-perfumed basmati layered with marinated chicken and caramelized onions, sealed and steamed together using the ancient dum method. Every grain is separate, every bite is aromatic.",
       "prepTime": "1 hr 30 min",
       "requiredIngredients": [
         "Basmati rice",
@@ -685,30 +649,21 @@
         "Salt"
       ],
       "steps": [
-        "Marinate chicken in yogurt, garam masala, garlic, ginger, salt (2+ hrs).",
-        "Fry onion in ghee until golden; set half aside.",
-        "Cook chicken with remaining onion until tender.",
-        "Parboil rice (70% cooked); drain.",
-        "Dissolve saffron in warm milk.",
-        "Layer: rice, chicken, mint, fried onion; repeat.",
-        "Drizzle saffron milk and ghee on top.",
-        "Cover tightly; cook on low heat 25 min (dum method). Serve."
+        "Marinate chicken pieces in yogurt, garam masala, minced garlic, grated ginger, and salt for minimum 2 hours. The yogurt breaks down the protein for unbelievably tender meat.",
+        "Slice onions thinly and fry in ghee over medium-high heat, stirring frequently, until deeply caramelized and dark brown — this takes 20-25 minutes and cannot be rushed. Set half aside for garnish.",
+        "Cook the chicken with the remaining onions in the same pan until just cooked through. Don't fully cook — it will finish in the dum step.",
+        "Parboil basmati rice in heavily salted boiling water for exactly 6 minutes — 70% cooked. Drain completely.",
+        "Steep a large pinch of saffron in 3 tablespoons of warm milk for 5 minutes until the milk turns deep gold.",
+        "In the pot you'll cook in: layer half the rice, then all the chicken mixture, then fresh mint leaves and fried onions, then the remaining rice. Drizzle the saffron milk and melted ghee evenly over the top.",
+        "Seal the pot tightly with a tight lid or foil then a lid. Cook on the lowest possible heat for 25 minutes (dum method). The steam trapped inside finishes the rice and chicken together. Do not open the lid early. Let rest 10 minutes, then gently fold before serving."
       ],
-      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "history": "Biryani traveled to India with the Mughal Empire from Persia in the 16th century. The word comes from the Persian 'birian' meaning 'fried before cooking.' Hyderabadi biryani, one of the most famous varieties, was developed in the court of the Nizam of Hyderabad.",
       "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "Biryani is India's most ordered food on delivery apps, accounting for over 95 million orders annually on Swiggy alone. It is eaten in every Indian state with hundreds of documented regional variations.",
       "comments": [
-        {
-          "user": "Priya M.",
-          "text": "Chicken Biryani felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Carla Makes",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Bao Kitchen",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Priya M.", "text": "Chicken Biryani felt like a passport stamp in dinner form." },
+        { "user": "Carla Makes", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Bao Kitchen", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -718,7 +673,7 @@
       "country": "India",
       "badgeEmoji": "🥬",
       "countryStamp": "IND",
-      "description": "Palak Paneer (菠菜奶酪) made with Spinach, Paneer, Onion, Tomato, and a guided postcard-style cooking route.",
+      "description": "Cubes of fresh paneer cheese suspended in a vivid green spinach sauce perfumed with garam masala and cream. A beloved vegetarian classic from North India that balances the richness of cheese with the freshness of greens.",
       "prepTime": "35 min",
       "requiredIngredients": [
         "Spinach",
@@ -733,30 +688,20 @@
         "Salt"
       ],
       "steps": [
-        "Blanch spinach (2 min); blend into smooth puree.",
-        "Fry cumin seeds in oil.",
-        "Add onion; cook until golden.",
-        "Add garlic and ginger; fry 2 min.",
-        "Add tomato; cook until soft.",
-        "Add spinach puree; simmer 5 min.",
-        "Add garam masala and cream; stir.",
-        "Add pan-fried paneer cubes; simmer 5 min. Season with salt. Serve with naan."
+        "Blanch spinach in boiling water for exactly 2 minutes — not more, or you lose the vibrant green color. Immediately transfer to ice water. Blend to a smooth, bright green puree. Set aside.",
+        "Cut paneer into 2cm cubes. Shallow fry in oil until golden on all sides, about 2 minutes per side. The golden crust holds the paneer together in the sauce. Set aside on paper towels.",
+        "In the same pan, heat oil and fry whole cumin seeds until they sizzle. Add finely diced onion and cook until deep golden, about 10 minutes.",
+        "Add minced garlic and grated ginger, fry 2 minutes. Add diced tomato, cook until completely broken down and jammy, about 8 minutes.",
+        "Add the spinach puree and stir to combine with the tomato base. Simmer 5 minutes. Season with garam masala and salt.",
+        "Stir in the cream. Add the fried paneer cubes gently — fold them in, don't stir aggressively or they'll break. Simmer 3 more minutes just to warm the paneer through. The sauce should be thick, green, and glossy. Serve with naan or rice."
       ],
-      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "history": "Palak paneer emerged as a restaurant classic in the Punjabi-influenced North Indian cuisine that spread across India after partition in 1947. Paneer itself has been made in India for at least 2,000 years, with references in ancient Vedic texts.",
       "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "Paneer is one of the only cheeses native to the Indian subcontinent and is made without rennet — making it suitable for vegetarians. It doesn't melt when heated, which is why it holds its shape in curries.",
       "comments": [
-        {
-          "user": "Noah L.",
-          "text": "Palak Paneer felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Lena W.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Maya C.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Noah L.", "text": "Palak Paneer felt like a passport stamp in dinner form." },
+        { "user": "Lena W.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Maya C.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -766,7 +711,7 @@
       "country": "India",
       "badgeEmoji": "🥟",
       "countryStamp": "IND",
-      "description": "Samosa (印度咖喱角) made with Flour, Potato, Green peas, Onion, and a guided postcard-style cooking route.",
+      "description": "Crispy triangular pastry parcels filled with spiced mashed potato and green peas, deep-fried to shattering golden perfection. The most popular street snack in India, sold by vendors at every train station and street corner.",
       "prepTime": "1 hr 15 min",
       "requiredIngredients": [
         "Flour",
@@ -781,29 +726,53 @@
         "Water"
       ],
       "steps": [
-        "Make dough: mix flour, salt, oil, water; knead until smooth; rest 30 min.",
-        "Boil and mash potatoes.",
-        "Fry onion with cumin and coriander seeds.",
-        "Add mashed potato, peas, chili powder, salt; mix well.",
-        "Roll dough into circles; cut in half.",
-        "Form cones; fill with potato mixture; seal edges.",
-        "Deep-fry in medium-hot oil until golden (5-7 min). Serve with chutney."
+        "Make the dough: mix flour, salt, and 2 tablespoons of oil together until the mixture resembles breadcrumbs — this fat in the dough creates flakiness. Add cold water tablespoon by tablespoon until a firm (not soft) dough forms. Knead briefly and rest covered for 30 minutes.",
+        "Boil potatoes until completely tender. Drain and mash roughly — leave some chunks for texture.",
+        "Heat oil in a pan, fry cumin seeds and crushed coriander seeds for 30 seconds until fragrant. Add finely diced onion and cook 5 minutes. Add mashed potato, green peas, chili powder, and salt. Mix and cook 3 minutes. Let the filling cool completely before using.",
+        "Divide dough into balls. Roll each into a thin oval, then cut in half to make two semicircles.",
+        "Wet the straight edge of each semicircle, fold into a cone shape and press the seam firmly. Fill with 2 tablespoons of potato mixture. Wet the top edges and press closed, crimping decoratively.",
+        "Deep fry in oil at 170°C (not too hot — you want the pastry to cook through slowly and become crisp) for 5-7 minutes, turning occasionally, until uniformly golden brown and the pastry sounds hollow when tapped. Drain on paper towels. Serve with green chutney or tamarind sauce."
       ],
-      "history": "Indian cooking spans many regions, languages, and techniques, with spices used for aroma, color, texture, and warmth. This recipe keeps the source instructions intact while presenting the dish as an approachable passport stop.",
+      "history": "Samosas traveled to India from Central Asia via the Silk Road as early as the 10th century, originally called 'sanbusak' in Arabic texts. They were mentioned by the 14th-century Moroccan traveler Ibn Battuta as a common dish served at the Delhi Sultanate's court.",
       "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "India produces and eats an estimated 10 billion samosas per year. The samosa was originally from Central Asia and the Middle East — the classic potato filling only became standard in India after potatoes arrived from the Americas in the 16th century.",
       "comments": [
-        {
-          "user": "Ivy Spoon",
-          "text": "Samosa felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Bao Kitchen",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Adi R.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Ivy Spoon", "text": "Samosa felt like a passport stamp in dinner form." },
+        { "user": "Bao Kitchen", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Adi R.", "text": "Saving this one for a weekend cook-along." }
+      ]
+    },
+    {
+      "id": "mango-lassi",
+      "name": "Mango Lassi",
+      "chineseName": "芒果拉西",
+      "country": "India",
+      "badgeEmoji": "🥭",
+      "countryStamp": "IND",
+      "description": "A chilled, thick drink of blended mango and yogurt — cooling, sweet, and slightly tangy. The perfect companion to any spiced Indian meal and a street staple from Delhi to Mumbai all summer long.",
+      "prepTime": "5 min",
+      "requiredIngredients": [
+        "Yogurt",
+        "Milk",
+        "Sugar",
+        "Saffron",
+        "Cardamom",
+        "Salt"
+      ],
+      "steps": [
+        "If using fresh mangoes, peel and cut the flesh away from the stone. Ripe Alphonso or Kesar mangoes are best — they're sweeter and more fragrant than common varieties.",
+        "Blend mango flesh (or canned mango pulp), yogurt, cold milk, sugar, and a tiny pinch of salt until completely smooth and frothy.",
+        "Add a tiny pinch of saffron and a pinch of ground cardamom. Blend again briefly.",
+        "Taste and adjust sweetness. The lassi should be pourable but thick — thicker than a milkshake but thinner than a smoothie.",
+        "Pour into tall glasses over ice. Garnish with a pinch of saffron threads and serve immediately while cold and frothy."
+      ],
+      "history": "Lassi has been made in the Punjab region of India for over 3,000 years. Originally a simple blend of yogurt and water, the sweet mango version became popular in the 20th century and is now served worldwide as a symbol of Indian cuisine.",
+      "flavorProfile": "Spiced & Warming | 香料温润",
+      "funFact": "Lassi is mentioned in ancient Ayurvedic texts as a health drink. The salty version (namkeen lassi) is still prescribed in Indian traditional medicine as a digestive aid and cure for heatstroke.",
+      "comments": [
+        { "user": "Carla Makes", "text": "The perfect way to cool down after a spicy curry." },
+        { "user": "Priya M.", "text": "Made this with fresh Alphonso mangoes — absolute heaven." },
+        { "user": "Noah L.", "text": "Five minutes and it tastes better than any restaurant version." }
       ]
     },
     {
@@ -813,7 +782,7 @@
       "country": "China",
       "badgeEmoji": "🍜",
       "countryStamp": "CHN",
-      "description": "Scallion Oil Noodles (葱油拌面) made with Noodles, Scallion, Soy sauce, Dark soy sauce, and a guided postcard-style cooking route.",
+      "description": "Shanghai's most beloved street noodle — wheat noodles tossed in deeply fragrant scallion-infused oil and a sweet-savory soy sauce. Only 5 ingredients, but the slow-fried scallion oil transforms everything.",
       "prepTime": "25 min",
       "requiredIngredients": [
         "Noodles",
@@ -825,28 +794,20 @@
         "Salt"
       ],
       "steps": [
-        "Fry scallion slices in oil on medium-low heat until golden and crispy (15 min).",
-        "Remove scallions; reserve the fragrant oil.",
-        "Mix soy sauce, dark soy sauce, sugar in a bowl.",
-        "Cook noodles until al dente; drain.",
-        "Toss noodles immediately with scallion oil and sauce mixture.",
-        "Top with crispy scallions. Serve."
+        "The scallion oil is the whole dish — don't rush it. Cut scallions into 5cm lengths. Place in a cold pan with enough vegetable oil to submerge them.",
+        "Turn heat to medium-low. Slowly fry the scallions for 15-20 minutes, turning occasionally, until they are deeply golden brown, shrunken, and slightly crispy. The oil will turn a deep amber and smell intensely of scallion. Remove the scallions and set aside — save them for topping.",
+        "In a bowl, whisk together soy sauce, dark soy sauce, and sugar until the sugar dissolves. The dark soy sauce gives color; the regular soy sauce gives salt; the sugar balances everything.",
+        "Boil noodles in unsalted water until al dente — 1 minute less than the package says. Drain and do not rinse (the starch helps the sauce cling).",
+        "Immediately toss hot noodles with the sauce mixture and several tablespoons of the hot scallion oil. Toss vigorously until every strand is coated and glistening.",
+        "Serve topped with the reserved crispy scallions. Eat immediately — this dish waits for no one."
       ],
-      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "history": "Scallion oil noodles (葱油拌面) is one of Shanghai's most iconic street foods, eaten by workers for breakfast and lunch since the early 20th century. The technique of slow-frying aromatics to infuse oil is a fundamental technique in Chinese home cooking.",
       "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "This dish has only 5 real ingredients yet is considered one of Shanghai's greatest culinary achievements. A famous food critic described it as 'proof that Chinese cooking is about technique, not ingredients.'",
       "comments": [
-        {
-          "user": "Carla Makes",
-          "text": "Scallion Oil Noodles felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Maya C.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Priya M.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Carla Makes", "text": "Scallion Oil Noodles felt like a passport stamp in dinner form." },
+        { "user": "Maya C.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Priya M.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -856,7 +817,7 @@
       "country": "China",
       "badgeEmoji": "🐟",
       "countryStamp": "CHN",
-      "description": "Steamed Fish (清蒸鱼) made with Sea bass, Ginger, Green onion, Soy sauce, and a guided postcard-style cooking route.",
+      "description": "The purest expression of Cantonese cooking — a whole sea bass steamed to silky perfection, then finished with a theatrical pour of sizzling hot oil over fresh ginger and scallion. Elegant, precise, and unbelievably fresh.",
       "prepTime": "20 min",
       "requiredIngredients": [
         "Sea bass",
@@ -868,29 +829,20 @@
         "Salt"
       ],
       "steps": [
-        "Score fish on both sides; season with salt and cooking wine.",
-        "Place ginger slices inside and on top of fish.",
-        "Steam over high heat for 8-10 min.",
-        "Discard liquid from plate.",
-        "Top with fresh shredded ginger and green onion.",
-        "Heat oil until smoking; pour over fish to wilt onion.",
-        "Drizzle with soy sauce and sesame oil. Serve immediately."
+        "Score the fish 3 times diagonally on each side, cutting to the bone. This helps the fish cook evenly and allows the flavors to penetrate.",
+        "Rub the fish inside and out with salt and cooking wine. Stuff the cavity and the score marks with julienned ginger. Place the fish on a plate that fits inside your steamer.",
+        "Steam over vigorously boiling water for 8-10 minutes depending on thickness. The fish is done when the flesh flakes easily at the thickest part. Do not overcook — every extra minute makes it rubbery.",
+        "Carefully pour away any liquid that has accumulated on the plate — this liquid is bitter and removes it makes the dish cleaner.",
+        "Top the fish with fresh julienned ginger and shredded scallion. This is the moment — heat 3 tablespoons of vegetable oil in a small pan until smoking hot, then pour it over the ginger and scallion. The sizzle is the sound of the dish coming alive.",
+        "Immediately pour soy sauce and a few drops of sesame oil over the fish. Serve at the table — do not let it wait."
       ],
-      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "history": "Cantonese steamed fish is considered the ultimate test of a chef's skill in Cantonese cuisine — the technique is simple, but the timing must be perfect. It is served at every important Chinese banquet and family celebration as a symbol of abundance and prosperity.",
       "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "In Cantonese, the word for fish (鱼, yú) sounds identical to the word for surplus/abundance (余, yú), which is why whole fish is mandatory at Chinese New Year banquets — eating it symbolizes prosperity for the coming year.",
       "comments": [
-        {
-          "user": "Lena W.",
-          "text": "Steamed Fish felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Adi R.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Noah L.",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Lena W.", "text": "Steamed Fish felt like a passport stamp in dinner form." },
+        { "user": "Adi R.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Noah L.", "text": "Saving this one for a weekend cook-along." }
       ]
     },
     {
@@ -900,7 +852,7 @@
       "country": "China",
       "badgeEmoji": "🥟",
       "countryStamp": "CHN",
-      "description": "Pan-fried Pork Buns (生煎包) made with Pork, Flour, Pork gelatin, Soy sauce, and a guided postcard-style cooking route.",
+      "description": "Shanghai's most iconic street breakfast — soft, yeasted buns with a crispy fried base and a juicy pork and gelatin filling that collapses into a burst of soup when bitten. The city's answer to the soup dumpling.",
       "prepTime": "1 hr 45 min",
       "requiredIngredients": [
         "Pork",
@@ -915,31 +867,137 @@
         "Salt"
       ],
       "steps": [
-        "Make dough: mix flour, yeast, sugar, water; knead; rest 1 hr.",
-        "Mix pork with soy sauce, ginger, green onion, salt.",
-        "Add diced pork gelatin to filling.",
-        "Divide dough into pieces; roll each into circle.",
-        "Fill and pleat buns closed.",
-        "Rest 20 min.",
-        "Fry buns in oiled pan (flat side down) until golden.",
-        "Add water; cover and steam 8 min.",
-        "Sprinkle sesame and green onion. Serve."
+        "Make the dough: combine flour, yeast, sugar, and warm water. Knead until smooth and elastic, about 8 minutes. Cover and prove for 1 hour until doubled.",
+        "Make the filling: combine ground pork with soy sauce, minced ginger, finely chopped green onion, salt, and a small amount of sesame oil. Mix vigorously in one direction until the mixture becomes sticky — this develops protein strands that keep the filling together.",
+        "Add diced pork gelatin (the secret ingredient — it melts into hot soup during cooking). Refrigerate the filling while the dough proves.",
+        "Punch down the dough and divide into 12 equal pieces. Roll each into a thin circle, thicker in the center.",
+        "Place a tablespoon of filling in the center. Pleat the edges together, twisting to seal tightly at the top. Rest the shaped buns 20 minutes.",
+        "Heat a flat-bottomed pan with oil over medium heat. Place buns pleated-side up, flat side down. Fry until the bases are deeply golden, about 3 minutes.",
+        "Add water to come 1cm up the sides of the buns. Immediately cover with a lid. Steam until the water evaporates, about 8 minutes. Remove the lid, let the bases crisp again for 1 minute.",
+        "Sprinkle with sesame seeds and chopped green onion. Serve immediately — hot, with black vinegar for dipping."
       ],
-      "history": "Chinese home cooking often turns a few focused ingredients into a meal with strong texture, aroma, and timing. This recipe follows the provided source data while presenting a concise cultural note for the cooking journey.",
+      "history": "生煎包 originated in Shanghai's teahouses in the early 20th century. Vendors still cook them in giant flat pans that hold 60 buns at once, filling the street with steam and the smell of fried dough. They remain Shanghai's favorite breakfast over 100 years later.",
       "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "The gelatin in the filling is the key technique — when cold, it's solid. When the bun is cooked, the gelatin melts into a soup that fills the interior. This same technique is used in xiaolongbao (soup dumplings), which were invented later.",
       "comments": [
-        {
-          "user": "Bao Kitchen",
-          "text": "Pan-fried Pork Buns felt like a passport stamp in dinner form."
-        },
-        {
-          "user": "Priya M.",
-          "text": "I followed the steps from the pantry card and the flavors landed beautifully."
-        },
-        {
-          "user": "Ivy Spoon",
-          "text": "Saving this one for a weekend cook-along."
-        }
+        { "user": "Bao Kitchen", "text": "Pan-fried Pork Buns felt like a passport stamp in dinner form." },
+        { "user": "Priya M.", "text": "I followed the steps from the pantry card and the flavors landed beautifully." },
+        { "user": "Ivy Spoon", "text": "Saving this one for a weekend cook-along." }
+      ]
+    },
+    {
+      "id": "mapo-tofu",
+      "name": "Mapo Tofu",
+      "chineseName": "麻婆豆腐",
+      "country": "China",
+      "badgeEmoji": "🌶️",
+      "countryStamp": "CHN",
+      "description": "Silken tofu and ground pork in a tongue-numbing, fiery Sichuan sauce of doubanjiang, chili oil, and Sichuan peppercorn. One of China's most famous dishes — bold, oily, floral, and addictively spicy.",
+      "prepTime": "25 min",
+      "requiredIngredients": [
+        "Tofu",
+        "Pork",
+        "Garlic",
+        "Ginger",
+        "Chili",
+        "Soy sauce",
+        "Dark soy sauce",
+        "Sesame oil",
+        "Green onion",
+        "Oil",
+        "Salt"
+      ],
+      "steps": [
+        "Cut silken tofu into 2cm cubes. Gently slide into a pot of simmering salted water for 2 minutes to firm it slightly — this prevents it crumbling in the sauce. Drain carefully.",
+        "Heat oil in a wok until smoking. Add ground pork and break apart, frying until browned with no pink remaining. Push to the side.",
+        "Add minced garlic and ginger to the empty side of the wok. Fry 30 seconds. Add chili paste (doubanjiang if available, or fresh chili paste) and fry until the oil turns red and fragrant, about 2 minutes.",
+        "Add soy sauce, dark soy sauce, and just enough water or stock to create a loose sauce. Bring to a simmer.",
+        "Gently slide the tofu into the sauce. Tilt the wok to baste the tofu rather than stirring — this preserves the cubes. Simmer 3 minutes.",
+        "Add a cornstarch slurry (1 tablespoon cornstarch in 2 tablespoons water) and gently fold through until the sauce thickens and coats the tofu glossily.",
+        "Finish with a drizzle of sesame oil and chili oil. Serve in a bowl topped with sliced green onion and ground Sichuan peppercorn. Eat immediately with steamed rice."
+      ],
+      "history": "Mapo tofu was created in the 1860s by a pock-marked (麻, má) woman (婆, pó) who ran a small restaurant in Chengdu. Her dish became so famous it was named after her face. Today it is one of the Ten Great Classic Dishes of Sichuan cuisine.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "The Sichuan peppercorn in mapo tofu creates a unique sensation called 麻 (má) — a tingling, numbing feeling on the tongue that is entirely different from the heat of chili. This combination of numbing and spicy (麻辣, málà) is the defining characteristic of Sichuan cuisine.",
+      "comments": [
+        { "user": "Adi R.", "text": "The numbing-spicy combo is unlike anything else I've eaten." },
+        { "user": "Carla Makes", "text": "Used regular chili paste instead of doubanjiang and it was still incredible." },
+        { "user": "Lena W.", "text": "This is the dish that made me understand why people love Sichuan food." }
+      ]
+    },
+    {
+      "id": "egg-fried-rice",
+      "name": "Egg Fried Rice",
+      "chineseName": "蛋炒饭",
+      "country": "China",
+      "badgeEmoji": "🍳",
+      "countryStamp": "CHN",
+      "description": "The most important 5 minutes of Chinese home cooking — day-old rice tossed with egg over screaming hot fire until every grain is separate, glistening, and faintly smoky with wok hei. Simple on paper, life-changing in execution.",
+      "prepTime": "10 min",
+      "requiredIngredients": [
+        "Cooked rice (day-old)",
+        "Egg",
+        "Green onion",
+        "Soy sauce",
+        "Sesame oil",
+        "Salt",
+        "Vegetable oil"
+      ],
+      "steps": [
+        "Use cold day-old rice — fresh rice is too wet. Break up every single clump with your hands before you start. The grains must be completely separate.",
+        "Heat a wok or your largest pan on the highest possible flame until it is smoking hot. Add 2 tablespoons of oil and swirl to coat.",
+        "Crack eggs directly into the hot wok. Scramble quickly until just set but still slightly wet — about 20 seconds. The eggs should still be glossy.",
+        "Add all the rice at once. Toss and press constantly — you want the rice to make contact with the hot wok surface. Do not stir gently: use a folding, scooping motion to keep everything moving.",
+        "After 2 minutes the rice should be slightly toasted and each grain separated. Add soy sauce around the edge of the wok (not over the rice directly) so it sizzles and steams as it hits the hot surface.",
+        "Add green onion, toss for 30 more seconds. Season with salt. Finish with a few drops of sesame oil. The whole dish from cold rice to table should take under 5 minutes. Serve immediately."
+      ],
+      "history": "Egg fried rice originated in the Sui Dynasty (589-618 AD) in Yangzhou, China, and is one of the oldest still-cooked Chinese dishes. The Yangzhou fried rice version with multiple ingredients remains a regional pride.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "The 'wok hei' (镬气) — the smoky, slightly charred flavor — in good fried rice is nearly impossible to replicate at home without a commercial burner. Home cooks use the trick of cooking smaller portions on the highest heat possible to compensate.",
+      "comments": [
+        { "user": "Maya C.", "text": "Finally cracked the secret — it's all about the wok temperature." },
+        { "user": "Noah L.", "text": "I've been making this wrong my whole life. Day-old rice is non-negotiable." },
+        { "user": "Ivy Spoon", "text": "The sesame oil finish completely changes the dish. Don't skip it." }
+      ]
+    },
+    {
+      "id": "kung-pao-chicken",
+      "name": "Kung Pao Chicken",
+      "chineseName": "宫保鸡丁",
+      "country": "China",
+      "badgeEmoji": "🥜",
+      "countryStamp": "CHN",
+      "description": "Tender chicken pieces and roasted peanuts in a glossy, sweet-sour-spicy sauce with dried chilies and Sichuan peppercorn. One of China's most internationally recognized dishes — born in a Qing Dynasty governor's kitchen.",
+      "prepTime": "30 min",
+      "requiredIngredients": [
+        "Chicken",
+        "Chili",
+        "Garlic",
+        "Ginger",
+        "Soy sauce",
+        "Dark soy sauce",
+        "Sugar",
+        "Black pepper",
+        "Sesame oil",
+        "Oil",
+        "Green onion"
+      ],
+      "steps": [
+        "Cut chicken thighs into 1.5cm cubes. Marinate in soy sauce, a tiny pinch of cornstarch, and sesame oil for 15 minutes.",
+        "Mix the sauce: soy sauce, dark soy sauce, sugar, black vinegar (or rice vinegar), and a little water. Set aside — everything should be measured before you start cooking as this dish moves fast.",
+        "Dry-roast peanuts in a dry pan until golden, about 3 minutes. Set aside.",
+        "Heat oil in a wok until smoking. Add dried whole chilies and Sichuan peppercorns — they should sizzle immediately. Fry 30 seconds until fragrant and the oil is infused with their flavor.",
+        "Add the chicken cubes in a single layer. Let them sear untouched for 1 minute before tossing. Cook until the chicken is just cooked through, about 3 minutes total.",
+        "Add minced garlic and ginger — fry 30 seconds. Pour in the sauce and toss to coat. The sauce should thicken and become glossy in about 1 minute.",
+        "Add the roasted peanuts and sliced green onion. Toss once more. Serve immediately with steamed white rice."
+      ],
+      "history": "Kung Pao chicken was created by Ding Baozhen (1820-1886), the governor of Sichuan Province, and named with his honorific title 'Kung Pao' meaning 'Palace Guardian.' It was banned during the Cultural Revolution for being named after a 'capitalist official' but was officially rehabilitated in 1980.",
+      "flavorProfile": "Savory & Fragrant | 咸鲜生香",
+      "funFact": "During the Cultural Revolution, Kung Pao Chicken was banned and renamed 'Fast-Fry Chicken Cubes' because it was named after a Qing Dynasty official. After the revolution ended, the original name was officially restored in 1980.",
+      "comments": [
+        { "user": "Bao Kitchen", "text": "The balance of sweet, sour, and spicy is absolutely perfect." },
+        { "user": "Priya M.", "text": "I never knew the history behind this dish — makes it taste even better." },
+        { "user": "Carla Makes", "text": "My new go-to when I want something impressive but quick." }
       ]
     }
   ]
