@@ -1019,9 +1019,6 @@ function CookingView({
   function goToStep(nextStep: number) {
     const clamped = Math.min(totalSteps - 1, Math.max(0, nextStep));
     setCurrentStep(clamped);
-    if (window.innerWidth < 768) {
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    }
   }
 
   useEffect(() => {
@@ -1034,8 +1031,7 @@ function CookingView({
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
       stepModeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [currentStep, showStepMode]);
-
+  }, [showStepMode]);
   return (
     <div className="animate-pop">
       <div className="overflow-hidden rounded-[2.5rem] border border-stone-900/10 bg-white shadow-soft">
