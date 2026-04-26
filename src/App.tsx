@@ -7,7 +7,9 @@ import {
   ChefHat,
   Download,
   Flame,
+  Globe2,
   ImagePlus,
+  Info,
   Lock,
   Map as MapIcon,
   RefreshCcw,
@@ -21,7 +23,11 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ChangeEvent, ReactNode } from "react";
+import { IngredientOriginSheet } from "./IngredientOriginSheet";
 import pantryData from "./data.json";
+import { i18n, useI18nLanguage } from "./i18n";
+import type { LanguageCode } from "./i18n";
+import { getIngredientMeta, getIngredientName } from "./ingredients";
 import chinaStamp from "./assets/stamps/china.svg";
 import indiaStamp from "./assets/stamps/india.svg";
 import indonesiaStamp from "./assets/stamps/indonesia.svg";
@@ -61,7 +67,7 @@ type StoredPassport = {
   photos: Record<string, string>;
 };
 
-type AppView = "pantry" | "suggestion" | "cooking" | "passport";
+type AppView = "pantry" | "suggestion" | "cooking" | "passport" | "settings";
 
 const data = pantryData as PantryData;
 const STORAGE_KEY = "passport-pantry-state-v1";
@@ -204,11 +210,13 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 function App() {
+  const language = useI18nLanguage() as LanguageCode;
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [view, setView] = useState<AppView>("pantry");
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [activeRecipeId, setActiveRecipeId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [originIngredient, setOriginIngredient] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [communityRecipeId, setCommunityRecipeId] = useState<string | null>(null);
   const [shareCardDataUrl, setShareCardDataUrl] = useState<string | null>(null);
@@ -219,6 +227,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
   }, [passport]);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
@@ -356,6 +368,7 @@ function App() {
               selectedIngredients={selectedIngredients}
               onToggle={toggleIngredient}
               onFind={findRecipe}
+              onOpenOrigin={setOriginIngredient}
               fridgeOpen={pantryFridgeOpen}
               onFridgeOpenChange={setPantryFridgeOpen}
             />
@@ -400,10 +413,18 @@ function App() {
                   onCookAgain={(recipe) => cookRecipe(recipe)}
                 />
               )}
+              {view === "settings" && <SettingsView />}
             </div>
           </section>
         )}
       </div>
+
+      {originIngredient && (
+        <IngredientOriginSheet
+          ingredient={originIngredient}
+          onClose={() => setOriginIngredient(null)}
+        />
+      )}
 
       {showHistory && (
         <HistoryModal recipe={activeRecipe} onClose={() => setShowHistory(false)} />
@@ -451,26 +472,32 @@ function Header({
         </span>
         <span>
           <span className="block font-display text-xl font-bold leading-tight md:text-3xl">
-            The Passport Pantry
+            {i18n.t("app.title")}
           </span>
           <span className="text-sm font-medium text-stone-600">
-            Pick ingredients. Cook the world. Stamp your plate.
+            {i18n.t("app.subtitle")}
           </span>
         </span>
       </button>
 
-      <nav className="hidden grid-cols-2 gap-2 sm:flex" aria-label="Primary navigation">
+      <nav className="hidden grid-cols-3 gap-2 sm:flex" aria-label={i18n.t("header.primary_nav")}>
         <NavButton
           active={view === "pantry"}
           icon={<Utensils aria-hidden="true" size={18} />}
-          label="Pantry"
+          label={i18n.t("nav.pantry")}
           onClick={() => setView("pantry")}
         />
         <NavButton
           active={view === "passport"}
           icon={<MapIcon aria-hidden="true" size={18} />}
-          label={`Passport ${earnedCount ? `(${earnedCount})` : ""}`}
+          label={`${i18n.t("nav.passport")} ${earnedCount ? `(${earnedCount})` : ""}`}
           onClick={() => setView("passport")}
+        />
+        <NavButton
+          active={view === "settings"}
+          icon={<Globe2 aria-hidden="true" size={18} />}
+          label={i18n.t("nav.settings")}
+          onClick={() => setView("settings")}
         />
       </nav>
     </header>
@@ -488,21 +515,27 @@ function MobileBottomNav({
 }) {
   return (
     <nav
-      className="fixed inset-x-4 z-30 grid grid-cols-2 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
+      className="fixed inset-x-4 z-30 grid grid-cols-3 gap-2 rounded-[1.6rem] border border-stone-900/10 bg-white/90 p-2 shadow-soft backdrop-blur sm:hidden"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
-      aria-label="Mobile navigation"
+      aria-label={i18n.t("header.primary_nav")}
     >
       <NavButton
         active={view === "pantry"}
         icon={<Utensils aria-hidden="true" size={18} />}
-        label="Pantry"
+        label={i18n.t("nav.pantry")}
         onClick={() => setView("pantry")}
       />
       <NavButton
         active={view === "passport"}
         icon={<MapIcon aria-hidden="true" size={18} />}
-        label={`Passport ${earnedCount ? `(${earnedCount})` : ""}`}
+        label={`${i18n.t("nav.passport")} ${earnedCount ? `(${earnedCount})` : ""}`}
         onClick={() => setView("passport")}
+      />
+      <NavButton
+        active={view === "settings"}
+        icon={<Globe2 aria-hidden="true" size={18} />}
+        label={i18n.t("nav.settings")}
+        onClick={() => setView("settings")}
       />
     </nav>
   );
@@ -517,7 +550,7 @@ function StampImage({
   className?: string;
   style?: CSSProperties;
 }) {
-  return <img src={getStampAsset(country)} alt={`${country} passport stamp`} className={className} style={style} />;
+  return <img src={getStampAsset(country)} alt={i18n.t("img.stamp_alt", { country: localizedCountryName(country) })} className={className} style={style} />;
 }
 
 function NavButton({
@@ -558,28 +591,28 @@ function ProgressPanel({
   return (
     <div className="flex h-full flex-col gap-5">
       <div>
-        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Today</p>
-        <h2 className="mt-2 font-display text-3xl font-bold">Your cooking route</h2>
+        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">{i18n.t("home.category_today")}</p>
+        <h2 className="mt-2 font-display text-3xl font-bold">{i18n.t("home.route_title")}</h2>
       </div>
 
       <div className="rounded-3xl bg-pantry-paper p-4">
-        <p className="text-sm font-bold text-stone-500">Selected ingredients</p>
+        <p className="text-sm font-bold text-stone-500">{i18n.t("home.selected_ingredients")}</p>
         <div className="mt-3 flex min-h-24 flex-wrap content-start gap-2">
           {selectedIngredients.length ? (
             selectedIngredients.map((ingredient) => (
               <span key={ingredient} className="rounded-full bg-white px-3 py-2 text-sm font-bold shadow-sm">
-                {ingredient}
+                {localizedIngredientName(ingredient)}
               </span>
             ))
           ) : (
-            <p className="text-sm text-stone-500">Choose 2 to 4 pantry items to begin.</p>
+            <p className="text-sm text-stone-500">{i18n.t("home.find_hint")}</p>
           )}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatCard icon={<Award />} label="Food Badges" value={passport.foodBadges.length} />
-        <StatCard icon={<Stamp />} label="Stamps" value={passport.countryStamps.length} />
+        <StatCard icon={<Award />} label={i18n.t("stats.food_badges")} value={passport.foodBadges.length} />
+        <StatCard icon={<Stamp />} label={i18n.t("stats.stamps")} value={passport.countryStamps.length} />
       </div>
 
       <button
@@ -588,7 +621,7 @@ function ProgressPanel({
         className="focus-ring mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-pantry-berry px-4 py-3 font-bold text-white shadow-soft transition hover:-translate-y-0.5"
       >
         <Trophy size={18} aria-hidden="true" />
-        Open Libraries
+        {i18n.t("home.open_libraries")}
       </button>
     </div>
   );
@@ -604,11 +637,80 @@ function StatCard({ icon, label, value }: { icon: ReactNode; label: string; valu
   );
 }
 
+const languageOptions: Array<{ code: LanguageCode; shortLabel: string }> = [
+  { code: "en", shortLabel: "EN" },
+  { code: "zh", shortLabel: "中文" },
+  { code: "id", shortLabel: "ID" },
+  { code: "hi", shortLabel: "HI" }
+];
+
+function LanguageSelector({ compact = false }: { compact?: boolean }) {
+  const language = useI18nLanguage() as LanguageCode;
+
+  return (
+    <div
+      className={cx(
+        "inline-flex rounded-2xl bg-white/90 p-1 shadow-sm ring-1 ring-stone-900/10",
+        compact ? "gap-0.5" : "gap-1"
+      )}
+      aria-label={i18n.t("settings.language")}
+    >
+      {languageOptions.map((option) => (
+        <button
+          key={option.code}
+          type="button"
+          onClick={() => i18n.setLanguage(option.code)}
+          className={cx(
+            "focus-ring rounded-xl font-black transition",
+            compact ? "px-2.5 py-2 text-xs" : "px-4 py-3 text-sm",
+            language === option.code
+              ? "bg-pantry-ink text-white shadow-sm"
+              : "text-stone-600 hover:bg-amber-50"
+          )}
+          aria-pressed={language === option.code}
+        >
+          {compact ? option.shortLabel : i18n.t(`settings.language.${option.code}`)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SettingsView() {
+  const language = useI18nLanguage() as LanguageCode;
+
+  return (
+    <div className="animate-pop">
+      <section className="rounded-[2rem] border border-stone-900/10 bg-white/75 p-5 shadow-soft md:p-7">
+        <div className="mb-6">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">{i18n.t("nav.settings")}</p>
+          <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
+            {i18n.t("settings.title")}
+          </h1>
+        </div>
+
+        <div className="rounded-[1.6rem] bg-pantry-paper p-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="font-display text-2xl font-bold">{i18n.t("settings.language")}</h2>
+              <p className="mt-1 text-sm font-semibold text-stone-600">
+                {i18n.t(`settings.language.${language}`)}
+              </p>
+            </div>
+            <LanguageSelector />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function PantryView({
   ingredients,
   selectedIngredients,
   onToggle,
   onFind,
+  onOpenOrigin,
   fridgeOpen,
   onFridgeOpenChange
 }: {
@@ -616,9 +718,12 @@ function PantryView({
   selectedIngredients: string[];
   onToggle: (ingredient: string) => void;
   onFind: () => void;
+  onOpenOrigin: (ingredient: string) => void;
   fridgeOpen: boolean;
   onFridgeOpenChange: (open: boolean) => void;
 }) {
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef(false);
   const visibleIngredients = Object.entries(ingredients).reduce<IngredientCategories>((categories, [category, items]) => {
     const visibleItems = items.filter(hasIngredientEmoji);
     if (visibleItems.length > 0) {
@@ -634,19 +739,40 @@ function PantryView({
     }
   }, [fridgeOpen, onFridgeOpenChange, selectedIngredients.length]);
 
+  function startIngredientPress(ingredient: string) {
+    longPressTriggered.current = false;
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+    }
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      onOpenOrigin(ingredient);
+    }, 560);
+  }
+
+  function endIngredientPress() {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }
+
   return (
     <div className="animate-pop">
       <section className={cx("fridge-landing", fridgeOpen && "fridge-landing-open") }>
         {fridgeOpen && (
           <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">The Pantry</p>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">{i18n.t("home.kicker")}</p>
               <h1 className="mt-2 max-w-3xl font-display text-3xl font-black leading-tight md:text-6xl">
-                Open the fridge. Pick your route.
+                {i18n.t("home.title")}
               </h1>
             </div>
-            <div className="self-start rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
-              {selectedIngredients.length}/4 selected
+            <div className="flex flex-wrap items-center gap-2 self-start">
+              <LanguageSelector compact />
+              <div className="rounded-2xl bg-white/85 px-4 py-3 text-sm font-bold text-stone-600 shadow-sm">
+                {i18n.t("home.selected_count", { count: selectedIngredients.length })}
+              </div>
             </div>
           </div>
         )}
@@ -658,11 +784,11 @@ function PantryView({
               <div className="fridge-light" aria-hidden="true" />
               <div className="relative z-10 mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-mint">Fresh picks</p>
-                  <h2 className="font-display text-3xl font-black text-pantry-ink">Choose 2 to 4 ingredients</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-mint">{i18n.t("home.fresh_picks")}</p>
+                  <h2 className="font-display text-3xl font-black text-pantry-ink">{i18n.t("home.title")}</h2>
                 </div>
                 <p className="rounded-full bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-stone-500 shadow-sm">
-                  Fridge open
+                  {i18n.t("home.fridge_open")}
                 </p>
               </div>
 
@@ -671,28 +797,49 @@ function PantryView({
                   <section key={category} className="fridge-shelf">
                     <h3 className="mb-3 flex items-center gap-2 font-display text-xl font-bold">
                       <Sparkles size={18} className="text-pantry-saffron" aria-hidden="true" />
-                      {category}
+                      {i18n.t(`category.${category}`)}
                     </h3>
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
                       {items.map((ingredient) => {
                         const active = selectedIngredients.includes(ingredient);
                         const disabled = !active && selectedIngredients.length >= 4;
                         return (
-                          <button
+                          <div
                             key={ingredient}
-                            type="button"
-                            disabled={disabled}
-                            onClick={() => onToggle(ingredient)}
                             className={cx(
-                              "focus-ring fridge-ingredient",
+                              "fridge-ingredient",
                               active ? "fridge-ingredient-active" : "",
-                              disabled && "cursor-not-allowed opacity-40"
+                              disabled && "opacity-40"
                             )}
-                            aria-pressed={active}
                           >
-                            <span className="block text-2xl">{ingredientEmoji(ingredient)}</span>
-                            <span className="block text-sm font-black leading-snug">{ingredient}</span>
-                          </button>
+                            <div className="flex items-start justify-between gap-2">
+                              <button
+                                type="button"
+                                disabled={disabled}
+                                onPointerDown={() => startIngredientPress(ingredient)}
+                                onPointerUp={endIngredientPress}
+                                onPointerLeave={endIngredientPress}
+                                onPointerCancel={endIngredientPress}
+                                onClick={() => {
+                                  if (longPressTriggered.current) return;
+                                  onToggle(ingredient);
+                                }}
+                                className="focus-ring min-w-0 flex-1 rounded-xl text-left disabled:cursor-not-allowed"
+                                aria-pressed={active}
+                              >
+                                <span className="block text-2xl">{ingredientEmoji(ingredient)}</span>
+                                <span className="mt-1 block text-sm font-black leading-snug">{localizedIngredientName(ingredient)}</span>
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={`${i18n.t("origin.header")}: ${localizedIngredientName(ingredient)}`}
+                                className="focus-ring inline-grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/80 text-pantry-mint ring-1 ring-stone-900/10 transition hover:bg-amber-50"
+                                onClick={() => onOpenOrigin(ingredient)}
+                              >
+                                <Info size={15} aria-hidden="true" />
+                              </button>
+                            </div>
+                          </div>
                         );
                       })}
                     </div>
@@ -713,7 +860,7 @@ function PantryView({
                   )}
                 >
                   <Search aria-hidden="true" />
-                  Find Recipe
+                  {i18n.t("home.find_recipe")}
                 </button>
               </div>
             </div>
@@ -729,13 +876,16 @@ function PantryView({
 
           {!fridgeOpen && (
             <div className="fridge-open-panel">
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-pantry-mint">Ready to cook?</p>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-pantry-mint">{i18n.t("home.ready_to_cook")}</p>
+              <div className="mt-3 flex justify-center">
+                <LanguageSelector compact />
+              </div>
               <button
                 type="button"
                 onClick={() => onFridgeOpenChange(true)}
                 className="focus-ring mt-3 inline-flex items-center justify-center rounded-3xl bg-pantry-berry px-7 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
               >
-                Open Fridge
+                {i18n.t("home.open_fridge")}
               </button>
             </div>
           )}
@@ -766,15 +916,15 @@ function SuggestionView({
     <div className="animate-pop">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Suggestion</p>
-          <h1 className="mt-2 font-display text-4xl font-black md:text-5xl">Your closest match</h1>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">{i18n.t("suggestion.kicker")}</p>
+          <h1 className="mt-2 font-display text-4xl font-black md:text-5xl">{i18n.t("suggestion.title")}</h1>
         </div>
         <button
           type="button"
           onClick={onBack}
           className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-bold shadow-sm transition hover:bg-amber-50"
         >
-          Edit Pantry
+          {i18n.t("suggestion.edit_pantry")}
         </button>
       </div>
 
@@ -790,7 +940,7 @@ function SuggestionView({
         </div>
         <div className="pt-16 sm:pt-20">
           <div className="mb-5 pr-20 sm:pr-28">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-berry">{recipe.country}</p>
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-berry">{localizedCountryName(recipe.country)}</p>
             <h2 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">{recipe.name}</h2>
             <p className="mt-1 text-lg font-bold text-pantry-mint">{recipe.chineseName}</p>
           </div>
@@ -799,7 +949,7 @@ function SuggestionView({
 
           <div className="mt-6 grid gap-4 md:grid-cols-[1fr_220px]">
             <div className="rounded-3xl bg-pantry-paper p-5">
-              <h3 className="mb-3 font-display text-2xl font-bold">Required ingredients</h3>
+              <h3 className="mb-3 font-display text-2xl font-bold">{i18n.t("suggestion.required")}</h3>
               <div className="flex flex-wrap gap-2">
                 {recipe.requiredIngredients.map((ingredient) => (
                   <span
@@ -811,7 +961,7 @@ function SuggestionView({
                         : "bg-white text-stone-600"
                     )}
                   >
-                    {ingredient}
+                    {localizedIngredientName(ingredient)}
                   </span>
                 ))}
               </div>
@@ -820,7 +970,7 @@ function SuggestionView({
               <Flame aria-hidden="true" />
               <p className="mt-4 text-3xl font-black">{recipe.prepTime}</p>
               <p className="text-sm font-bold text-white/70">
-                {matched.length} pantry match{matched.length === 1 ? "" : "es"} · score {Math.round(matchScore)}
+                {localizedMatchScore(matched.length, Math.round(matchScore))}
               </p>
             </div>
           </div>
@@ -832,7 +982,7 @@ function SuggestionView({
               className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-6 py-5 text-lg font-black text-white shadow-stamp transition hover:-translate-y-0.5"
             >
               <Check aria-hidden="true" />
-              Cook This
+              {i18n.t("suggestion.cook_this")}
             </button>
             <button
               type="button"
@@ -840,7 +990,7 @@ function SuggestionView({
               className="focus-ring inline-flex items-center justify-center gap-2 rounded-3xl bg-white px-6 py-5 text-lg font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:-translate-y-0.5 hover:bg-amber-50"
             >
               <RefreshCcw aria-hidden="true" />
-              Change Food
+              {i18n.t("suggestion.change_food")}
             </button>
           </div>
         </div>
@@ -893,14 +1043,14 @@ function CookingView({
       <div className="overflow-hidden rounded-[2.5rem] border border-stone-900/10 bg-white shadow-soft">
         <div className="grid gap-6 p-5 md:grid-cols-[1fr_260px] md:p-8">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">Cooking</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">{i18n.t("cooking.kicker")}</p>
             <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
               {recipe.name}
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">{recipe.description}</p>
           </div>
           <div className="hidden rounded-[2rem] bg-pantry-paper p-5 md:block">
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-stone-500">Badge</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-stone-500">{i18n.t("cooking.badge")}</p>
             <div className="mt-4 flex items-center gap-3">
               <span className="text-6xl">{recipe.badgeEmoji}</span>
               <div>
@@ -920,14 +1070,14 @@ function CookingView({
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
                       Step {currentStep + 1} of {totalSteps}
                     </p>
-                    <h2 className="mt-2 font-display text-3xl font-bold">Full Recipe</h2>
+                    <h2 className="mt-2 font-display text-3xl font-bold">{i18n.t("cooking.steps")}</h2>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowStepMode(true)}
                     className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5"
                   >
-                    Step Mode
+                    {i18n.t("cooking.steps")}
                   </button>
                 </div>
                 <div className="mt-4 h-3 overflow-hidden rounded-full bg-white" aria-hidden="true">
@@ -976,13 +1126,13 @@ function CookingView({
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
                           Step {currentStep + 1} of {totalSteps}
                         </p>
-                        <h2 className="mt-2 font-display text-3xl font-bold">Step-by-step</h2>
+                        <h2 className="mt-2 font-display text-3xl font-bold">{i18n.t("cooking.steps")}</h2>
                       </div>
                       <button
                         type="button"
                         onClick={() => setShowStepMode(false)}
                         className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink"
-                        aria-label="Close step mode"
+                        aria-label={i18n.t("common.close")}
                       >
                         <X size={18} aria-hidden="true" />
                       </button>
@@ -1005,7 +1155,7 @@ function CookingView({
                         onClick={() => goToStep(currentStep - 1)}
                         className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
                       >
-                        Back
+                        {i18n.t("common.back")}
                       </button>
                       <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
                         {currentStep + 1}/{totalSteps}
@@ -1026,7 +1176,7 @@ function CookingView({
                             : "bg-pantry-ink"
                         )}
                       >
-                        {currentStep === totalSteps - 1 ? "Finish" : "Next Step"}
+                        {currentStep === totalSteps - 1 ? i18n.t("common.confirm") : i18n.t("cooking.steps")}
                       </button>
                     </div>
                   </div>
@@ -1040,7 +1190,7 @@ function CookingView({
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-pantry-mint">
                     Step {currentStep + 1} of {totalSteps}
                   </p>
-                  <h2 className="font-display text-3xl font-bold">Step-by-step</h2>
+                  <h2 className="font-display text-3xl font-bold">{i18n.t("cooking.steps")}</h2>
                 </div>
                 <div className="h-3 overflow-hidden rounded-full bg-stone-100 sm:w-48" aria-hidden="true">
                   <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
@@ -1089,7 +1239,7 @@ function CookingView({
                     onClick={() => goToStep(currentStep - 1)}
                     className="focus-ring rounded-2xl bg-white px-4 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    Back
+                    {i18n.t("common.back")}
                   </button>
                   <span className="text-center text-xs font-black uppercase tracking-[0.16em] text-stone-500">
                     {currentStep + 1}/{totalSteps}
@@ -1100,7 +1250,7 @@ function CookingView({
                     onClick={() => goToStep(currentStep + 1)}
                     className="focus-ring rounded-2xl bg-pantry-ink px-4 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-stone-500 disabled:hover:translate-y-0"
                   >
-                    Next Step
+                    {i18n.t("cooking.steps")}
                   </button>
                 </div>
               </div>
@@ -1114,7 +1264,7 @@ function CookingView({
               className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-white px-5 py-4 text-lg font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
             >
               <BookOpen aria-hidden="true" />
-              Cultural History
+              {i18n.t("cooking.history")}
             </button>
             <button
               type="button"
@@ -1122,7 +1272,7 @@ function CookingView({
               className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-pantry-berry px-5 py-4 text-lg font-black text-white shadow-soft transition hover:-translate-y-0.5"
             >
               <Award aria-hidden="true" />
-              {isEarned ? "Cook Again" : "I Finished Cooking!"}
+              {isEarned ? i18n.t("cooking.finish_again") : i18n.t("cooking.finish_first")}
             </button>
             <button
               type="button"
@@ -1130,7 +1280,7 @@ function CookingView({
               className="focus-ring flex min-h-[76px] w-full items-center justify-center gap-3 rounded-3xl bg-pantry-mint px-5 py-4 text-lg font-black text-white shadow-stamp transition hover:-translate-y-0.5"
             >
               <MapIcon aria-hidden="true" />
-              Food Passport & Badges
+              {i18n.t("cooking.passport_button")}
             </button>
           </aside>
         </div>
@@ -1204,9 +1354,9 @@ function PassportView({
   return (
     <div className="animate-pop">
       <div className="mb-6">
-        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">Libraries</p>
+        <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">{i18n.t("passport.kicker")}</p>
         <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
-          Food Passport
+          {i18n.t("passport.title")}
         </h1>
       </div>
 
@@ -1214,14 +1364,14 @@ function PassportView({
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="flex items-center gap-2 font-display text-3xl font-bold">
             <Stamp className="text-pantry-berry" aria-hidden="true" />
-            Country Stamps
+            {i18n.t("passport.country_stamps")}
           </h2>
           <div className="flex items-center gap-2 self-start rounded-3xl bg-white/85 p-2 shadow-sm sm:self-auto">
             <button
               type="button"
               onClick={() => turnPage("previous")}
               disabled={!canTurnBack}
-              aria-label="Turn to previous passport page"
+              aria-label={i18n.t("passport.turn_prev")}
               className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft aria-hidden="true" />
@@ -1233,7 +1383,7 @@ function PassportView({
               type="button"
               onClick={() => turnPage("next")}
               disabled={!canTurnForward}
-              aria-label="Turn to next passport page"
+              aria-label={i18n.t("passport.turn_next")}
               className="focus-ring grid h-11 w-11 place-items-center rounded-2xl bg-pantry-paper text-pantry-ink transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronRight aria-hidden="true" />
@@ -1243,12 +1393,12 @@ function PassportView({
         <div className="passport-book-shell">
           <div className={cx("passport-book", turnDirection === "next" && "passport-book-turn-next", turnDirection === "previous" && "passport-book-turn-previous")}>
             <PassportStampPage
-              label={`Page ${pageIndex + 1}`}
+              label={i18n.t("passport.page", { page: pageIndex + 1 })}
               recipes={currentPage}
             />
             <div className="hidden md:block">
               <PassportStampPage
-                label={facingPage.length ? `Page ${pageIndex + 2}` : "Notes"}
+                label={facingPage.length ? i18n.t("passport.page", { page: pageIndex + 2 }) : i18n.t("passport.notes")}
                 recipes={facingPage}
                 isFacing
               />
@@ -1260,7 +1410,7 @@ function PassportView({
       <section className="rounded-[2rem] border border-stone-900/10 bg-white/75 p-5 shadow-soft">
         <h2 className="mb-4 flex items-center gap-2 font-display text-3xl font-bold">
           <Award className="text-pantry-saffron" aria-hidden="true" />
-          Food Badges
+          {i18n.t("passport.food_badges")}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {sortedRecipes.map((recipe) => {
@@ -1295,7 +1445,7 @@ function PassportView({
                         : "cursor-not-allowed bg-stone-200 text-stone-500"
                     )}
                   >
-                    <span className="block w-full text-center">Community</span>
+                    <span className="block w-full text-center">{i18n.t("common.community")}</span>
                   </button>
                   <button
                     type="button"
@@ -1303,12 +1453,12 @@ function PassportView({
                     className="focus-ring inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-3 py-3 text-sm font-black text-pantry-ink ring-1 ring-stone-900/10 transition hover:bg-amber-50"
                   >
                     <ChefHat size={16} aria-hidden="true" />
-                    Cook
+                    {i18n.t("common.cook")}
                   </button>
                 </div>
                 {passport.photos[recipe.id] && (
                   <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-pantry-berry">
-                    Photo shared
+                    {i18n.t("passport.photo_shared")}
                   </p>
                 )}
               </article>
@@ -1336,14 +1486,14 @@ function PassportStampPage({
       <div className="passport-page-face">
         <div className="mb-4 flex items-center justify-between border-b border-stone-900/10 pb-3">
           <p className="font-display text-2xl font-black text-pantry-ink">{label}</p>
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">Visa Stamps</p>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">{i18n.t("passport.visa_stamps")}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {slots.map((recipe, index) => {
             if (!recipe) {
               return (
                 <div key={`empty-${index}`} className="passport-stamp-slot border-stone-900/10 bg-white/35 text-stone-400">
-                  <span className="text-xs font-black uppercase tracking-[0.18em]">Blank Page</span>
+                  <span className="text-xs font-black uppercase tracking-[0.18em]">{i18n.t("passport.blank_page")}</span>
                 </div>
               );
             }
@@ -1359,7 +1509,7 @@ function PassportStampPage({
                 />
                 <div className="mt-3">
                   <p className="font-display text-xl font-black leading-tight">{recipe.countryStamp}</p>
-                  <p className="text-xs font-bold leading-snug">{recipe.country}</p>
+                  <p className="text-xs font-bold leading-snug">{localizedCountryName(recipe.country)}</p>
                 </div>
               </div>
             );
@@ -1377,13 +1527,13 @@ function HistoryModal({ recipe, onClose }: { recipe: Recipe; onClose: () => void
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-berry">
-              {recipe.country}
+              {localizedCountryName(recipe.country)}
             </p>
             <h2 id="history-title" className="mt-2 font-display text-4xl font-black">
-              Cultural History
+              {i18n.t("modal.history_title")}
             </h2>
           </div>
-          <IconButton label="Close history" onClick={onClose} icon={<X aria-hidden="true" />} />
+          <IconButton label={i18n.t("modal.close_history")} onClick={onClose} icon={<X aria-hidden="true" />} />
         </div>
         <p className="text-lg font-medium leading-8 text-stone-700">{recipe.history}</p>
       </div>
@@ -1414,13 +1564,13 @@ function CommunityModal({
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-stone-900/10 bg-white/95 p-5 backdrop-blur">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-pantry-mint">
-              Community View
+              {i18n.t("modal.community_kicker")}
             </p>
             <h2 id="community-title" className="mt-1 font-display text-3xl font-black">
               {recipe.badgeEmoji} {recipe.name}
             </h2>
           </div>
-          <IconButton label="Close community" onClick={onClose} icon={<X aria-hidden="true" />} />
+          <IconButton label={i18n.t("modal.close_community")} onClick={onClose} icon={<X aria-hidden="true" />} />
         </div>
 
         <div className="grid gap-5 p-5 lg:grid-cols-[320px_minmax(0,1fr)]">
@@ -1429,12 +1579,12 @@ function CommunityModal({
               {isUnlocked ? recipe.badgeEmoji : <Lock aria-hidden="true" />}
             </div>
             <div className="mb-3 rounded-2xl bg-white/70 p-2"><StampImage country={recipe.country} className="mx-auto h-28 w-28 object-contain" /></div>
-            <p className="font-display text-2xl font-bold">{recipe.country}</p>
+            <p className="font-display text-2xl font-bold">{localizedCountryName(recipe.country)}</p>
             <p className="mt-2 text-sm font-bold text-stone-600">{recipe.flavorProfile}</p>
 
             <label className="focus-within:ring-4 focus-within:ring-amber-500/30 mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-3xl bg-pantry-mint px-4 py-4 text-center font-black text-white shadow-stamp transition hover:-translate-y-0.5">
               <ImagePlus aria-hidden="true" />
-              Share Your Result
+              {i18n.t("modal.share_result")}
               <input type="file" accept="image/*" onChange={onUpload} className="sr-only" />
             </label>
 
@@ -1445,8 +1595,7 @@ function CommunityModal({
                 className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-pantry-berry px-4 py-4 font-black text-white shadow-soft transition hover:-translate-y-0.5"
               >
                 <Share2 aria-hidden="true" />
-                Generate Share Card
-                <span className="text-white/80">生成分享海报</span>
+                {i18n.t("modal.generate_share_card")}
               </button>
             )}
 
@@ -1457,7 +1606,7 @@ function CommunityModal({
                 className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-pantry-ink px-4 py-4 font-black text-white transition hover:-translate-y-0.5"
               >
                 <Download aria-hidden="true" />
-                Download PNG
+                {i18n.t("common.download_png")}
               </a>
             )}
           </aside>
@@ -1467,16 +1616,16 @@ function CommunityModal({
               <article className="mb-4 rounded-[2rem] border border-pantry-mint/30 bg-emerald-50 p-4 shadow-sm">
                 <div className="mb-3 flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-full bg-pantry-mint font-black text-white">
-                    You
+                    {i18n.t("modal.you")}
                   </div>
                   <div>
-                    <p className="font-black">You shared a cooking photo</p>
-                    <p className="text-sm font-semibold text-stone-500">Just now · live in your pantry</p>
+                    <p className="font-black">{i18n.t("modal.you_shared_photo")}</p>
+                    <p className="text-sm font-semibold text-stone-500">{i18n.t("modal.just_now")}</p>
                   </div>
                 </div>
                 <img
                   src={photo}
-                  alt={`Your cooked ${recipe.name}`}
+                  alt={i18n.t("img.cooked_alt", { dish: recipe.name })}
                   className="max-h-[420px] w-full rounded-3xl object-cover"
                 />
               </article>
@@ -1484,10 +1633,10 @@ function CommunityModal({
 
             {shareCardDataUrl && (
               <article className="mb-4 rounded-[2rem] border border-stone-900/10 bg-white p-4 shadow-sm">
-                <p className="mb-3 font-black">Share card preview</p>
+                <p className="mb-3 font-black">{i18n.t("modal.share_card_preview")}</p>
                 <img
                   src={shareCardDataUrl}
-                  alt={`Generated share card for ${recipe.name}`}
+                  alt={i18n.t("img.share_card_alt", { dish: recipe.name })}
                   className="mx-auto max-h-[520px] rounded-3xl border border-stone-900/10"
                 />
               </article>
@@ -1502,7 +1651,7 @@ function CommunityModal({
                     </div>
                     <div>
                       <p className="font-black">{comment.user}</p>
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Cooked this</p>
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">{i18n.t("modal.cooked_this")}</p>
                     </div>
                   </div>
                   <p className="mt-3 font-medium leading-7 text-stone-700">{comment.text}</p>
@@ -1524,8 +1673,8 @@ function Celebration({ recipe }: { recipe: Recipe }) {
         <div className="celebration-badge">
           <span>{recipe.badgeEmoji}</span>
         </div>
-        <p className="mt-3 font-display text-3xl font-black">Badge earned!</p>
-        <p className="font-bold text-pantry-mint">{recipe.countryStamp} stamp added</p>
+        <p className="mt-3 font-display text-3xl font-black">{i18n.t("celebration.badge_earned")}</p>
+        <p className="font-bold text-pantry-mint">{i18n.t("celebration.stamp_added", { stamp: recipe.countryStamp })}</p>
       </div>
       {pieces.map((piece) => (
         <span
@@ -1594,6 +1743,23 @@ function hasIngredientEmoji(ingredient: string) {
 
 function ingredientEmoji(ingredient: string) {
   return ingredientEmojiMap[ingredient] ?? "🍽️";
+}
+
+function localizedIngredientName(ingredient: string) {
+  const meta = getIngredientMeta(ingredient);
+  if (!meta) return ingredient;
+  return getIngredientName(meta, i18n.getLanguage());
+}
+
+function localizedCountryName(country: string) {
+  return i18n.t(`country.${country}`);
+}
+
+function localizedMatchScore(count: number, score: number) {
+  const params = { count, score };
+  const pluralKey = count === 1 ? "suggestion.match_score_one" : "suggestion.match_score_many";
+  const pluralText = i18n.t(pluralKey, params);
+  return pluralText === pluralKey ? i18n.t("suggestion.match_score", params) : pluralText;
 }
 
 
