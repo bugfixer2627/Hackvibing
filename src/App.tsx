@@ -262,9 +262,6 @@ function App() {
       if (current.includes(ingredient)) {
         return current.filter((item) => item !== ingredient);
       }
-      if (current.length >= 4) {
-        return current;
-      }
       return [...current, ingredient];
     });
   }
@@ -644,13 +641,14 @@ const languageOptions: Array<{ code: LanguageCode; shortLabel: string }> = [
   { code: "hi", shortLabel: "HI" }
 ];
 
-function LanguageSelector({ compact = false }: { compact?: boolean }) {
+function LanguageSelector({ compact = false, vertical = false }: { compact?: boolean; vertical?: boolean }) {
   const language = useI18nLanguage() as LanguageCode;
 
   return (
     <div
       className={cx(
-        "inline-flex rounded-2xl bg-white/90 p-1 shadow-sm ring-1 ring-stone-900/10",
+        "rounded-2xl bg-white/90 p-1 shadow-sm ring-1 ring-stone-900/10",
+        vertical ? "flex w-full flex-col gap-1" : "inline-flex",
         compact ? "gap-0.5" : "gap-1"
       )}
       aria-label={i18n.t("settings.language")}
@@ -662,7 +660,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
           onClick={() => i18n.setLanguage(option.code)}
           className={cx(
             "focus-ring rounded-xl font-black transition",
-            compact ? "px-2.5 py-2 text-xs" : "px-4 py-3 text-sm",
+            compact ? "px-2.5 py-2 text-xs" : vertical ? "w-full px-4 py-3 text-left text-base" : "px-4 py-3 text-sm",
             language === option.code
               ? "bg-pantry-ink text-white shadow-sm"
               : "text-stone-600 hover:bg-amber-50"
@@ -697,7 +695,9 @@ function SettingsView() {
                 {i18n.t(`settings.language.${language}`)}
               </p>
             </div>
-            <LanguageSelector />
+            <div className="w-full md:max-w-sm">
+              <LanguageSelector vertical />
+            </div>
           </div>
         </div>
       </section>
@@ -731,7 +731,7 @@ function PantryView({
     }
     return categories;
   }, {});
-  const canFind = selectedIngredients.length >= 2 && selectedIngredients.length <= 4;
+  const canFind = selectedIngredients.length >= 2;
 
   useEffect(() => {
     if (selectedIngredients.length > 0 && !fridgeOpen) {
@@ -802,20 +802,17 @@ function PantryView({
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
                       {items.map((ingredient) => {
                         const active = selectedIngredients.includes(ingredient);
-                        const disabled = !active && selectedIngredients.length >= 4;
                         return (
                           <div
                             key={ingredient}
                             className={cx(
                               "fridge-ingredient",
-                              active ? "fridge-ingredient-active" : "",
-                              disabled && "opacity-40"
+                              active ? "fridge-ingredient-active" : ""
                             )}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <button
                                 type="button"
-                                disabled={disabled}
                                 onPointerDown={() => startIngredientPress(ingredient)}
                                 onPointerUp={endIngredientPress}
                                 onPointerLeave={endIngredientPress}
@@ -824,7 +821,7 @@ function PantryView({
                                   if (longPressTriggered.current) return;
                                   onToggle(ingredient);
                                 }}
-                                className="focus-ring min-w-0 flex-1 rounded-xl text-left disabled:cursor-not-allowed"
+                                className="focus-ring min-w-0 flex-1 rounded-xl text-left"
                                 aria-pressed={active}
                               >
                                 <span className="block text-2xl">{ingredientEmoji(ingredient)}</span>
@@ -945,7 +942,7 @@ function SuggestionView({
             <p className="mt-1 text-lg font-bold text-pantry-mint">{recipe.chineseName}</p>
           </div>
 
-          <p className="max-w-2xl text-lg font-medium leading-8 text-stone-600">{recipe.description}</p>
+          <p className="max-w-2xl text-lg font-medium leading-8 text-stone-600">{localizedRecipeDescription(recipe)}</p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-[1fr_220px]">
             <div className="rounded-3xl bg-pantry-paper p-5">
@@ -1012,10 +1009,11 @@ function CookingView({
   onFinish: () => void;
   onPassport: () => void;
 }) {
+  const localizedSteps = localizedRecipeSteps(recipe);
   const [currentStep, setCurrentStep] = useState(0);
   const [showStepMode, setShowStepMode] = useState(false);
   const stepModeRef = useRef<HTMLDivElement | null>(null);
-  const totalSteps = recipe.steps.length;
+  const totalSteps = localizedSteps.length;
   const stepProgress = totalSteps > 1 ? (currentStep / (totalSteps - 1)) * 100 : 100;
 
   function goToStep(nextStep: number) {
@@ -1047,7 +1045,7 @@ function CookingView({
             <h1 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">
               {recipe.name}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">{recipe.description}</p>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">{localizedRecipeDescription(recipe)}</p>
           </div>
           <div className="hidden rounded-[2rem] bg-pantry-paper p-5 md:block">
             <p className="text-sm font-black uppercase tracking-[0.2em] text-stone-500">{i18n.t("cooking.badge")}</p>
@@ -1084,7 +1082,7 @@ function CookingView({
                   <div className="h-full rounded-full bg-pantry-mint transition-all duration-500" style={{ width: `${stepProgress}%` }} />
                 </div>
                 <ol className="mt-4 grid gap-2.5">
-                  {recipe.steps.map((step, index) => {
+                  {localizedSteps.map((step, index) => {
                     const active = index === currentStep;
                     const completed = index < currentStep;
                     return (
@@ -1145,7 +1143,7 @@ function CookingView({
                         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-pantry-mint font-black text-white">
                           {currentStep + 1}
                         </span>
-                        <p className="pt-1 text-lg font-semibold leading-8 text-pantry-ink">{recipe.steps[currentStep]}</p>
+                        <p className="pt-1 text-lg font-semibold leading-8 text-pantry-ink">{localizedSteps[currentStep]}</p>
                       </div>
                     </article>
                     <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
@@ -1198,7 +1196,7 @@ function CookingView({
               </div>
 
               <ol className="grid gap-3">
-                {recipe.steps.map((step, index) => {
+                {localizedSteps.map((step, index) => {
                   const active = index === currentStep;
                   const completed = index < currentStep;
                   return (
@@ -1432,7 +1430,7 @@ function PassportView({
                   </span>
                 </div>
                 <h3 className="mt-4 font-display text-2xl font-bold leading-tight">{recipe.name}</h3>
-                <p className="mt-2 line-clamp-2 text-sm font-medium text-stone-600">{recipe.description}</p>
+                <p className="mt-2 line-clamp-2 text-sm font-medium text-stone-600">{localizedRecipeDescription(recipe)}</p>
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -1760,6 +1758,120 @@ function localizedMatchScore(count: number, score: number) {
   const pluralKey = count === 1 ? "suggestion.match_score_one" : "suggestion.match_score_many";
   const pluralText = i18n.t(pluralKey, params);
   return pluralText === pluralKey ? i18n.t("suggestion.match_score", params) : pluralText;
+}
+
+type RecipeChineseContent = {
+  description: string;
+  steps: string[];
+};
+
+const recipeChineseContent: Record<string, RecipeChineseContent> = {
+  hamburger: {
+    description: "经典美式汉堡，夹着多汁牛肉饼、奶酪、生菜和番茄，适合做成一顿满足感很强的快手餐。",
+    steps: ["牛肉末加入盐和黑胡椒，轻轻拌匀后压成肉饼。", "平底锅或烤盘烧热，每面煎 3 到 4 分钟。", "最后 1 分钟放上切达奶酪，让它融化。", "把面包胚略微烤香。", "依次放上生菜、番茄、洋葱、酸黄瓜、牛肉饼和酱料后合上即可。"]
+  },
+  "mac-and-cheese": {
+    description: "香浓顺滑的芝士通心粉，用奶香酱汁包裹每一口意面，是典型的美式安慰食物。",
+    steps: ["通心粉煮到略带嚼劲后捞出。", "锅中融化黄油，加入面粉搅成面糊。", "慢慢倒入牛奶并持续搅拌，煮到酱汁变稠。", "加入切达奶酪拌到完全融化。", "放入盐、黑胡椒和少许肉豆蔻调味。", "把通心粉倒回锅中拌匀后趁热食用。"]
+  },
+  "bbq-ribs": {
+    description: "慢烤 BBQ 排骨外层焦香、内里软嫩，刷上烧烤酱后会带出浓郁的甜咸烟熏风味。",
+    steps: ["撕掉排骨背面的薄膜。", "把蒜粉、洋葱粉、红椒粉、红糖、盐和黑胡椒混合成干擦料。", "将调味料均匀抹在排骨上。", "用锡纸包好，150°C 烤约 3 小时。", "取出后刷上烧烤酱。", "再烤或炙烤 5 到 10 分钟，表面上色后即可。"]
+  },
+  "clam-chowder": {
+    description: "新英格兰蛤蜊浓汤质地浓厚，带有培根香气和奶油口感，是很经典的海边暖胃汤品。",
+    steps: ["先把培根煎香，取出备用。", "利用锅中的油脂炒软洋葱和西芹。", "加入面粉炒 1 分钟。", "倒入蛤蜊汁和土豆，小火煮到土豆变软。", "加入蛤蜊和淡奶油轻轻加热，不要大滚。", "用盐和百里香调味，最后撒上培根即可。"]
+  },
+  "apple-pie": {
+    description: "双层派皮包裹肉桂苹果内馅，外酥内软，是极具代表性的美式甜点。",
+    steps: ["用面粉、盐和冷黄油搓成碎粒状，加入冷水揉成派皮面团后冷藏。", "苹果切片，与糖、肉桂和柠檬汁拌匀。", "擀开一半面团铺入派盘。", "放入苹果馅料。", "盖上另一张派皮并封边，在表面划几个气孔。", "刷上蛋液，200°C 烘烤 45 到 50 分钟。"]
+  },
+  pancakes: {
+    description: "松软厚实的美式松饼做法简单，适合早餐搭配黄油、糖浆或水果一起吃。",
+    steps: ["把面粉、糖、盐和膨松材料混合。", "另一个碗里把鸡蛋、牛奶和融化黄油搅匀。", "把湿料倒入干料中，轻轻拌到刚好没有干粉即可。", "面糊静置几分钟。", "平底锅加热后倒入面糊，表面起泡后翻面。", "两面金黄后即可堆叠上桌。"]
+  },
+  "nasi-goreng": {
+    description: "印尼炒饭以隔夜米饭、甜酱油和香料炒制而成，锅气十足又带一点甜咸层次。",
+    steps: ["将红葱头、蒜、辣椒和虾酱打成糊。", "热油炒香香料糊。", "加入虾米炒出香味。", "倒入隔夜饭，大火翻炒。", "加入甜酱油拌匀。", "调入盐。", "把饭拨到一边，煎一个太阳蛋。", "把蛋盖在炒饭上，再撒上青葱即可。"]
+  },
+  "beef-rendang": {
+    description: "仁当牛肉以椰浆和香料慢炖，酱汁浓郁厚重，牛肉会吸满深沉的香辣风味。",
+    steps: ["把香茅、蒜、姜、辣椒和香料打成香料糊。", "锅中炒香香料糊直到出油。", "加入牛肉翻炒上色。", "倒入椰浆，小火慢炖。", "持续翻拌并收汁，直到酱汁浓稠、牛肉软嫩。", "根据口味补盐后即可。"]
+  },
+  "chicken-satay": {
+    description: "鸡肉沙嗲先腌后烤，再搭配花生酱，是印尼街头很受欢迎的串烧小吃。",
+    steps: ["鸡肉切块后用蒜、姜黄、盐和少许油腌制。", "将鸡肉串到竹签上。", "平底锅、烤盘或烤架加热后把鸡串烤熟。", "途中翻面并刷少量油。", "搭配花生酱和青柠一起食用。"]
+  },
+  "gado-gado": {
+    description: "加多加多是印尼经典温沙拉，把蔬菜、鸡蛋和花生酱组合在一起，清爽又有饱足感。",
+    steps: ["把蔬菜分别焯熟或煮熟。", "鸡蛋煮熟后切开。", "如果有豆腐或配料，也先处理好。", "把花生酱、青柠汁和调味料调成酱汁。", "把所有材料摆盘。", "淋上花生酱后即可食用。"]
+  },
+  "soto-ayam": {
+    description: "印尼鸡汤以姜黄和香料熬出金黄色汤底，味道清亮却很有层次。",
+    steps: ["把蒜、姜、姜黄和香料打碎。", "先炒香香料。", "加入鸡肉稍微煎一下。", "倒入清水或高汤，煮到鸡肉熟透。", "捞出鸡肉撕成丝后放回汤里。", "按口味加入盐和青柠，配米饭或面食食用。"]
+  },
+  "mie-goreng": {
+    description: "印尼炒面甜咸浓香，面条裹上酱汁后非常入味，是家常又有街头感的主食。",
+    steps: ["面条先煮到八九分熟后沥干。", "锅中炒香蒜、红葱头和辣椒。", "加入蛋、鸡肉或喜欢的配料炒熟。", "放入面条大火翻炒。", "加入甜酱油、酱油和其他调味料拌匀。", "最后加入蔬菜快速翻炒后盛出。"]
+  },
+  "butter-chicken": {
+    description: "黄油鸡咖喱奶香顺滑、微甜微辣，鸡肉经过腌制后口感格外柔嫩。",
+    steps: ["鸡肉用酸奶、蒜、姜和香料腌制。", "把鸡肉煎到表面上色。", "另起锅用黄油炒香洋葱、蒜和番茄。", "加入咖喱香料继续翻炒。", "倒入奶油或牛奶，煮成顺滑酱汁。", "放回鸡肉，小火煮到完全入味。"]
+  },
+  dal: {
+    description: "达尔豆汤用扁豆和香料慢煮，口感绵密温和，是非常经典的印度家常菜。",
+    steps: ["红扁豆洗净后加水煮软。", "锅中用油或酥油炒香洋葱、蒜、姜和香料。", "把炒香的调味料倒入豆里。", "继续小火煮到浓稠顺滑。", "按口味加入盐，最后可撒香菜或挤柠檬汁。"]
+  },
+  "chicken-biryani": {
+    description: "印度香饭把鸡肉、香米和整粒香料层层叠煮，香气非常丰富。",
+    steps: ["鸡肉用酸奶、蒜、姜和香料腌制。", "巴斯马蒂米洗净后煮到半熟。", "锅中炒香洋葱和整粒香料。", "加入鸡肉煮到七八分熟。", "把半熟米铺在鸡肉上，分层焖煮。", "焖到米饭完全熟透、香气融合后即可。"]
+  },
+  "palak-paneer": {
+    description: "菠菜奶酪咖喱颜色鲜绿、口感柔和，适合搭配米饭或印度烤饼。",
+    steps: ["菠菜焯水后打成泥。", "锅中炒香洋葱、蒜、姜和香料。", "加入菠菜泥煮匀。", "放入奶酪块轻轻拌开。", "如果需要可加一点奶油或牛奶调整浓度。", "最后用盐调味即可。"]
+  },
+  samosa: {
+    description: "萨摩萨外皮酥脆，内馅通常是香料土豆或肉馅，适合作为点心或开胃菜。",
+    steps: ["把土豆煮熟压碎，与香料和配料拌成馅。", "面皮擀薄后切片。", "包入馅料并捏紧边缘。", "油锅加热后把萨摩萨炸到金黄酥脆。", "沥油后搭配酱料食用。"]
+  },
+  "mango-lassi": {
+    description: "芒果拉昔是冰凉香甜的印度酸奶饮品，做法简单，很适合搭配重口味主食。",
+    steps: ["芒果切块备用。", "把芒果、酸奶、牛奶和糖放入搅拌机。", "打到顺滑细腻。", "如果想更冰凉，可以加入冰块再稍微打一下。", "倒入杯中即可饮用。"]
+  },
+  "scallion-oil-noodles": {
+    description: "葱油拌面用简单食材做出浓郁葱香，面条油润顺滑，是上海很经典的一道家常面。",
+    steps: ["青葱切段，冷油下锅慢慢炸到金黄。", "把炸好的葱捞出备用。", "在葱油中加入生抽、老抽和糖，煮成酱汁。", "面条煮熟后沥干。", "把热面和酱汁、葱油快速拌匀。", "最后撒上炸葱即可。"]
+  },
+  "steamed-fish": {
+    description: "清蒸鱼强调鱼肉本身的新鲜度，再用姜葱和热油提香，是非常典型的粤式做法。",
+    steps: ["鱼身划刀后抹盐和料酒。", "把姜丝放入鱼肚和鱼身上。", "大火蒸 8 到 10 分钟。", "倒掉盘中多余汤汁。", "铺上新鲜姜丝和葱丝。", "把热油浇在姜葱上，最后淋上酱油和少许香油。"]
+  },
+  "pan-fried-pork-buns": {
+    description: "生煎包底部焦脆、内里多汁，咬开后会有肉汁流出，是很有代表性的上海点心。",
+    steps: ["用面粉、酵母和水揉面并发酵。", "猪肉和调味料拌匀，再加入肉冻小丁做馅。", "面团分小剂子后擀皮包入馅料。", "包好后再醒一会儿。", "平底锅煎至底部金黄。", "加入少量水盖锅焖蒸，水收干后再略煎一下即可。"]
+  },
+  "mapo-tofu": {
+    description: "麻婆豆腐麻辣鲜香，豆腐嫩滑，和米饭特别搭，是川菜里很经典的一道菜。",
+    steps: ["豆腐切块后用淡盐水稍微焯一下。", "锅中把猪肉末炒散炒香。", "加入蒜末、姜末和辣酱炒出红油。", "倒入酱油和少量水煮开。", "放入豆腐，小火煮几分钟。", "最后勾薄芡，再淋少许香油和撒葱花。"]
+  },
+  "egg-fried-rice": {
+    description: "蛋炒饭看似简单，但关键在于隔夜饭和大火快炒，让每一粒米都松散有香气。",
+    steps: ["先把隔夜饭拨散。", "锅烧热后下油，先把鸡蛋快速炒到半熟。", "倒入米饭，大火不断翻炒。", "沿锅边加入酱油。", "加入葱花和盐继续炒匀。", "最后淋少许香油即可出锅。"]
+  },
+  "kung-pao-chicken": {
+    description: "宫保鸡丁把鸡肉、花生和辣椒结合在一起，酸甜微辣又带一点酱香，非常下饭。",
+    steps: ["鸡肉切丁后用少量酱油和调味料腌一下。", "先把花生炒香备用。", "热锅下油，炒香干辣椒和花椒。", "放入鸡丁快速炒熟。", "加入蒜末、姜末和调好的酱汁。", "最后拌入花生和葱段，炒匀后马上出锅。"]
+  }
+};
+
+function localizedRecipeDescription(recipe: Recipe) {
+  if (i18n.getLanguage() !== "zh") return recipe.description;
+  return recipeChineseContent[recipe.id]?.description ?? recipe.description;
+}
+
+function localizedRecipeSteps(recipe: Recipe) {
+  if (i18n.getLanguage() !== "zh") return recipe.steps;
+  return recipeChineseContent[recipe.id]?.steps ?? recipe.steps;
 }
 
 
