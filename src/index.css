@@ -332,46 +332,28 @@ input {
   left: 22px;
 }
 
-.fridge-magnet {
+.fridge-brand {
   position: absolute;
-  border-radius: 999px;
-  box-shadow: 0 8px 18px rgba(45, 41, 38, 0.12);
-  animation: magnetBob 4.8s ease-in-out infinite;
+  left: 50%;
+  top: 17%;
+  z-index: 4;
+  width: min(86%, 620px);
+  color: #a43313;
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", "Arial Black", system-ui, sans-serif;
+  font-size: clamp(3rem, 10vw, 7rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.9;
+  text-align: center;
+  text-shadow: 0 3px 0 rgba(255, 250, 240, 0.76), 0 14px 24px rgba(45, 41, 38, 0.13);
+  transform: translateX(-50%);
+  transition: opacity 420ms ease, transform 420ms ease;
+  white-space: nowrap;
 }
 
-.fridge-magnet-one {
-  right: 18%;
-  top: 18%;
-  width: 42px;
-  height: 42px;
-  background: #d97706;
-}
-
-.fridge-magnet-two {
-  right: 33%;
-  top: 31%;
-  width: 30px;
-  height: 30px;
-  background: #0f766e;
-  animation-delay: 900ms;
-}
-
-.fridge-magnet-three {
-  left: 18%;
-  top: 18%;
-  width: 40px;
-  height: 40px;
-  background: #9f1239;
-  animation-delay: 340ms;
-}
-
-.fridge-magnet-four {
-  left: 34%;
-  top: 32%;
-  width: 28px;
-  height: 28px;
-  background: #4338ca;
-  animation-delay: 1120ms;
+.fridge-stage-open .fridge-brand {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-0.5rem) scale(0.96);
 }
 
 .fridge-open-panel {
@@ -446,16 +428,6 @@ input {
   50% {
     transform: translateY(-10px) scale(1.035);
     opacity: 1;
-  }
-}
-
-@keyframes magnetBob {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-5px) rotate(4deg);
   }
 }
 

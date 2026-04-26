@@ -720,14 +720,11 @@ function PantryView({
 
             <div className="fridge-door fridge-door-left" aria-hidden="true">
               <span className="fridge-handle fridge-handle-left" />
-              <span className="fridge-magnet fridge-magnet-three" />
-              <span className="fridge-magnet fridge-magnet-four" />
             </div>
             <div className="fridge-door fridge-door-right" aria-hidden="true">
               <span className="fridge-handle fridge-handle-right" />
-              <span className="fridge-magnet fridge-magnet-one" />
-              <span className="fridge-magnet fridge-magnet-two" />
             </div>
+            <span className="fridge-brand" aria-hidden="true">Foodie Vibe</span>
           </div>
 
           {!fridgeOpen && (
@@ -1592,11 +1589,11 @@ function IconButton({
 }
 
 function hasIngredientEmoji(ingredient: string) {
-  return ingredient in ingredientEmojiMap;
+  return ingredient.trim().length > 0;
 }
 
 function ingredientEmoji(ingredient: string) {
-  return ingredientEmojiMap[ingredient] ?? null;
+  return ingredientEmojiMap[ingredient] ?? "🍽️";
 }
 
 
