@@ -1,0 +1,10 @@
+{
+  "name": "The Passport Pantry",
+  "short_name": "Passport Pantry",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f3ea",
+  "theme_color": "#0f766e",
+  "orientation": "portrait",
+  "description": "An offline cooking passport app for discovering recipes from your pantry."
+}
