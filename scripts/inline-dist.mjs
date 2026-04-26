@@ -19,7 +19,10 @@ html = html.replace(/\s*<script type="module" crossorigin src="\.\/(assets\/[^\"
 });
 
 if (!appScript) {
-  throw new Error("Could not find bundled app script to inline");
+  mkdirSync(join(projectRoot, "Hackvibing-web"), { recursive: true });
+  writeFileSync(join(projectRoot, "Hackvibing-web", "index.html"), html);
+  console.log("Bundled app script already inlined by Vite; copied standalone index.html");
+  process.exit(0);
 }
 
 html = html.replace("</body>", `  <script>\n${appScript}\n  </script>\n  </body>`);
