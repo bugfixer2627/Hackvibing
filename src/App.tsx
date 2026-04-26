@@ -7,13 +7,13 @@ import {
   ChefHat,
   Download,
   Flame,
-  Globe2,
   ImagePlus,
   Info,
   Lock,
   Map as MapIcon,
   RefreshCcw,
   Search,
+  Settings as SettingsIcon,
   Share2,
   Sparkles,
   Stamp,
@@ -237,6 +237,21 @@ function App() {
   }, [passport]);
 
   useEffect(() => {
+    function initAudio() {
+      if (audioInitializedRef.current) return;
+      audioInitializedRef.current = true;
+      audio.init();
+      setAudioReady(true);
+    }
+    window.addEventListener("pointerdown", initAudio, { once: true });
+    window.addEventListener("keydown", initAudio, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", initAudio);
+      window.removeEventListener("keydown", initAudio);
+    };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
 
@@ -311,12 +326,10 @@ function App() {
     setView("transition");
   }
 
-  function openCountryRecipe(country: string) {
-    const countryRecipes = data.recipes.filter((recipe) => recipe.country === country);
-    const unlockedRecipe =
-      countryRecipes.find((recipe) => passport.foodBadges.includes(recipe.id)) ?? countryRecipes[0];
-    if (!unlockedRecipe) return;
-    cookRecipe(unlockedRecipe);
+  function openCountryRecipe(recipeId: string) {
+    const recipe = data.recipes.find((entry) => entry.id === recipeId);
+    if (!recipe) return;
+    cookRecipe(recipe);
   }
 
   function finishRecipe(recipe: Recipe) {
@@ -395,7 +408,7 @@ function App() {
     <main
       className={cx(
         "app-safe-shell min-h-screen overflow-x-hidden text-pantry-ink",
-        view === "map" || view === "transition" ? "bg-stone-950" : "paper-texture"
+        view === "map" ? "bg-stone-950" : "paper-texture"
       )}
     >
       {view === "map" ? (
@@ -474,7 +487,20 @@ function App() {
                   onCookAgain={(recipe) => cookRecipe(recipe)}
                 />
               )}
-              {view === "settings" && <SettingsView />}
+              {view === "settings" && (
+                <SettingsView
+                  audioMuted={audioMuted}
+                  onToggleMute={() => {
+                    if (!audioInitializedRef.current) {
+                      audioInitializedRef.current = true;
+                      audio.init();
+                      setAudioReady(true);
+                    }
+                    const nowMuted = audio.toggleMute();
+                    setAudioMuted(nowMuted);
+                  }}
+                />
+              )}
             </div>
           </section>
         )}
@@ -508,27 +534,6 @@ function App() {
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </main>
 
-    {/* Mute toggle — rendered OUTSIDE <main> so it's never clipped by overflow-x:hidden.
-        Positioned bottom-right to avoid the sticky header. On sm+ screens it moves
-        to the top-right corner where there's clear space beside the header nav. */}
-    <button
-      type="button"
-      onClick={() => {
-        if (!audioInitializedRef.current) {
-          audioInitializedRef.current = true;
-          audio.init();
-          setAudioReady(true);
-        }
-        const nowMuted = audio.toggleMute();
-        setAudioMuted(nowMuted);
-      }}
-      aria-label={audioMuted ? "Unmute sound" : "Mute sound"}
-      title={audioMuted ? "Unmute sound" : "Mute sound"}
-      style={{ position: "fixed", bottom: "4.5rem", right: "0.75rem", zIndex: 60 }}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/10 bg-white text-xl shadow-soft transition hover:bg-amber-50 sm:bottom-auto sm:right-3 sm:top-3"
-    >
-      {audioMuted ? "🔇" : "🔊"}
-    </button>
     </>
   );
 }
@@ -586,7 +591,7 @@ function Header({
         />
         <NavButton
           active={view === "settings"}
-          icon={<Globe2 aria-hidden="true" size={18} />}
+          icon={<SettingsIcon aria-hidden="true" size={18} />}
           label={i18n.t("nav.settings")}
           onClick={() => setView("settings")}
         />
@@ -630,7 +635,7 @@ function MobileBottomNav({
       />
       <NavButton
         active={view === "settings"}
-        icon={<Globe2 aria-hidden="true" size={18} />}
+        icon={<SettingsIcon aria-hidden="true" size={18} />}
         label={i18n.t("nav.settings")}
         onClick={() => setView("settings")}
       />
@@ -774,7 +779,13 @@ function LanguageSelector({ compact = false, vertical = false }: { compact?: boo
   );
 }
 
-function SettingsView() {
+function SettingsView({
+  audioMuted,
+  onToggleMute
+}: {
+  audioMuted: boolean;
+  onToggleMute: () => void;
+}) {
   const language = useI18nLanguage() as LanguageCode;
 
   return (
@@ -787,16 +798,39 @@ function SettingsView() {
           </h1>
         </div>
 
-        <div className="rounded-[1.6rem] bg-pantry-paper p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="font-display text-2xl font-bold">{i18n.t("settings.language")}</h2>
-              <p className="mt-1 text-sm font-semibold text-stone-600">
-                {i18n.t(`settings.language.${language}`)}
-              </p>
+        <div className="grid gap-4">
+          <div className="rounded-[1.6rem] bg-pantry-paper p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="font-display text-2xl font-bold">{i18n.t("settings.language")}</h2>
+                <p className="mt-1 text-sm font-semibold text-stone-600">
+                  {i18n.t(`settings.language.${language}`)}
+                </p>
+              </div>
+              <div className="w-full md:max-w-sm">
+                <LanguageSelector vertical />
+              </div>
             </div>
-            <div className="w-full md:max-w-sm">
-              <LanguageSelector vertical />
+          </div>
+
+          <div className="rounded-[1.6rem] bg-pantry-paper p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="font-display text-2xl font-bold">Sound</h2>
+                <p className="mt-1 text-sm font-semibold text-stone-600">
+                  {audioMuted ? "Sound is muted" : "Sound is on"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onToggleMute}
+                aria-pressed={!audioMuted}
+                aria-label={audioMuted ? "Unmute sound" : "Mute sound"}
+                className="focus-ring inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-base font-bold text-stone-800 shadow-sm transition hover:bg-amber-50"
+              >
+                <span className="text-2xl" aria-hidden="true">{audioMuted ? "🔇" : "🔊"}</span>
+                <span>{audioMuted ? "Unmute" : "Mute"}</span>
+              </button>
             </div>
           </div>
         </div>
