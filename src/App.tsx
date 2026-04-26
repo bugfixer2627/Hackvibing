@@ -22,6 +22,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ChangeEvent, ReactNode } from "react";
 import pantryData from "./data.json";
+import { audio } from "./audio";
 import chinaStamp from "./assets/stamps/china.svg";
 import indiaStamp from "./assets/stamps/india.svg";
 import indonesiaStamp from "./assets/stamps/indonesia.svg";
@@ -215,6 +216,11 @@ function App() {
   const [passport, setPassport] = useState<StoredPassport>(() => loadPassport());
   const [pantryFridgeOpen, setPantryFridgeOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+  // audioReady is STATE (not a ref) so the BGM useEffect can react to it changing.
+  const [audioReady, setAudioReady] = useState(false);
+  // audioInitializedRef guards against double-init (StrictMode / multiple gestures).
+  const audioInitializedRef = useRef(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
@@ -229,6 +235,21 @@ function App() {
       setPantryFridgeOpen(true);
     }
   }, [selectedIngredients.length]);
+  // Autoplay-policy compliant: init AudioContext on first user gesture.
+  useEffect(() => {
+    const handleFirstGesture = () => {
+      if (audioInitializedRef.current) return;
+      audioInitializedRef.current = true;
+      audio.init();
+      setAudioReady(true); // triggers re-render → BGM useEffect fires with current view
+    };
+    window.addEventListener("pointerdown", handleFirstGesture, { once: true });
+    window.addEventListener("keydown", handleFirstGesture, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstGesture);
+      window.removeEventListener("keydown", handleFirstGesture);
+    };
+  }, []);
 
   const orderedMatches = useMemo(
     () => matchingRecipes(selectedIngredients, data.recipes),
@@ -245,14 +266,31 @@ function App() {
   const unlockedBadges = new Set(passport.foodBadges);
   const showAppChrome = view !== "pantry";
 
+  // Drive BGM from the current screen.
+  // audioReady is STATE so this effect re-runs the moment audio is initialised.
+  useEffect(() => {
+    if (!audioReady) return;
+    if (view === "pantry" || view === "passport") {
+      audio.playBGM("home");
+    } else if (view === "suggestion") {
+      audio.stopBGM();
+    } else if (view === "cooking") {
+      audio.playBGM(activeRecipe.country);
+    }
+  }, [view, activeRecipe.country, audioReady]);
+
   function toggleIngredient(ingredient: string) {
+    // Read current state HERE (outside updater) for the audio side-effect decision.
+    // State updaters must be pure — no side effects inside them.
+    const isSelected = selectedIngredients.includes(ingredient);
+    if (isSelected) {
+      audio.playIngredientDeselect(ingredient);
+    } else if (selectedIngredients.length < 4) {
+      audio.playIngredientTap(ingredient);
+    }
     setSelectedIngredients((current) => {
-      if (current.includes(ingredient)) {
-        return current.filter((item) => item !== ingredient);
-      }
-      if (current.length >= 4) {
-        return current;
-      }
+      if (current.includes(ingredient)) return current.filter((item) => item !== ingredient);
+      if (current.length >= 4) return current;
       return [...current, ingredient];
     });
   }
@@ -279,6 +317,7 @@ function App() {
       countryStamps: Array.from(new Set([...current.countryStamps, recipe.country])),
       photos: current.photos
     }));
+    audio.playStampJingle(recipe.country);
     setShowCelebration(true);
     window.setTimeout(() => setShowCelebration(false), 2200);
   }
@@ -424,6 +463,29 @@ function App() {
       {showCelebration && <Celebration recipe={activeRecipe} />}
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </main>
+
+    {/* Mute toggle — rendered OUTSIDE <main> so it's never clipped by overflow-x:hidden.
+        Positioned bottom-right to avoid the sticky header. On sm+ screens it moves
+        to the top-right corner where there's clear space beside the header nav. */}
+    <button
+      type="button"
+      onClick={() => {
+        if (!audioInitializedRef.current) {
+          audioInitializedRef.current = true;
+          audio.init();
+          setAudioReady(true);
+        }
+        const nowMuted = audio.toggleMute();
+        setAudioMuted(nowMuted);
+      }}
+      aria-label={audioMuted ? "Unmute sound" : "Mute sound"}
+      title={audioMuted ? "Unmute sound" : "Mute sound"}
+      style={{ position: "fixed", bottom: "4.5rem", right: "0.75rem", zIndex: 60 }}
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/10 bg-white text-xl shadow-soft transition hover:bg-amber-50 sm:bottom-auto sm:right-3 sm:top-3"
+    >
+      {audioMuted ? "🔇" : "🔊"}
+    </button>
+    </>
   );
 }
 
@@ -781,17 +843,17 @@ function SuggestionView({
         </button>
       </div>
 
-      <article className="relative overflow-hidden rounded-[2rem] border-2 border-dashed border-stone-900/20 bg-[#fffaf0] p-4 shadow-soft sm:p-6">
+      <article className="relative z-0 overflow-hidden rounded-[2rem] border-2 border-dashed border-stone-900/20 bg-[#fffaf0] p-4 shadow-soft sm:p-6">
         <div className={cx("absolute inset-x-0 top-0 h-2 bg-gradient-to-r", countryPalette[recipe.country] ?? "from-amber-500 to-teal-700")} />
-        <div className="absolute right-4 top-5 rotate-6 rounded-2xl bg-white/70 p-1 shadow-sm">
+        <div className="absolute right-4 top-5 z-20 rotate-6 rounded-2xl bg-white/70 p-1 shadow-sm">
           <StampImage country={recipe.country} className="h-20 w-20 object-contain sm:h-28 sm:w-28" />
         </div>
-        <div className="pointer-events-none absolute bottom-5 right-5 hidden w-40 space-y-3 opacity-25 sm:block">
+        <div className="pointer-events-none absolute bottom-5 right-5 z-0 hidden w-40 space-y-3 opacity-25 sm:block">
           <span className="block border-t border-stone-700" />
           <span className="block border-t border-stone-700" />
           <span className="block border-t border-stone-700" />
         </div>
-        <div className="pt-16 sm:pt-20">
+        <div className="relative z-10 pt-16 sm:pt-20">
           <div className="mb-5 pr-20 sm:pr-28">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-pantry-berry">{recipe.country}</p>
             <h2 className="mt-2 font-display text-4xl font-black leading-tight md:text-6xl">{recipe.name}</h2>
